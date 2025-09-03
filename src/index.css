@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "flowbite/src/themes/default";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.primary-button {
+  background-color: #141317;
+  font-weight: bold;
+  /* border-radius: 23px; */
+  color: white;
+  border: none;
+}
+
+.ant-upload {
+  
+  width: 100% !important;
+ 
+}
+.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #141317 !important; /* Change la couleur du fond */
+  border-color: #141317 !important; /* Change la couleur de la bordure */
+}
+.custom-checkbox .ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #141317 !important; 
+}
+
+.demande-view-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.custom-tabs .ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.custom-tabs .ant-tabs-tab {
+  color: black;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+.custom-tabs .ant-tabs-tab-active {
+  color: black;
+  border-bottom: 2px solid black !important;
+}
+
+.custom-tabs .ant-tabs-ink-bar {
+  background: black !important;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* color: #138241; */
+  font-weight: bold;
+  
+}
+
+.tab-icon {
+  font-size: 18px;
+}
+
+body{
+  background-color: #e3e2de;
+}
+/* .custom-select .ant-select-selector {
+  background-color: black !important; 
+  border-radius: 8px;
+} */
+
+/* .custom-select.ant-select-open .ant-select-selector {
+  background-color: white !important;
+}
+
+.custom-select .ant-select-dropdown {
+  background-color: white !important;
+} */
+.custom-row-height {
+  height: 20px !important; /* ou une valeur plus petite comme 28px */
+}
+/* .ant-table-row {
+  height: 36px !important;
+}
+.ant-table-tbody > tr > td {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+} */
+.ant-table-thead > tr > th {
+  background-color: black !important; 
+  color: white !important; 
+}
+.dark .ant-table-thead > tr > th {
+  background-color: black !important; 
+  color: white !important; 
+}
+.dark .ant-table-tbody > tr > td {
+  background-color: black !important; 
+  color: white;
+}
+.dark .ant-table {
+  background-color: white;
+  color: black;
+}
+
+
+@layer components {
+  .primary-button {
+    @apply bg-main-color border-none  hover:!bg-main-color hover:!text-white text-white hover:border-none;
+  }
+  .auth-button {
+    @apply bg-main-color border-none  hover:!bg-main-color hover:!text-white text-white hover:border-none;
+  }
+  .secondary-button {
+    @apply bg-second-color border-none font-bold hover:!bg-second-color hover:!text-black text-black hover:border-none;
+  }
+  /* .custom-select {
+    @apply bg-black hover:!bg-white
+  } */
+}
