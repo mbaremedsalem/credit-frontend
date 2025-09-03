@@ -159,6 +159,7 @@ function DemandesEntreprise() {
         footer={null}
         width={1400}
         closable={false}
+          maskClosable={false}
       >
         <AjoutCreditEntreprise
           typeFile={"entreprise"}

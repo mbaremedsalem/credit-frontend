@@ -226,6 +226,7 @@ Annuler
             footer={null}
             width={1500}
             closable={false}
+              maskClosable={false}
           >
             <AjoutCreditStep2 closeFirstModal={onCloseModal} closeSecondModal={handleCancel} client={openPopupConfirm.client!} credit={credit}/>
 

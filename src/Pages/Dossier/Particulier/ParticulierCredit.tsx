@@ -788,6 +788,7 @@ else if (
             footer={null}
             width={1000}
             closable={false}
+              maskClosable={false}
           >
             <RemonterNouveau
               closeSecondModal={handlecancelRemonterANouveau}
@@ -802,6 +803,7 @@ else if (
         footer={null}
         width="80%"
         style={{ top: 20 }}
+          maskClosable={false}
       >
         {uploadedFile && (
           uploadedFile.file.type.startsWith('image/') ? (
@@ -832,6 +834,7 @@ else if (
             footer={null}
             width={1200}
             closeIcon={false}
+              maskClosable={false}
           >
             <DetailsLigne
               closeSecondModal={handlecancelDetails}
@@ -846,6 +849,7 @@ else if (
             footer={null}
             width={900}
             closeIcon={false}
+              maskClosable={false}
           >
             <HistoriqueLigne
               onClose={handlecancelHistorique}
@@ -860,6 +864,7 @@ else if (
             footer={null}
             width={uploadedFile ?800: 375}
             closeIcon={false}
+              maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">
@@ -1125,6 +1130,7 @@ else if (
             footer={null}
             width={375}
             closeIcon={false}
+              maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">

@@ -562,6 +562,8 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
         footer={null}
         width={375}
         closeIcon={false}
+          maskClosable={false}
+          
       >
         <div className="flex flex-col items-center space-y-3 ">
           <div className="flex items-center justify-center space-x-3">
@@ -599,6 +601,7 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
         footer={null}
         width={1200}
         closeIcon={false}
+          maskClosable={false}
       >
         <RemonterStep2
           closeSecondModal={CancelPopupConfirmDetails}

@@ -794,6 +794,7 @@ useEffect(() => {
             footer={null}
             width={1350}
             closable={false}
+              maskClosable={false}
           >
             <RemonterANouveauEntreprise
               closeSecondModal={handlecancelRemonterANouveau}
@@ -810,6 +811,7 @@ useEffect(() => {
             footer={null}
             width={1200}
             closeIcon={false}
+              maskClosable={false}
           >
             <DetailsCreditEntreprise
               closeSecondModal={handlecancelDetails}
@@ -824,6 +826,7 @@ useEffect(() => {
             footer={null}
             width={900}
             closeIcon={false}
+              maskClosable={false}
           >
             <HistoriqueEntreprise
               onClose={handlecancelHistorique}
@@ -837,6 +840,7 @@ useEffect(() => {
         footer={null}
         width="80%"
         style={{ top: 20 }}
+          maskClosable={false}
       >
         {uploadedFile && (
           uploadedFile.file.type.startsWith('image/') ? (
@@ -866,6 +870,7 @@ useEffect(() => {
             footer={null}
             width={uploadedFile ? 800 : 375}
             closeIcon={false}
+              maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">
@@ -1134,6 +1139,7 @@ useEffect(() => {
             footer={null}
             width={375}
             closeIcon={false}
+              maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">

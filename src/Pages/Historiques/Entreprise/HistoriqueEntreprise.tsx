@@ -136,8 +136,11 @@ function HistoriqueEntreprise() {
       render: (_, record) => {
         return (
           // <span>{record?.client?.credits?.[0]?.montant.toLocaleString()}</span>
-          <span>{new Intl.NumberFormat('fr-FR').format(Number(record?.client?.credits?.[0]?.montant?.toLocaleString()))}</span>
-
+          <span>
+            {new Intl.NumberFormat("fr-FR").format(
+              Number(record?.client?.credits?.[0]?.montant?.toLocaleString())
+            )}
+          </span>
         );
       },
     },
@@ -252,8 +255,10 @@ function HistoriqueEntreprise() {
         <div className="flex flex-col ">
           <span className="text-[18px] font-bold">Historiques Entreprises</span>
           <span className="text-[13px] ">
-            
-             {active === 0 ? onlyEntrepriseValider?.length! : onlyEntrepriseRejeter?.length!} Historique Crédit {active === 0 ? "Validé" : "Rejeté"}
+            {active === 0
+              ? onlyEntrepriseValider?.length!
+              : onlyEntrepriseRejeter?.length!}{" "}
+            Historique Crédit {active === 0 ? "Validé" : "Rejeté"}
           </span>
         </div>
         <div className="flex items-center gap-x-[13px] justify-center mt-3">
@@ -265,6 +270,7 @@ function HistoriqueEntreprise() {
             footer={null}
             width={1200}
             closeIcon={false}
+            maskClosable={false}
           >
             <DetailsHistoriqueHistoriqueEntreprise
               closeSecondModal={handlecancelDetails}
@@ -279,6 +285,8 @@ function HistoriqueEntreprise() {
             footer={null}
             width={900}
             closeIcon={false}
+              maskClosable={false}
+
           >
             <HistoriqueHistoriqueEntreprise
               onClose={handlecancelHistorique}

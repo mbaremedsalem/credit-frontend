@@ -92,6 +92,7 @@ return (
                 width={412}
                 closable={false}
                 className=''
+                  maskClosable={false}
               >
               <UpdateProfileAdmin handleCancel={handlecancelProfile}/>
               </Modal>
@@ -102,7 +103,8 @@ return (
                 footer={null}
                 width={390}
                 closable={false}
-                className=''              >
+                className=''     
+                  maskClosable={false}         >
               <EditPassword handleCancel={handlecancelPassword}/>
               </Modal>
         </header>

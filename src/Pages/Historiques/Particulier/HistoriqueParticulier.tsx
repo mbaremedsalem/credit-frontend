@@ -296,6 +296,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={1300}
             closeIcon={false}
+              maskClosable={false}
           >
             <DetailsHistoriquePaticulier
               closeSecondModal={handlecancelDetails!}
@@ -310,6 +311,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={900}
             closeIcon={false}
+              maskClosable={false}
           >
             <HistoriqueHistoriqueParticulier
               onClose={handlecancelHistorique}
@@ -324,6 +326,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={375}
             closeIcon={false}
+                maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">
@@ -359,6 +362,8 @@ function HistoriqueParticulier() {
             footer={null}
             width={375}
             closeIcon={false}
+              maskClosable={false}
+
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">

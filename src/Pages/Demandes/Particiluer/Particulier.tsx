@@ -155,6 +155,7 @@ function DemandesParticulier() {
         footer={null}
         width={950}
         closable={false}
+          maskClosable={false}
       >
         <AjoutCreditPaticulier
           typeFile={"particulier"}
