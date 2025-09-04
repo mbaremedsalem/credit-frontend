@@ -199,6 +199,20 @@ useEffect(() => {
   //   setUploadedFile(newFiles[0] || null);
   // };
 
+
+  const handleDownload = (fileData: UploadedFile | null) => {
+  if (!fileData) return;
+  
+  const url = URL.createObjectURL(fileData.file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileData.file.name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
     const handleFileChange = (info: any) => {
     const file = info.fileList[0]?.originFileObj;
     if (!file) {
@@ -754,7 +768,7 @@ useEffect(() => {
               {
                 label: (
                   <div className="flex items-center justify-between space-x-3">
-                    <span> Joindre le tableau d'amortissement </span>
+                    <span> Joindre documents </span>
                     <GrValidate color="green" size={17} />
                   </div>
                 ),
@@ -907,7 +921,7 @@ useEffect(() => {
                 </label>
                  {role === "Analyse de Risque" && (
                   <div className="mt-3">
-                    Fichier <span style={{ color: "red" }}>*</span>
+                     PV Commité (Draft) <span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -923,58 +937,77 @@ useEffect(() => {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer Fichier Risque
+                           Importer PV Commité (Draft)
                         </Button>
                       </div>
                     </Upload>
-                            {uploadedFile && (
-        <div className="file-preview-section">
-          <h3>Aperçu du fichier:</h3>
-          <div className="file-info">
-            {getFileIcon(uploadedFile.file.type)}
-            <span className="file-name">{uploadedFile.file.name}</span>
-            <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
-          </div>
+              {uploadedFile && (
+  <div className="file-preview-section">
+    <h3>Aperçu du fichier:</h3>
+    <div className="file-info">
+      {getFileIcon(uploadedFile.file.type)}
+      <span className="file-name">{uploadedFile.file.name}</span>
+      <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
+    </div>
 
-          <div className="preview-content">
-            {uploadedFile.file.type.startsWith('image/') ? (
-              <div className="image-preview">
-                <img src={uploadedFile.previewUrl} alt="Aperçu" />
-              </div>
-            ) : uploadedFile.file.type === 'application/pdf' ? (
-              <div className="pdf-preview">
-                <iframe 
-                  ref={iframeRef}
-                  src={uploadedFile.previewUrl} 
-                  title="Aperçu PDF"
-                  width="100%" 
-                  height="500px"
-                />
-                <Button  onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
-                  Ouvrir en plein écran
-                </Button>
-              </div>
-            ) : textContent ? (
-              <div className="text-preview">
-                <h4>Contenu du fichier texte:</h4>
-                <pre>{textContent}</pre>
-              </div>
-            ) : (
-              <div className="unsupported-preview">
-                <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
-                <Button type="primary" onClick={handlePreview} className="preview-button">
-                  Voir les détails du fichier
-                </Button>
-              </div>
-            )}
-          </div>
+    <div className="preview-content">
+      {uploadedFile.file.type.startsWith('image/') ? (
+        <div className="image-preview">
+          <img src={uploadedFile.previewUrl} alt="Aperçu" />
+        </div>
+      ) : uploadedFile.file.type === 'application/pdf' ? (
+        <div className="pdf-preview">
+          <iframe 
+            ref={iframeRef}
+            src={uploadedFile.previewUrl} 
+            title="Aperçu PDF"
+            width="100%" 
+            height="500px"
+          />
+          <Button onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
+            Ouvrir en plein écran
+          </Button>
+        </div>
+      ) : textContent ? (
+        <div className="text-preview">
+          <h4>Contenu du fichier texte:</h4>
+          <pre>{textContent}</pre>
+        </div>
+      ) : uploadedFile.file.type.includes('csv') || 
+           uploadedFile.file.type.includes('excel') || 
+           uploadedFile.file.type.includes('sheet') || 
+           uploadedFile.file.type.includes('word') || 
+           uploadedFile.file.type.includes('document') ? (
+        <div className="download-preview">
+          <p>Ce type de fichier nécessite un téléchargement.</p>
+          <Button 
+            type="primary" 
+            onClick={() => handleDownload(uploadedFile)} 
+            className="download-button"
+          >
+            Télécharger le fichier
+          </Button>
+        </div>
+      ) : (
+        <div className="unsupported-preview">
+          <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
+          <Button 
+            type="primary" 
+            onClick={() => handleDownload(uploadedFile)} 
+            className="download-button"
+          >
+            Télécharger le fichier
+          </Button>
         </div>
       )}
+    </div>
+  </div>
+)}
                   </div>
                 )}
                 {role === "Directeur Risque" && (
                   <div className="mt-3">
-                    PV <span style={{ color: "red" }}>*</span>
+                    PV Signé <span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -990,54 +1023,73 @@ useEffect(() => {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer PV
+                           Importer PV Signé
                         </Button>
                       </div>
                     </Upload>
 
-                         {uploadedFile && (
-        <div className="file-preview-section">
-          <h3>Aperçu du fichier:</h3>
-          <div className="file-info">
-            {getFileIcon(uploadedFile.file.type)}
-            <span className="file-name">{uploadedFile.file.name}</span>
-            <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
-          </div>
+           {uploadedFile && (
+  <div className="file-preview-section">
+    <h3>Aperçu du fichier:</h3>
+    <div className="file-info">
+      {getFileIcon(uploadedFile.file.type)}
+      <span className="file-name">{uploadedFile.file.name}</span>
+      <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
+    </div>
 
-          <div className="preview-content">
-            {uploadedFile.file.type.startsWith('image/') ? (
-              <div className="image-preview">
-                <img src={uploadedFile.previewUrl} alt="Aperçu" />
-              </div>
-            ) : uploadedFile.file.type === 'application/pdf' ? (
-              <div className="pdf-preview">
-                <iframe 
-                  ref={iframeRef}
-                  src={uploadedFile.previewUrl} 
-                  title="Aperçu PDF"
-                  width="100%" 
-                  height="500px"
-                />
-                <Button  onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
-                  Ouvrir en plein écran
-                </Button>
-              </div>
-            ) : textContent ? (
-              <div className="text-preview">
-                <h4>Contenu du fichier texte:</h4>
-                <pre>{textContent}</pre>
-              </div>
-            ) : (
-              <div className="unsupported-preview">
-                <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
-                <Button type="primary" onClick={handlePreview} className="preview-button">
-                  Voir les détails du fichier
-                </Button>
-              </div>
-            )}
-          </div>
+    <div className="preview-content">
+      {uploadedFile.file.type.startsWith('image/') ? (
+        <div className="image-preview">
+          <img src={uploadedFile.previewUrl} alt="Aperçu" />
+        </div>
+      ) : uploadedFile.file.type === 'application/pdf' ? (
+        <div className="pdf-preview">
+          <iframe 
+            ref={iframeRef}
+            src={uploadedFile.previewUrl} 
+            title="Aperçu PDF"
+            width="100%" 
+            height="500px"
+          />
+          <Button onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
+            Ouvrir en plein écran
+          </Button>
+        </div>
+      ) : textContent ? (
+        <div className="text-preview">
+          <h4>Contenu du fichier texte:</h4>
+          <pre>{textContent}</pre>
+        </div>
+      ) : uploadedFile.file.type.includes('csv') || 
+           uploadedFile.file.type.includes('excel') || 
+           uploadedFile.file.type.includes('sheet') || 
+           uploadedFile.file.type.includes('word') || 
+           uploadedFile.file.type.includes('document') ? (
+        <div className="download-preview">
+          <p>Ce type de fichier nécessite un téléchargement.</p>
+          <Button 
+            type="primary" 
+            onClick={() => handleDownload(uploadedFile)} 
+            className="download-button"
+          >
+            Télécharger le fichier
+          </Button>
+        </div>
+      ) : (
+        <div className="unsupported-preview">
+          <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
+          <Button 
+            type="primary" 
+            onClick={() => handleDownload(uploadedFile)} 
+            className="download-button"
+          >
+            Télécharger le fichier
+          </Button>
         </div>
       )}
+    </div>
+  </div>
+)}
                   </div>
                 )}
 
@@ -1046,7 +1098,7 @@ useEffect(() => {
 
                  {role === "Chargé de clientèle" && openPopupConfirmValider?.ligne?.points_valides! === 48 && (
                   <div className="mt-3">
-                    Tableau d'amortissement <span style={{ color: "red" }}>*</span>
+                    Tableau d'amortissement et BO <span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -1062,7 +1114,7 @@ useEffect(() => {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer Tableau d'amortissement
+                          Importer Tableau d'amortissement  et BO
                         </Button>
                       </div>
                     </Upload>

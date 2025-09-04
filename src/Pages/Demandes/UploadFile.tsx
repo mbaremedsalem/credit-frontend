@@ -28,7 +28,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({client,documen
     handleFileChange(info, client.CLIENT, type);
   };
 
-
+  console.log("files : ", DateDocument)
  if(isPending){
   return <SpinnerLoader/>
  }
@@ -60,11 +60,12 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({client,documen
       }`}
     >
       <label className="font-semibold text-[13px]">
-        {type.label} 
+        {type.nom} 
       </label>
       <Upload
         accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
         maxCount={1}
+        // multiple
         beforeUpload={() => false}
         onChange={onUploadChange(type.nom)}
         showUploadList={true}

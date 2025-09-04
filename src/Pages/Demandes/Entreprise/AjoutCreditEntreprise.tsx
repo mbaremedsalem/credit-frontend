@@ -151,7 +151,7 @@ const handleFileChange = (
         <label>
           <span className="font-bold text-base">Montant</span>{" "}<span style={{ color: 'red' }}>*</span>
         <Input 
-         type="text"
+         type="number"
         value={montant}
         suffix={"MRU"}
         prefix={<IoIosPricetags /> as unknown as string}
@@ -188,7 +188,7 @@ const handleFileChange = (
         </label>
         
         <div className="flex ">
-            <span className="text-[17px] font-bold">Document à Télécharger</span> 
+            <span className="text-[17px] font-bold">Documents à Télécharger</span> 
             </div>
          <label className=" w-full">
    <FileUploadComponent client={client} type={typeFile} handleFileChange={handleFileChange}/>
