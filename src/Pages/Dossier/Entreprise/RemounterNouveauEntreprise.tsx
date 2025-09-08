@@ -258,6 +258,8 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
     fichiers: uploadedFiles[Credit?.client?.client_code!] || [],
   };
 
+  console.log("credit is : ", credit)
+
   const docsNormaux = Credit?.documents?.filter(
   (doc) => doc.createur?.post !== "Analyse de Risque"
 )
@@ -414,6 +416,7 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
               <span className="font-bold text-base">Nature Crédit</span>{" "}
               <span style={{ color: "red" }}>*</span>
               <Select 
+              value={nature}
   options={[
     {label: "Crédit Immobilier", value: "Crédit Immobilier"},
     {label: "Crédit Automobile", value: "Crédit Automobile"},

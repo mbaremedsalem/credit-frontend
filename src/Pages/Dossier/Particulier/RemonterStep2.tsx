@@ -56,6 +56,7 @@ const RemonterStep2 = ({
   oncloseFirstModal,
 }: props) => {
   console.log("ligne : ", ligne);
+  console.log("credit : ", credit);
   const fullName = AuthService.getFullNameUserConnect();
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);

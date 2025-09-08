@@ -196,17 +196,6 @@ const AjoutCreditParticulier = ({ client, onCloseModal, typeFile }: props) => {
       </div>
 
       <label>
-        <span className="text-base font-bold">Avis</span>{" "}
-        <span style={{ color: "red" }}>*</span>
-        <TextArea
-          rows={3}
-          onChange={(e) => setAvis(e.target.value)}
-          value={avis}
-          className="rounded-lg"
-          placeholder="Saisissez votre avis"
-        />
-      </label>
-      <label>
         <span className="text-base font-bold">Memo</span>{" "}
         <span style={{ color: "red" }}>*</span>
         <TextArea
@@ -215,6 +204,18 @@ const AjoutCreditParticulier = ({ client, onCloseModal, typeFile }: props) => {
           onChange={(e) => setmemoType(e.target.value)}
           rows={3}
           placeholder="Saisissez un mémo"
+        />
+      </label>
+
+      <label>
+        <span className="text-base font-bold">Avis</span>{" "}
+        <span style={{ color: "red" }}>*</span>
+        <TextArea
+          rows={3}
+          onChange={(e) => setAvis(e.target.value)}
+          value={avis}
+          className="rounded-lg"
+          placeholder="Saisissez votre avis"
         />
       </label>
 

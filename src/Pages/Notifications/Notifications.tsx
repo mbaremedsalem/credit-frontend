@@ -17,7 +17,7 @@ const NotificationPage: React.FC<Props> = ({ notifications }) => {
   const [hasMarkedAsRead, setHasMarkedAsRead] = useState(false); 
   const notificationRef = useRef<HTMLDivElement | null>(null);
 
-  const readNotifications = notifications.filter(not => not.lu === false);
+  const readNotifications = notifications?.filter(not => not.lu === false) || [];
   console.log("isread : ", readNotifications.length)
   const { mutate: luNotifications, isPending: isPendingNotifications } = useLuNotifications();
 

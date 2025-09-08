@@ -56,6 +56,7 @@ const RemonterStepEntreprise2 = ({
   oncloseFirstModal,
 }: props) => {
   console.log("ligne : ", ligne);
+  console.log("credit nouveau : ", credit);
   const fullName = AuthService.getFullNameUserConnect();
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
@@ -176,6 +177,7 @@ const RemonterStepEntreprise2 = ({
       fichiers: credit?.fichiers!,
       nature_credit: credit?.nature!,
     };
+    console.log("params : ", params);
     UpdateCredit(params, {
       onSuccess: () => {
         hideModal(),
@@ -351,41 +353,6 @@ const RemonterStepEntreprise2 = ({
             Anciennes importations{" "}
           </h1>
         </div>
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-           {ligne?.documents?.map((fileObj, idx) => (
-        <motion.div
-           initial={{ opacity: 0, x:  idx % 2 !== 0 ? "100vw" : "-100vw" }}
-        animate={{ opacity: 1, x:  0 }} 
-        exit={{ opacity: 0, x:  idx % 2 !== 0 ? "100vw" : "-100vw" }}
-  transition={{ duration: 0.4, delay:0.3*idx }}
-  
-  >
-          <span>{fileObj.type_document}</span>
-          <div
-          key={idx}
-          title={fileObj.fichier} 
-          className="flex items-center gap-2 shadow p-3 rounded-lg bg-white mt-3"
-        >
-          <div className="w-1/6 flex justify-center text-xl ">
-            {getFileIcon(fileObj.fichier)}
-          </div>
-    
-
-          <div className="w-4/6 truncate">
-        
-          {fileObj.fichier.split("/").pop()}</div>
-
-          <div className="w-1/6 text-right">
-  <Dropdown menu={{ items: generateItems(fileObj?.fichier) }}>
-    <div className="cursor-pointer">
-      <DotIcon />
-    </div>
-  </Dropdown>
-</div>
-        </div>
-        </motion.div>
-      ))}
-    </div> */}
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">

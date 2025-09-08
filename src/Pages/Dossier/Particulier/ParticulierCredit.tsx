@@ -39,7 +39,15 @@ import {
 import { enqueueSnackbar } from "notistack";
 import SpinnerLoader from "../../../Ui/Spinner";
 import RemonterNouveau from "./RemonterNouveau";
-import { FaArrowDown, FaFileAlt, FaFileExcel, FaFileImage, FaFilePdf, FaFileWord, FaUpload } from "react-icons/fa";
+import {
+  FaArrowDown,
+  FaFileAlt,
+  FaFileExcel,
+  FaFileImage,
+  FaFilePdf,
+  FaFileWord,
+  FaUpload,
+} from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 export type PopconfirmType = {
   client?: CLientT | null;
@@ -56,6 +64,8 @@ export type PopconfirmTypeDetails = {
 function ParticulierCreditView() {
   const role = AuthService.getPostUserConnect();
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [uploadedFileMourabaha, setUploadedFileMourabaha] =
+    useState<UploadedFile | null>(null);
   const [selectAutre, setSelectAutre] = useState("");
   const [memoType, setmemoType] = useState("");
   const [avis, setAvis] = useState("");
@@ -95,35 +105,53 @@ function ParticulierCreditView() {
     null,
     null,
   ]);
-  const [textContent, setTextContent] = useState<string>('');
+  const [textContent, setTextContent] = useState<string>("");
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
+  const [previewVisibleMourbaha, setPreviewVisibleMourabaha] =
+    useState<boolean>(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-    const handlePreview = () => {
+  const handlePreview = () => {
     setPreviewVisible(true);
   };
 
   const handleCancelPreview = () => {
     setPreviewVisible(false);
   };
+  const handlePreviewMourabaha = () => {
+    setPreviewVisibleMourabaha(true);
+  };
 
-    const getFileIcon = (fileType: string) => {
-    if (fileType.includes('pdf')) return <FaFilePdf className="file-icon pdf" />;
-    if (fileType.includes('image')) return <FaFileImage className="file-icon image" />;
-    if (fileType.includes('sheet') || fileType.includes('excel')) return <FaFileExcel className="file-icon excel" />;
-    if (fileType.includes('word')) return <FaFileWord className="file-icon word" />;
+  const handleCancelPreviewMourabaha = () => {
+    setPreviewVisibleMourabaha(false);
+  };
+
+  const getFileIcon = (fileType: string) => {
+    if (fileType.includes("pdf"))
+      return <FaFilePdf className="file-icon pdf" />;
+    if (fileType.includes("image"))
+      return <FaFileImage className="file-icon image" />;
+    if (fileType.includes("sheet") || fileType.includes("excel"))
+      return <FaFileExcel className="file-icon excel" />;
+    if (fileType.includes("word"))
+      return <FaFileWord className="file-icon word" />;
     return <FaFileAlt className="file-icon generic" />;
   };
 
-  // Nettoyer les URLs créées pour éviter les fuites mémoire
   useEffect(() => {
     return () => {
       if (uploadedFile?.previewUrl) {
         URL.revokeObjectURL(uploadedFile.previewUrl);
       }
     };
-  }, [uploadedFile])
+  }, [uploadedFile]);
 
-  // Ajoutez cet état pour gérer la sélection du filtre
+  useEffect(() => {
+    return () => {
+      if (uploadedFileMourabaha?.previewUrl) {
+        URL.revokeObjectURL(uploadedFileMourabaha.previewUrl);
+      }
+    };
+  }, [uploadedFileMourabaha]);
   const [filtreStatus, setFiltreStatus] = useState<string>("all");
 
   useEffect(() => {
@@ -132,7 +160,6 @@ function ParticulierCreditView() {
     }
   }, [cherche]);
   useEffect(() => {
-    // Réinitialiser le filtre de statut quand on change la recherche ou les dates
     setFiltreStatus("a_decider");
   }, [dates]);
 
@@ -142,7 +169,6 @@ function ParticulierCreditView() {
 
     if (dossierStatus !== "EN_COURS") return false;
 
-    // Logique pour déterminer si l'utilisateur doit prendre une décision
     if (role === "Chargé de clientèle" && dossierPoints === 0) return true;
     if (role === "Chargé de clientèle" && dossierPoints === 48) return true;
     if (role === "Chef agence central" && dossierPoints === 2) return true;
@@ -155,7 +181,6 @@ function ParticulierCreditView() {
     return false;
   };
 
-  // Ajoutez cette fonction pour filtrer les données en fonction de la sélection
   const filtrerLignesCredit = (lignes: LigneCredit[] | undefined) => {
     console.log("ligne : ", lignes);
     if (!lignes) return [];
@@ -165,7 +190,6 @@ function ParticulierCreditView() {
         console.log("ligne : ", lignes);
         return lignes;
       case "a_decider":
-        // Filtre les crédits où l'utilisateur connecté doit prendre une décision
         return lignes.filter(doitPrendreDecision);
 
       default:
@@ -210,29 +234,18 @@ function ParticulierCreditView() {
   const { mutate: rejeterligne, isPending: isPendigRejeter } =
     useRejeterLigne();
 
-  // const handleFileChange = (info: any) => {
-  //   const newFiles = info.fileList
-  //     .filter((file: any) => file.originFileObj)
-  //     .map((file: any) => ({
-  //       file: file.originFileObj,
-  //       previewUrl: URL.createObjectURL(file.originFileObj),
-  //     }));
-
-  //   setUploadedFile(newFiles[0] || null);
-  // };
-
   const handleDownload = (fileData: UploadedFile | null) => {
-  if (!fileData) return;
-  
-  const url = URL.createObjectURL(fileData.file);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileData.file.name;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+    if (!fileData) return;
+
+    const url = URL.createObjectURL(fileData.file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileData.file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleFileChange = (info: any) => {
     const file = info.fileList[0]?.originFileObj;
@@ -245,14 +258,35 @@ function ParticulierCreditView() {
     setUploadedFile({ file, previewUrl });
 
     // Si c'est un fichier texte, on lit son contenu
-    if (file.type.startsWith('text/') || file.type === 'application/json') {
+    if (file.type.startsWith("text/") || file.type === "application/json") {
       const reader = new FileReader();
       reader.onload = (e) => {
         setTextContent(e.target?.result as string);
       };
       reader.readAsText(file);
     } else {
-      setTextContent('');
+      setTextContent("");
+    }
+  };
+
+  const handleFileChangeMourabeha = (info: any) => {
+    const file = info.fileList[0]?.originFileObj;
+    if (!file) {
+      setUploadedFileMourabaha(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setUploadedFileMourabaha({ file, previewUrl });
+
+    if (file.type.startsWith("text/") || file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setTextContent(e.target?.result as string);
+      };
+      reader.readAsText(file);
+    } else {
+      setTextContent("");
     }
   };
   const post = AuthService.getPostUserConnect();
@@ -324,19 +358,52 @@ function ParticulierCreditView() {
   };
 
   const handleValiderLigne = () => {
+    const errors = [];
+
+if (!memoType?.trim()) {
+  errors.push("Le mémo est obligatoire");
+}
+
+if (!avis?.trim()) {
+  errors.push("L'avis est obligatoire");
+}
+
+if (errors.length > 0) {
+  return message.error(errors.join("\n"));
+}
     if (!uploadedFile && role === "Analyse de Risque") {
       return message.error("importer document risque");
     } else if (!uploadedFile && role === "Directeur Risque") {
       return message.error("importer pv");
-    } else if (!uploadedFile && role === "Chargé de clientèle" && openPopupConfirmValider?.ligne?.points_valides! === 48) {
-      return message.error("importer tableau amorissement");
+    } else if (
+      !uploadedFile &&
+      role === "Chargé de clientèle" &&
+      openPopupConfirmValider?.ligne?.points_valides! === 48
+    ) {
+      return message.error("importer tableau d'amortissement");
+    } else if (
+      !uploadedFileMourabaha &&
+      role === "Chargé de clientèle" &&
+      openPopupConfirmValider?.ligne?.points_valides! === 48 &&
+      (openPopupConfirmValider.ligne?.type_credit === "CRDT CT- MOURABAHA" ||
+        openPopupConfirmValider.ligne?.type_credit === "CRDT MT- MOURABAHA" ||
+        openPopupConfirmValider.ligne?.type_credit === "CRDT LT- MOURABAHA")
+    ) {
+      return message.error("importer le document mourabaha");
     }
     const params: ValiderLigne = {
       id_credit: Number(openPopupConfirmValider?.ligne?.id),
       user_id: Number(idUserConnect)!,
       memo: memoType,
       motiv: avis,
-      documents: uploadedFile?.file!,
+      documents:
+        role === "Chargé de clientèle" &&
+        openPopupConfirmValider?.ligne?.points_valides! === 48 &&
+        (openPopupConfirmValider.ligne?.type_credit === "CRDT CT- MOURABAHA" ||
+          openPopupConfirmValider.ligne?.type_credit === "CRDT MT- MOURABAHA" ||
+          openPopupConfirmValider.ligne?.type_credit === "CRDT LT- MOURABAHA")
+          ? [uploadedFile?.file!, uploadedFileMourabaha?.file!]
+          : uploadedFile?.file!,
     };
 
     ValiderLigne(params, {
@@ -344,6 +411,9 @@ function ParticulierCreditView() {
         setAvis("");
         setmemoType("");
         handlecancelValide();
+        setUploadedFileMourabaha(null);
+        setUploadedFile(null);    
+        setTextContent("");
       },
     });
   };
@@ -476,13 +546,16 @@ function ParticulierCreditView() {
       title: "État de remontée",
       key: "etat_remontee",
       render: (_, record) => {
-        if (role === "Chargé de clientèle" ) {
-          return record.points_valides! > 0 && record.points_valides!<48 ? (
+        if (role === "Chargé de clientèle") {
+          return record.points_valides! > 0 && record.points_valides! < 48 ? (
             <Tag color="green">Déjà remonté</Tag>
-          ) : record.points_valides! === 48 ?(
+          ) : record.points_valides! === 48 ? (
             <Tag color="orange">En attente de Table d'amortissement</Tag>
-          ) : record.points_valides!> 48 ?   <Tag color="green">Déjà remonté</Tag>
-          : <Tag color="orange">En attente de remontée</Tag>;
+          ) : record.points_valides! > 48 ? (
+            <Tag color="green">Déjà remonté</Tag>
+          ) : (
+            <Tag color="orange">En attente de remontée</Tag>
+          );
         } else if (role === "Chef agence central") {
           return record?.points_valides! > 4 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
@@ -539,14 +612,25 @@ function ParticulierCreditView() {
           ) : (
             ""
           );
-        }
-         else if (role === "Directeur Engagement") {
-          return record?.points_valides! > 48  ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : record.status === "EN_COURS" ? "orange" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : record.status === "EN_COURS" ? "En attente de votre décision" : "remonté"}
+        } else if (role === "Directeur Engagement") {
+          return record?.points_valides! > 48 ? (
+            <Tag
+              color={
+                record.status === "REJETÉ"
+                  ? "red"
+                  : record.status === "EN_COURS"
+                  ? "orange"
+                  : "green"
+              }
+            >
+              {record.status === "REJETÉ"
+                ? "Déjà Rejeté"
+                : record.status === "EN_COURS"
+                ? "En attente de votre décision"
+                : "remonté"}
             </Tag>
           ) : record.points_valides === 48 && record.status === "EN_COURS" ? (
-           <Tag color="orange">En attente de Table d'amortissement</Tag>
+            <Tag color="orange">En attente de Table d'amortissement</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
           ) : record?.points_valides! < 48 ? (
@@ -723,7 +807,7 @@ function ParticulierCreditView() {
                 ),
                 key: "3",
                 onClick: () => showModalValider(record),
-              },
+              }
               // {
               //   label: (
               //     <div className="flex items-center justify-between space-x-3">
@@ -736,7 +820,6 @@ function ParticulierCreditView() {
               // }
             );
           }
-          
         } else if (
           dossierStatus === "EN_COURS" &&
           connectedUser.post === "Chargé de clientèle" &&
@@ -752,26 +835,22 @@ function ParticulierCreditView() {
             key: "13",
             onClick: () => showModalRemonterAnouveau(record),
           });
-        }
-else if (
+        } else if (
           dossierStatus === "EN_COURS" &&
           connectedUser.post === "Chargé de clientèle" &&
           dossierPoints === 48
         ) {
-          items.push(
-            {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    {/* <span>Valider</span> */}
-                    <span> Joindre documents </span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "3",
-                onClick: () => showModalValider(record),
-              
-          }
-        );
+          items.push({
+            label: (
+              <div className="flex items-center justify-between space-x-3">
+                {/* <span>Valider</span> */}
+                <span> Joindre documents </span>
+                <GrValidate color="green" size={17} />
+              </div>
+            ),
+            key: "3",
+            onClick: () => showModalValider(record),
+          });
         }
         return (
           <div className="cursor-pointer">
@@ -802,7 +881,7 @@ else if (
             footer={null}
             width={1000}
             closable={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <RemonterNouveau
               closeSecondModal={handlecancelRemonterANouveau}
@@ -810,47 +889,115 @@ else if (
               Credit_id={openPopupRemonterAnouveau?.ligne?.id!}
             />
           </Modal>
-      <Modal
-        title={`Aperçu de ${uploadedFile?.file.name || 'fichier'}`}
-        open={previewVisible}
-        onCancel={handleCancelPreview}
-        footer={null}
-        width="80%"
-        style={{ top: 20 }}
-          maskClosable={false}
-      >
-        {uploadedFile && (
-          uploadedFile.file.type.startsWith('image/') ? (
-            <img src={uploadedFile.previewUrl} alt="Aperçu" style={{ width: '100%' }} />
-          ) : uploadedFile.file.type === 'application/pdf' ? (
-            <iframe 
-              src={uploadedFile.previewUrl} 
-              title="Aperçu PDF"
-              width="100%" 
-              height="600px"
-            />
-          ) : (
-            <div>
-              <p><strong>Nom:</strong> {uploadedFile.file.name}</p>
-              <p><strong>Taille:</strong> {(uploadedFile.file.size / 1024).toFixed(2)} KB</p>
-              <p><strong>Type:</strong> {uploadedFile.file.type}</p>
-              <p>Pour visualiser ce type de fichier, vous devrez peut-être le télécharger.</p>
-              <Button>
-                Télécharger 
-                <FaArrowDown />
-                   <a
-                                href={uploadedFile.previewUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800"
-                              >
-                                <IoEyeOutline size={20} />
-                              </a>
-              </Button>
-            </div>
-          )
-        )}
-      </Modal>
+          <Modal
+            title={`Aperçu de ${uploadedFile?.file.name || "fichier"}`}
+            open={previewVisible}
+            onCancel={handleCancelPreview}
+            footer={null}
+            width="80%"
+            style={{ top: 20 }}
+            maskClosable={false}
+          >
+            {uploadedFile &&
+              (uploadedFile.file.type.startsWith("image/") ? (
+                <img
+                  src={uploadedFile.previewUrl}
+                  alt="Aperçu"
+                  style={{ width: "100%" }}
+                />
+              ) : uploadedFile.file.type === "application/pdf" ? (
+                <iframe
+                  src={uploadedFile.previewUrl}
+                  title="Aperçu PDF"
+                  width="100%"
+                  height="600px"
+                />
+              ) : (
+                <div>
+                  <p>
+                    <strong>Nom:</strong> {uploadedFile.file.name}
+                  </p>
+                  <p>
+                    <strong>Taille:</strong>{" "}
+                    {(uploadedFile.file.size / 1024).toFixed(2)} KB
+                  </p>
+                  <p>
+                    <strong>Type:</strong> {uploadedFile.file.type}
+                  </p>
+                  <p>
+                    Pour visualiser ce type de fichier, vous devrez peut-être le
+                    télécharger.
+                  </p>
+                  <Button>
+                    Télécharger
+                    <FaArrowDown />
+                    <a
+                      href={uploadedFile.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <IoEyeOutline size={20} />
+                    </a>
+                  </Button>
+                </div>
+              ))}
+          </Modal>
+
+          <Modal
+            title={`Aperçu de ${uploadedFileMourabaha?.file.name || "fichier"}`}
+            open={previewVisibleMourbaha}
+            onCancel={handleCancelPreviewMourabaha}
+            footer={null}
+            width="80%"
+            style={{ top: 20 }}
+            maskClosable={false}
+          >
+            {uploadedFileMourabaha &&
+              (uploadedFileMourabaha.file.type.startsWith("image/") ? (
+                <img
+                  src={uploadedFileMourabaha.previewUrl}
+                  alt="Aperçu"
+                  style={{ width: "100%" }}
+                />
+              ) : uploadedFileMourabaha.file.type === "application/pdf" ? (
+                <iframe
+                  src={uploadedFileMourabaha.previewUrl}
+                  title="Aperçu PDF"
+                  width="100%"
+                  height="600px"
+                />
+              ) : (
+                <div>
+                  <p>
+                    <strong>Nom:</strong> {uploadedFileMourabaha.file.name}
+                  </p>
+                  <p>
+                    <strong>Taille:</strong>{" "}
+                    {(uploadedFileMourabaha.file.size / 1024).toFixed(2)} KB
+                  </p>
+                  <p>
+                    <strong>Type:</strong> {uploadedFileMourabaha.file.type}
+                  </p>
+                  <p>
+                    Pour visualiser ce type de fichier, vous devrez peut-être le
+                    télécharger.
+                  </p>
+                  <Button>
+                    Télécharger
+                    <FaArrowDown />
+                    <a
+                      href={uploadedFileMourabaha.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <IoEyeOutline size={20} />
+                    </a>
+                  </Button>
+                </div>
+              ))}
+          </Modal>
 
           <Modal
             className="rounded-lg"
@@ -860,7 +1007,7 @@ else if (
             footer={null}
             width={1200}
             closeIcon={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <DetailsLigne
               closeSecondModal={handlecancelDetails}
@@ -875,7 +1022,7 @@ else if (
             footer={null}
             width={900}
             closeIcon={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <HistoriqueLigne
               onClose={handlecancelHistorique}
@@ -888,9 +1035,9 @@ else if (
             onCancel={handlecancelValide}
             open={openPopupConfirmValider.open}
             footer={null}
-            width={uploadedFile ?800: 375}
+            width={uploadedFile || uploadedFileMourabaha ? 800 : 375}
             closeIcon={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">
@@ -901,9 +1048,19 @@ else if (
               </div>
               <p className=" my-2 text-[15px] text-center">
                 Êtes-vous sûr de vouloir remonter ce Crédit ?
-                {/* Êtes-vous sûr de vouloir valider ce Crédit ? */}
               </p>
               <div className="w-full">
+                <label>
+                  Memo <span style={{ color: "red" }}>*</span>
+                  <TextArea
+                    rows={3}
+                    onChange={(e) => setmemoType(e.target.value)}
+                    value={memoType}
+                    className="rounded-lg"
+                    placeholder="Saisissez un mémo"
+                  />
+                </label>
+
                 <label>
                   Avis <span style={{ color: "red" }}>*</span>
                   <TextArea
@@ -915,16 +1072,6 @@ else if (
                   />
                 </label>
 
-                <label>
-                  Memo <span style={{ color: "red" }}>*</span>
-                  <TextArea
-                    rows={3}
-                    onChange={(e) => setmemoType(e.target.value)}
-                    value={memoType}
-                    className="rounded-lg"
-                    placeholder="Saisissez un mémo"
-                  />
-                </label>
                 {role === "Analyse de Risque" && (
                   <div className="mt-3">
                     PV Commité (Draft) <span style={{ color: "red" }}>*</span>
@@ -947,68 +1094,80 @@ else if (
                         </Button>
                       </div>
                     </Upload>
-                 {uploadedFile && (
-  <div className="file-preview-section">
-    <h3>Aperçu du fichier:</h3>
-    <div className="file-info">
-      {getFileIcon(uploadedFile.file.type)}
-      <span className="file-name">{uploadedFile.file.name}</span>
-      <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
-    </div>
+                    {uploadedFile && (
+                      <div className="file-preview-section">
+                        <h3>Aperçu du fichier:</h3>
+                        <div className="file-info">
+                          {getFileIcon(uploadedFile.file.type)}
+                          <span className="file-name">
+                            {uploadedFile.file.name}
+                          </span>
+                          <span className="file-size">
+                            ({(uploadedFile.file.size / 1024).toFixed(2)} KB)
+                          </span>
+                        </div>
 
-    <div className="preview-content">
-      {uploadedFile.file.type.startsWith('image/') ? (
-        <div className="image-preview">
-          <img src={uploadedFile.previewUrl} alt="Aperçu" />
-        </div>
-      ) : uploadedFile.file.type === 'application/pdf' ? (
-        <div className="pdf-preview">
-          <iframe 
-            ref={iframeRef}
-            src={uploadedFile.previewUrl} 
-            title="Aperçu PDF"
-            width="100%" 
-            height="500px"
-          />
-          <Button onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
-            Ouvrir en plein écran
-          </Button>
-        </div>
-      ) : textContent ? (
-        <div className="text-preview">
-          <h4>Contenu du fichier texte:</h4>
-          <pre>{textContent}</pre>
-        </div>
-      ) : uploadedFile.file.type.includes('csv') || 
-           uploadedFile.file.type.includes('excel') || 
-           uploadedFile.file.type.includes('sheet') || 
-           uploadedFile.file.type.includes('word') || 
-           uploadedFile.file.type.includes('document') ? (
-        <div className="download-preview">
-          <p>Ce type de fichier nécessite un téléchargement.</p>
-          <Button 
-            type="primary" 
-            onClick={() => handleDownload(uploadedFile)} 
-            className="download-button"
-          >
-            Télécharger le fichier
-          </Button>
-        </div>
-      ) : (
-        <div className="unsupported-preview">
-          <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
-          <Button 
-            type="primary" 
-            onClick={() => handleDownload(uploadedFile)} 
-            className="download-button"
-          >
-            Télécharger le fichier
-          </Button>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+                        <div className="preview-content">
+                          {uploadedFile.file.type.startsWith("image/") ? (
+                            <div className="image-preview">
+                              <img src={uploadedFile.previewUrl} alt="Aperçu" />
+                            </div>
+                          ) : uploadedFile.file.type === "application/pdf" ? (
+                            <div className="pdf-preview">
+                              <iframe
+                                ref={iframeRef}
+                                src={uploadedFile.previewUrl}
+                                title="Aperçu PDF"
+                                width="100%"
+                                height="500px"
+                              />
+                              <Button
+                                onClick={handlePreview}
+                                className="w-[153.8px] h-[50.6px] mt-2 primary-button"
+                              >
+                                Ouvrir en plein écran
+                              </Button>
+                            </div>
+                          ) : textContent ? (
+                            <div className="text-preview">
+                              <h4>Contenu du fichier texte:</h4>
+                              <pre>{textContent}</pre>
+                            </div>
+                          ) : uploadedFile.file.type.includes("csv") ||
+                            uploadedFile.file.type.includes("excel") ||
+                            uploadedFile.file.type.includes("sheet") ||
+                            uploadedFile.file.type.includes("word") ||
+                            uploadedFile.file.type.includes("document") ? (
+                            <div className="download-preview">
+                              <p>
+                                Ce type de fichier nécessite un téléchargement.
+                              </p>
+                              <Button
+                                type="primary"
+                                onClick={() => handleDownload(uploadedFile)}
+                                className="download-button"
+                              >
+                                Télécharger le fichier
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="unsupported-preview">
+                              <p>
+                                L'aperçu direct n'est pas disponible pour ce
+                                type de fichier.
+                              </p>
+                              <Button
+                                type="primary"
+                                onClick={() => handleDownload(uploadedFile)}
+                                className="download-button"
+                              >
+                                Télécharger le fichier
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 {role === "Directeur Risque" && (
@@ -1033,153 +1192,350 @@ else if (
                         </Button>
                       </div>
                     </Upload>
+                    {uploadedFile && (
+                      <div className="file-preview-section">
+                        <h3>Aperçu du fichier:</h3>
+                        <div className="file-info">
+                          {getFileIcon(uploadedFile.file.type)}
+                          <span className="file-name">
+                            {uploadedFile.file.name}
+                          </span>
+                          <span className="file-size">
+                            ({(uploadedFile.file.size / 1024).toFixed(2)} KB)
+                          </span>
+                        </div>
 
-                               {uploadedFile && (
-  <div className="file-preview-section">
-    <h3>Aperçu du fichier:</h3>
-    <div className="file-info">
-      {getFileIcon(uploadedFile.file.type)}
-      <span className="file-name">{uploadedFile.file.name}</span>
-      <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
-    </div>
-
-    <div className="preview-content">
-      {uploadedFile.file.type.startsWith('image/') ? (
-        <div className="image-preview">
-          <img src={uploadedFile.previewUrl} alt="Aperçu" />
-        </div>
-      ) : uploadedFile.file.type === 'application/pdf' ? (
-        <div className="pdf-preview">
-          <iframe 
-            ref={iframeRef}
-            src={uploadedFile.previewUrl} 
-            title="Aperçu PDF"
-            width="100%" 
-            height="500px"
-          />
-          <Button onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
-            Ouvrir en plein écran
-          </Button>
-        </div>
-      ) : textContent ? (
-        <div className="text-preview">
-          <h4>Contenu du fichier texte:</h4>
-          <pre>{textContent}</pre>
-        </div>
-      ) : uploadedFile.file.type.includes('csv') || 
-           uploadedFile.file.type.includes('excel') || 
-           uploadedFile.file.type.includes('sheet') || 
-           uploadedFile.file.type.includes('word') || 
-           uploadedFile.file.type.includes('document') ? (
-        <div className="download-preview">
-          <p>Ce type de fichier nécessite un téléchargement.</p>
-          <Button 
-            type="primary" 
-            onClick={() => handleDownload(uploadedFile)} 
-            className="download-button"
-          >
-            Télécharger le fichier
-          </Button>
-        </div>
-      ) : (
-        <div className="unsupported-preview">
-          <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
-          <Button 
-            type="primary" 
-            onClick={() => handleDownload(uploadedFile)} 
-            className="download-button"
-          >
-            Télécharger le fichier
-          </Button>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-                  </div>
-                )}
-
-                    {role === "Chargé de clientèle" && openPopupConfirmValider?.ligne?.points_valides! === 48 && (
-                  <div className="mt-3">
-                    Tableau d'amortissement et BO <span style={{ color: "red" }}>*</span>
-                    <Upload
-                      accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
-                      beforeUpload={() => false}
-                      maxCount={1}
-                      showUploadList={true}
-                      onChange={(info) => handleFileChange(info)}
-                      className="w-full mt-3"
-                      style={{ width: "100%" }}
-                    >
-                      <div className="w-full">
-                        <Button
-                          type="dashed"
-                          className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
-                          icon={<FaUpload />}
-                        >
-                          Importer Tableau d'amortissement et BO
-                        </Button>
-                      </div>
-                    </Upload>
-
-                         {uploadedFile && (
-        <div className="file-preview-section">
-          <h3>Aperçu du Tableau d'amortissement:</h3>
-          <div className="file-info">
-            {getFileIcon(uploadedFile.file.type)}
-            <span className="file-name">{uploadedFile.file.name}</span>
-            <span className="file-size">({(uploadedFile.file.size / 1024).toFixed(2)} KB)</span>
-          </div>
-
-          <div className="preview-content">
-            {uploadedFile.file.type.startsWith('image/') ? (
-              <div className="image-preview">
-                <img src={uploadedFile.previewUrl} alt="Aperçu" />
-              </div>
-            ) : uploadedFile.file.type === 'application/pdf' ? (
-              <div className="pdf-preview">
-                <iframe 
-                  ref={iframeRef}
-                  src={uploadedFile.previewUrl} 
-                  title="Aperçu PDF"
-                  width="100%" 
-                  height="500px"
-                />
-                <Button  onClick={handlePreview} className="w-[153.8px] h-[50.6px] mt-2 primary-button">
-                  Ouvrir en plein écran
-                </Button>
-              </div>
-            ) : textContent ? (
-              <div className="text-preview">
-                <h4>Contenu du fichier texte:</h4>
-                <pre>{textContent}</pre>
-              </div>
-            ) : (
-              <div className="unsupported-preview">
-                <p>L'aperçu direct n'est pas disponible pour ce type de fichier.</p>
-                <Button type="primary" onClick={handlePreview} className="preview-button">
-                  Voir les détails du fichier
-                </Button>
-                   <a
-                                href={uploadedFile.previewUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800"
+                        <div className="preview-content">
+                          {uploadedFile.file.type.startsWith("image/") ? (
+                            <div className="image-preview">
+                              <img src={uploadedFile.previewUrl} alt="Aperçu" />
+                            </div>
+                          ) : uploadedFile.file.type === "application/pdf" ? (
+                            <div className="pdf-preview">
+                              <iframe
+                                ref={iframeRef}
+                                src={uploadedFile.previewUrl}
+                                title="Aperçu PDF"
+                                width="100%"
+                                height="500px"
+                              />
+                              <Button
+                                onClick={handlePreview}
+                                className="w-[153.8px] h-[50.6px] mt-2 primary-button"
                               >
-                                <IoEyeOutline size={20} />
-                              </a>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+                                Ouvrir en plein écran
+                              </Button>
+                            </div>
+                          ) : textContent ? (
+                            <div className="text-preview">
+                              <h4>Contenu du fichier texte:</h4>
+                              <pre>{textContent}</pre>
+                            </div>
+                          ) : uploadedFile.file.type.includes("csv") ||
+                            uploadedFile.file.type.includes("excel") ||
+                            uploadedFile.file.type.includes("sheet") ||
+                            uploadedFile.file.type.includes("word") ||
+                            uploadedFile.file.type.includes("document") ? (
+                            <div className="download-preview">
+                              <p>
+                                Ce type de fichier nécessite un téléchargement.
+                              </p>
+                              <Button
+                                type="primary"
+                                onClick={() => handleDownload(uploadedFile)}
+                                className="download-button"
+                              >
+                                Télécharger le fichier
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="unsupported-preview">
+                              <p>
+                                L'aperçu direct n'est pas disponible pour ce
+                                type de fichier.
+                              </p>
+                              <Button
+                                type="primary"
+                                onClick={() => handleDownload(uploadedFile)}
+                                className="download-button"
+                              >
+                                Télécharger le fichier
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
+
+                {role === "Chargé de clientèle" &&
+                  openPopupConfirmValider?.ligne?.points_valides! === 48 && (
+                    <div className="mt-3">
+                      <div>
+                        Tableau d'amortissement et BO{" "}
+                        <span style={{ color: "red" }}>*</span>
+                        <Upload
+                          accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
+                          beforeUpload={() => false}
+                          maxCount={1}
+                          showUploadList={true}
+                          onChange={(info) => handleFileChange(info)}
+                          className="w-full mt-3"
+                          style={{ width: "100%" }}
+                        >
+                          <div className="w-full">
+                            <Button
+                              type="dashed"
+                              className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
+                              icon={<FaUpload />}
+                            >
+                              Importer Tableau d'amortissement et BO
+                            </Button>
+                          </div>
+                        </Upload>
+                      </div>
+
+                      {(openPopupConfirmValider.ligne?.type_credit ===
+                        "CRDT CT- MOURABAHA" ||
+                        openPopupConfirmValider.ligne?.type_credit ===
+                          "CRDT MT- MOURABAHA" ||
+                        openPopupConfirmValider.ligne?.type_credit ===
+                          "CRDT LT- MOURABAHA") && (
+                        <div>
+                          Mourabaha <span style={{ color: "red" }}>*</span>
+                          <Upload
+                            accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
+                            beforeUpload={() => false}
+                            maxCount={1}
+                            showUploadList={true}
+                            onChange={(info) => handleFileChangeMourabeha(info)}
+                            className="w-full mt-3"
+                            style={{ width: "100%" }}
+                          >
+                            <div className="w-full">
+                              <Button
+                                type="dashed"
+                                className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
+                                icon={<FaUpload />}
+                              >
+                                Importer document mourabaha
+                              </Button>
+                            </div>
+                          </Upload>
+                        </div>
+                      )}
+                      {(uploadedFile! || uploadedFileMourabaha!) && (
+                        <hr className="my-3 mt-2" />
+                      )}
+
+                      <div
+                        className={`grid gap-4 ${
+                          uploadedFileMourabaha && uploadedFile
+                            ? "grid-cols-2"
+                            : "grid-cols-1"
+                        } `}
+                      >
+                        {uploadedFile && (
+                          <div className="file-preview-section">
+                            <h3>
+                              Aperçu du fichier (Tableau d'amortissement) :{" "}
+                            </h3>
+                            <div className="file-info">
+                              {getFileIcon(uploadedFile.file.type)}
+                              <span className="file-name">
+                                {uploadedFile.file.name}
+                              </span>
+                              <span className="file-size">
+                                ({(uploadedFile.file.size / 1024).toFixed(2)}{" "}
+                                KB)
+                              </span>
+                            </div>
+
+                            <div className="preview-content">
+                              {uploadedFile.file.type.startsWith("image/") ? (
+                                <div className="image-preview">
+                                  <img
+                                    src={uploadedFile.previewUrl}
+                                    alt="Aperçu"
+                                  />
+                                </div>
+                              ) : uploadedFile.file.type ===
+                                "application/pdf" ? (
+                                <div className="pdf-preview">
+                                  <iframe
+                                    ref={iframeRef}
+                                    src={uploadedFile.previewUrl}
+                                    title="Aperçu PDF"
+                                    width="100%"
+                                    height="500px"
+                                  />
+                                  <Button
+                                    onClick={handlePreview}
+                                    className="w-[153.8px] h-[50.6px] mt-2 primary-button"
+                                  >
+                                    Ouvrir en plein écran
+                                  </Button>
+                                </div>
+                              ) : textContent ? (
+                                <div className="text-preview">
+                                  <h4>Contenu du fichier texte:</h4>
+                                  <pre>{textContent}</pre>
+                                </div>
+                              ) : uploadedFile.file.type.includes("csv") ||
+                                uploadedFile.file.type.includes("excel") ||
+                                uploadedFile.file.type.includes("sheet") ||
+                                uploadedFile.file.type.includes("word") ||
+                                uploadedFile.file.type.includes("document") ? (
+                                <div className="download-preview">
+                                  <p>
+                                    Ce type de fichier nécessite un
+                                    téléchargement.
+                                  </p>
+                                  <Button
+                                    type="primary"
+                                    onClick={() => handleDownload(uploadedFile)}
+                                    className="download-button"
+                                  >
+                                    Télécharger le fichier
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="unsupported-preview">
+                                  <p>
+                                    L'aperçu direct n'est pas disponible pour ce
+                                    type de fichier.
+                                  </p>
+                                  <Button
+                                    type="primary"
+                                    onClick={() => handleDownload(uploadedFile)}
+                                    className="download-button"
+                                  >
+                                    Télécharger le fichier
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {uploadedFileMourabaha && (
+                          <div className="file-preview-section">
+                            <h3>Aperçu du fichier (Mourabaha) :</h3>
+                            <div className="file-info">
+                              {getFileIcon(uploadedFileMourabaha.file.type)}
+                              <span className="file-name">
+                                {uploadedFileMourabaha.file.name}
+                              </span>
+                              <span className="file-size">
+                                (
+                                {(
+                                  uploadedFileMourabaha.file.size / 1024
+                                ).toFixed(2)}{" "}
+                                KB)
+                              </span>
+                            </div>
+
+                            <div className="preview-content">
+                              {uploadedFileMourabaha.file.type.startsWith(
+                                "image/"
+                              ) ? (
+                                <div className="image-preview">
+                                  <img
+                                    src={uploadedFileMourabaha.previewUrl}
+                                    alt="Aperçu"
+                                  />
+                                </div>
+                              ) : uploadedFileMourabaha.file.type ===
+                                "application/pdf" ? (
+                                <div className="pdf-preview">
+                                  <iframe
+                                    ref={iframeRef}
+                                    src={uploadedFileMourabaha.previewUrl}
+                                    title="Aperçu PDF"
+                                    width="100%"
+                                    height="500px"
+                                  />
+                                  <Button
+                                    onClick={handlePreviewMourabaha}
+                                    className="w-[153.8px] h-[50.6px] mt-2 primary-button"
+                                  >
+                                    Ouvrir en plein écran
+                                  </Button>
+                                </div>
+                              ) : textContent ? (
+                                <div className="text-preview">
+                                  <h4>Contenu du fichier texte:</h4>
+                                  <pre>{textContent}</pre>
+                                </div>
+                              ) : uploadedFileMourabaha.file.type.includes(
+                                  "csv"
+                                ) ||
+                                uploadedFileMourabaha.file.type.includes(
+                                  "excel"
+                                ) ||
+                                uploadedFileMourabaha.file.type.includes(
+                                  "sheet"
+                                ) ||
+                                uploadedFileMourabaha.file.type.includes(
+                                  "word"
+                                ) ||
+                                uploadedFileMourabaha.file.type.includes(
+                                  "document"
+                                ) ? (
+                                <div className="download-preview">
+                                  <p>
+                                    Ce type de fichier nécessite un
+                                    téléchargement.
+                                  </p>
+                                  <Button
+                                    type="primary"
+                                    onClick={() =>
+                                      handleDownload(uploadedFileMourabaha)
+                                    }
+                                    className="download-button"
+                                  >
+                                    Télécharger le fichier
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="unsupported-preview">
+                                  <p>
+                                    L'aperçu direct n'est pas disponible pour ce
+                                    type de fichier.
+                                  </p>
+                                  <Button
+                                    type="primary"
+                                    onClick={() =>
+                                      handleDownload(uploadedFileMourabaha)
+                                    }
+                                    className="download-button"
+                                  >
+                                    Télécharger le fichier
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   className="!w-full  h-[50.6px] mt-2 secondary-button"
-                  onClick={handlecancelValide}
+                  // onClick={handlecancelValide}
+                  onClick={() => {
+                    handlecancelValide();
+                    setUploadedFile(null);
+                    setUploadedFileMourabaha(null);
+                  handlecancelValide();
+                    setUploadedFile(null);
+                    setAvis("");
+                    setmemoType("");
+                    setTextContent("");
+                  }}
                 >
                   No, Annuler
                 </Button>
@@ -1187,6 +1543,7 @@ else if (
                   className="!w-full h-[50.6px] mt-2 primary-button"
                   loading={isPendigValider}
                   onClick={handleValiderLigne}
+                 
                 >
                   Oui, Valider
                 </Button>
@@ -1202,7 +1559,7 @@ else if (
             footer={null}
             width={375}
             closeIcon={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">

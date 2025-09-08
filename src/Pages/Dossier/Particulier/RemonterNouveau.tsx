@@ -50,7 +50,8 @@ export type PopconfirmTypeDetails = {
 };
 const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
   const { data: Credit, isPending: isPendigCredit } =
-    useGetSeulCredit(Credit_id);
+  useGetSeulCredit(Credit_id);
+  console.log("credit : nature credit :  ", Credit?.nature_credit)
   const [montant, setMontant] = useState(Credit?.montant || 0);
   const [duree, setDuree] = useState(Credit?.duree || 0);
   const [status, setStatus] = useState(Credit?.status || "");
@@ -58,11 +59,6 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
   const [memo, setMemo] = useState(Credit?.memo || "");
   const [typeCredit, setTypeCredit] = useState(Credit?.type_credit || "");
   const [nature, setNature] = useState(Credit?.nature_credit || "");
-
-
-
-
-
 
 
   console.log("credit : ", Credit);
@@ -425,6 +421,7 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
           <label>
           <span className="text-base font-bold">Nature de Crédit</span> {" "}<span style={{ color: 'red' }}>*</span>
          <Select 
+         value={nature}
   options={[
     {label: "Crédit Immobilier", value: "Crédit Immobilier"},
     {label: "Crédit Automobile", value: "Crédit Automobile"},

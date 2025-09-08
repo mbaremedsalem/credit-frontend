@@ -86,20 +86,21 @@ const AjoutCreditEntrepriseStep2= ({client, closeFirstModal, closeSecondModal, c
 const onSubmit = () => {
 
   const params : AddCreditEntreprise = {
-      avis: credit?.avis!,
+      avis: credit?.avis! ?? "",
       fichiers: credit?.fichiers ?? [],
-      montant: credit?.montant!,
-      NIF: client?.NIF!,
-      memo: credit?.memo!,
-      TEL: client?.TEL!,
-      duree: credit?.duree!,
-      NOM: client?.Raison_sociale!,
-      CLIENT:client?.CLIENT!,
-      AGENCE: client?.Agence!,
-      Address : client?.Address!,
-      type_credit: credit?.type_credit!,
-      nature_credit : credit?.nature
+      montant: credit?.montant! ?? "",
+      NIF: client?.NIF! ?? "",
+      memo: credit?.memo! ?? "",
+      TEL: client?.TEL! ?? "",
+      duree: credit?.duree! ?? "",
+      NOM: client?.Raison_sociale! ?? "",
+      CLIENT:client?.CLIENT! ??  "",
+      AGENCE: client?.Agence! ?? "",
+      Address : client?.Address! ?? "",
+      type_credit: credit?.type_credit! ?? "",
+      nature_credit : credit?.nature ?? ""
   }
+  console.log("params : ", params)
 
   AddCreditEntreprise(params, {
     onSuccess: () => {

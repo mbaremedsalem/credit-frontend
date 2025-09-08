@@ -32,7 +32,7 @@ type props = {
   closeSecondModal?: () => void;
   closeFirstModal?: () => void;
 };
-const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
+const DetailsHistoriquePaticulier = ({ ligne, closeSecondModal }: props) => {
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
 
@@ -79,9 +79,9 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
     window.open(url, "_blank");
   };
 
-   const downloadDocument = async (file: string | File) => {
+  const downloadDocument = async (file: string | File) => {
     if (typeof file === "string") {
-    console.log("type : ", typeof(file))
+      console.log("type : ", typeof file);
 
       try {
         const response = await fetch(`${BaseUrl}${file}`, {
@@ -135,17 +135,45 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
     },
   ];
 
-     const docsRisque = ligne?.documents?.filter(
-  (doc) => doc.createur?.post === "Analyse de Risque" || doc.createur?.post === "Directeur Risque"
-);
+  const docsRisque = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post === "Analyse de Risque" ||
+          doc.createur?.post === "Directeur Risque"
+      )
+    : [];
 
-const docsNormaux = ligne?.documents?.filter(
-  (doc) => doc.createur?.post !== "Analyse de Risque" && doc.createur?.post !== "Directeur Risque" && doc.type_document !== "analyse" && doc.type_document !== "amortissement"  
-);
+  const docsNormaux = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document !== "amortissement" &&
+          doc.type_document !== "mourabaha"
+      )
+    : [];
 
-const docsAMortissement = ligne?.documents?.filter(
-  (doc) => doc.createur?.post !== "Analyse de Risque" && doc.createur?.post !== "Directeur Risque" && doc.type_document !== "analyse" && doc.type_document === "amortissement"  
-);
+  const docsAMortissement = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document === "amortissement"
+      )
+    : [];
+
+  const docsMourabaha = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document === "mourabaha"
+      )
+    : [];
+
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
       <div className="flex items-center justify-center space-x-3">
@@ -177,7 +205,9 @@ const docsAMortissement = ligne?.documents?.filter(
           </div>
           <div>
             <span className="font-medium">Date Naissance :</span>{" "}
-            {ligne?.client?.date_naissance? ligne?.client?.date_naissance.slice(0, 10) : ""}
+            {ligne?.client?.date_naissance
+              ? ligne?.client?.date_naissance.slice(0, 10)
+              : ""}
           </div>
           <div>
             <span className="font-medium">nni :</span> {ligne?.client?.nni}
@@ -267,156 +297,233 @@ const docsAMortissement = ligne?.documents?.filter(
         <hr />
       </div>
 
-    
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">
+            Informations sur les Importations
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+          {docsNormaux.map((fileObj) => (
+            <div
+              key={fileObj.id}
+              className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl text-blue-600">
+                  {getFileIcon(fileObj.fichier)}
+                </div>
+                <div className="flex-1 truncate font-medium text-gray-800 text-[13px]">
+                  {fileObj.fichier.split("/").pop()}
+                </div>
+                <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                  <div className="cursor-pointer">
+                    <DotIcon />
+                  </div>
+                </Dropdown>
+              </div>
+
+              <div className="text-xs text-gray-500 pl-1 space-y-1">
+                <div>
+                  <span className="font-medium text-gray-600">Type : </span>
+                  {fileObj.type_document}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Ajouté le :{" "}
+                  </span>
+                  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Créé par : </span>
+                  {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                  {fileObj.createur.nom}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="space-y-4">
-  <div className="flex items-center space-x-2 text-gray-700">
-    <FaFileImport size={23} />
-    <span className="text-lg font-semibold">
-      Informations sur les Importations
-    </span>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-    {docsNormaux.map((fileObj) => (
-      <div key={fileObj.id} className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{getFileIcon(fileObj.fichier)}</div>
-          <div className="flex-1 truncate font-medium text-gray-800 text-[13px]">
-            {fileObj.fichier.split("/").pop()}
-          </div>
-          <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
-            <div className="cursor-pointer">
-              <DotIcon />
-            </div>
-          </Dropdown>
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">
+            Informations sur les Importations de Risque
+          </span>
         </div>
 
-        <div className="text-xs text-gray-500 pl-1 space-y-1">
-          <div>
-            <span className="font-medium text-gray-600">Type : </span>
-            {fileObj.type_document}
-          </div>
-       <div>
-  <span className="font-medium text-gray-600">Ajouté le : </span>
-  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-      second: "2-digit",
-  })}
-</div>
-          <div>
-            <span className="font-medium text-gray-600">Créé par : </span>
-           {fileObj.createur.post} {fileObj.createur.prenom} {fileObj.createur.nom} 
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+          {docsRisque.map((fileObj) => (
+            <div
+              key={fileObj.id}
+              className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl text-blue-600">
+                  {getFileIcon(fileObj.fichier)}
+                </div>
+                <div className="flex-1 truncate font-medium text-gray-800">
+                  {fileObj.fichier.split("/").pop()}
+                </div>
+                <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                  <div className="cursor-pointer">
+                    <DotIcon />
+                  </div>
+                </Dropdown>
+              </div>
+
+              <div className="text-xs text-gray-500 pl-1 space-y-1">
+                <div>
+                  <span className="font-medium text-gray-600">Type : </span>
+                  {fileObj.type_document}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Ajouté le :{" "}
+                  </span>
+                  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Créé par : </span>
+                  {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                  {fileObj.createur.nom}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
-<div className="space-y-4">
-  <div className="flex items-center space-x-2 text-gray-700">
-    <FaFileImport size={23} />
-    <span className="text-lg font-semibold">
-      Informations sur les Importations de Risque
-    </span>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-    {docsRisque.map((fileObj) => (
-      <div key={fileObj.id} className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{getFileIcon(fileObj.fichier)}</div>
-          <div className="flex-1 truncate font-medium text-gray-800">
-            {fileObj.fichier.split("/").pop()}
-          </div>
-          <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
-            <div className="cursor-pointer">
-              <DotIcon />
-            </div>
-          </Dropdown>
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">Table d'amortissement</span>
         </div>
 
-        <div className="text-xs text-gray-500 pl-1 space-y-1">
-          <div>
-            <span className="font-medium text-gray-600">Type : </span>
-            {fileObj.type_document}
-          </div>
-       <div>
-  <span className="font-medium text-gray-600">Ajouté le : </span>
-  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  })}
-</div>
-          <div>
-            <span className="font-medium text-gray-600">Créé par : </span>
-          {fileObj.createur.post}  {fileObj.createur.prenom} {fileObj.createur.nom} 
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+          {docsAMortissement.map((fileObj) => (
+            <div
+              key={fileObj.id}
+              className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl text-blue-600">
+                  {getFileIcon(fileObj.fichier)}
+                </div>
+                <div className="flex-1 truncate font-medium text-gray-800">
+                  {fileObj.fichier.split("/").pop()}
+                </div>
+                <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                  <div className="cursor-pointer">
+                    <DotIcon />
+                  </div>
+                </Dropdown>
+              </div>
+
+              <div className="text-xs text-gray-500 pl-1 space-y-1">
+                <div>
+                  <span className="font-medium text-gray-600">Type : </span>
+                  {fileObj.type_document}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Ajouté le :{" "}
+                  </span>
+                  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Créé par : </span>
+                  {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                  {fileObj.createur.nom}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
-<div className="space-y-4">
-  <div className="flex items-center space-x-2 text-gray-700">
-    <FaFileImport size={23} />
-    <span className="text-lg font-semibold">
-    Table d'amortissement
-    </span>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-    {docsAMortissement.map((fileObj) => (
-      <div key={fileObj.id} className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{getFileIcon(fileObj.fichier)}</div>
-          <div className="flex-1 truncate font-medium text-gray-800">
-            {fileObj.fichier.split("/").pop()}
+      {docsMourabaha && (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 text-gray-700">
+            <FaFileImport size={23} />
+            <span className="text-lg font-semibold">Document Mourabaha</span>
           </div>
-          <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
-            <div className="cursor-pointer">
-              <DotIcon />
-            </div>
-          </Dropdown>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+            {docsMourabaha.map((fileObj) => (
+              <div
+                key={fileObj.id}
+                className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl text-blue-600">
+                    {getFileIcon(fileObj.fichier)}
+                  </div>
+                  <div className="flex-1 truncate font-medium text-gray-800">
+                    {fileObj.fichier.split("/").pop()}
+                  </div>
+                  <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                    <div className="cursor-pointer">
+                      <DotIcon />
+                    </div>
+                  </Dropdown>
+                </div>
+
+                <div className="text-xs text-gray-500 pl-1 space-y-1">
+                  <div>
+                    <span className="font-medium text-gray-600">Type : </span>
+                    {fileObj.type_document}
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Ajouté le :{" "}
+                    </span>
+                    {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Créé par :{" "}
+                    </span>
+                    {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                    {fileObj.createur.nom}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-
-        <div className="text-xs text-gray-500 pl-1 space-y-1">
-          <div>
-            <span className="font-medium text-gray-600">Type : </span>
-            {fileObj.type_document}
-          </div>
-       <div>
-  <span className="font-medium text-gray-600">Ajouté le : </span>
-  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  })}
-</div>
-          <div>
-            <span className="font-medium text-gray-600">Créé par : </span>
-          {fileObj.createur.post}  {fileObj.createur.prenom} {fileObj.createur.nom} 
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+      )}
 
       <div className="grid  grid-cols-1 gap-3">
         <Button className="auth-button !h-[44px]" onClick={closeSecondModal}>
@@ -427,4 +534,4 @@ const docsAMortissement = ligne?.documents?.filter(
   );
 };
 
-export default DetailsPaticulier;
+export default DetailsHistoriquePaticulier;

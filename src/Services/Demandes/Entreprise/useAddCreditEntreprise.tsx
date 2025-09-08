@@ -1,5 +1,3 @@
-
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
 import axios from "axios";
@@ -12,15 +10,15 @@ import { handleError } from "../../../Lib/HandleError";
 import { useNavigate } from "react-router-dom";
 
 export const useAddCreditEntreprise = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const queryClient = useQueryClient();
   async function addCreditEntreprise(ligne: AddCreditEntreprise) {
-    console.log("nature_credit : ", ligne.nature_credit)
+    console.log("ligne credit entreprise : ", ligne);
     const formData = new FormData();
-    const agence = AuthService.getAGENCEUserConnect()
-    const user_id = AuthService.getIDUserConnect()
-    console.log("agence : ", agence)
+    const agence = AuthService.getAGENCEUserConnect();
+    const user_id = AuthService.getIDUserConnect();
+    console.log("agence : ", agence);
     formData.append("CLIENT", ligne?.CLIENT!);
     formData.append("NOM", ligne?.NOM!);
     formData.append("AGENCE", ligne?.AGENCE!);
@@ -37,16 +35,14 @@ export const useAddCreditEntreprise = () => {
     formData.append("type_dossier", "Entreprise");
     formData.append("NIF", ligne?.NIF);
     formData.append("Address", ligne?.Address);
-    
-   
 
     ligne.fichiers?.forEach((doc) => {
-        formData.append(`documents`, doc?.file); 
-        formData.append(`type_document`, doc?.type_document); 
-      });
+      formData.append(`documents`, doc?.file);
+      formData.append(`type_document`, doc?.type_document);
+    });
 
-      console.log("ligne : ")
-    
+    console.log("ligne : ");
+
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -62,27 +58,33 @@ export const useAddCreditEntreprise = () => {
         queryKey: LIGNES_KEY,
       });
       enqueueSnackbar("Crédit ajoutée avec succès !", { variant: "success" });
-    navigate("/dossier")
+      navigate("/dossier");
     },
     onError: (err: any) => {
-      console.log("err est : ", err?.response?.data?.error)
+      console.log("err est : ", err?.response?.data?.error);
       const errorMessage = handleError(err);
-      const errorPackage =  err?.response?.data?.error
-      if(errorPackage){
+      const errorPackage = err?.response?.data?.error;
+      if (errorPackage) {
         return enqueueSnackbar(errorPackage, { variant: "error" });
-
       }
-      if(err?.response?.data?.error === "UNIQUE constraint failed: commite_client.client_code") {
-       
-              return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
-      } if (err?.response?.data?.error === "['“null” value has an invalid date format. It must be in YYYY-MM-DD format.']") {
-  return enqueueSnackbar(
-    "La date d'expiration du carte ou passport client est null dans CoreBanking et doit être ajoutée !",
-    { variant: "error" }
-  );
-} else {
+      if (
+        err?.response?.data?.error ===
+        "UNIQUE constraint failed: commite_client.client_code"
+      ) {
+        return enqueueSnackbar("L'utilisateur existe déjà !", {
+          variant: "error",
+        });
+      }
+      if (
+        err?.response?.data?.error ===
+        "['“null” value has an invalid date format. It must be in YYYY-MM-DD format.']"
+      ) {
+        return enqueueSnackbar(
+          "La date d'expiration du carte ou passport client est null dans CoreBanking et doit être ajoutée !",
+          { variant: "error" }
+        );
+      } else {
         message.error(errorMessage);
-
       }
     },
   });

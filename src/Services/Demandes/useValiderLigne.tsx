@@ -11,29 +11,32 @@ export type ValiderLigne = {
     id_credit?:number,
     motiv?:string
     memo?:string,
-    documents: File;
-  
-
-
+    documents: File | File[];
 }
 export const useValiderLigne = () => {
   const queryClient = useQueryClient();
   const userIdConnect = AuthService.getIDUserConnect()
   async function validerligne(ligne: ValiderLigne) {
+
+    console.log("doc credit : ", ligne)
     const formData = new FormData();
     
     formData.append("memo", ligne?.memo!);
     formData.append("user_id", String(userIdConnect));
     formData.append("motiv", ligne.motiv!);
 
-    
-        
-    if(ligne.documents){
-      
-      formData.append(`documents`, ligne.documents); 
-
+     if (ligne.documents) {
+      if (Array.isArray(ligne.documents)) {
+        ligne.documents.forEach((file, index) => {
+          console.log("index : ", index)
+          formData.append(`documents`, file); // Use the same field name for multiple files
+          // formData.append(`documents[${index}]`, file);
+        });
+      } else {
+        // If it's a single file, append it directly
+        formData.append(`documents`, ligne.documents);
+      }
     }
-    
     
     const res = await axios.post(`${BaseUrl}api/credits/${ligne.id_credit}/remonter/`, formData);
     return res.data;

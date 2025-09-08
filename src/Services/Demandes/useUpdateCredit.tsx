@@ -26,10 +26,12 @@ export type typUpdateCredit = {
 export const useUpdateCredit = () => {
   const queryClient = useQueryClient();
   
+
   async function updateCredit(ligne: typUpdateCredit) {
     const formData = new FormData();
   const idUserConnect = AuthService.getIDUserConnect()
 
+  console.log("update credit : ", ligne)
     formData.append("montant", ligne?.montant?.toString()!);
     formData.append("duree", ligne?.duree?.toString()!);
     formData.append("avis", ligne?.avis!);

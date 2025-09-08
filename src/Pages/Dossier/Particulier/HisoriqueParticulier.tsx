@@ -5,8 +5,6 @@ import { IoMdCreate } from "react-icons/io";
 import { SiProgress } from "react-icons/si";
 import { GrValidate } from "react-icons/gr";
 import { Button, Tag } from "antd";
-import { useGetUserConnect } from "../../../Services/Auth/useGetUsers";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 type props = {
@@ -30,14 +28,9 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
     },
   };
 
-
-
   const { data: HistoriqueData } = useGetHistoriqueLigneCredit(credit);
 
- 
-  const [codeUser, setCodeUser] = useState("");
 
-  const { data: TestUser } = useGetUserConnect(codeUser);
 
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return "";
@@ -53,41 +46,6 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
     }).format(date);
   };
 
-  const HanldeRejter = () => {
-    if (!HistoriqueData?.credit) {
-      return { codeUser: "", rejectionDetails: "" };
-    }
-
-    const { points_valides, agence } = HistoriqueData.credit;
-    let code = "";
-
-    if (points_valides === 2) {
-      code = agence === "00001" ? "10027" : "10017";
-    } else if (points_valides === 6) {
-      code = "10014";
-    } else if (points_valides === 12) {
-      code = "10062";
-    } else if (points_valides === 24) {
-      code = "10013";
-    }
-
-    return {
-      codeUser: code,
-      rejectionDetails: ` ${
-        TestUser?.post === "Directeur Risque"
-          ? "Commité (" + TestUser?.post + ")"
-          : TestUser?.post
-      } ${TestUser?.nom || ""} ${TestUser?.prenom || ""} ${formatDate(
-        HistoriqueData.credit.date_rejet
-      )}`,
-    };
-  };
-
-  useEffect(() => {
-    const { codeUser } = HanldeRejter();
-
-    setCodeUser(codeUser);
-  }, [HistoriqueData?.credit?.points_valides, HistoriqueData?.credit?.agence]);
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <div className="flex items-center space-x-3 mb-6 justify-center">
@@ -178,7 +136,7 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
                 : status}
               {" Par "}
               {credit.poste === "Chef agence central"
-                  ? credit.poste+","
+                ? credit.poste + ","
                 : credit?.poste === "Directeur Risque"
                 ? `Commité (${credit?.validateur?.post})`
                 : credit?.validateur?.post}{" "}
@@ -212,7 +170,6 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
         >
           <SiProgress size={20} />
           <span>
-         
             {/* {UserData?.post === "Chargé de clientèle"
               ? "de remontation"
               : "de la décision"}
@@ -223,39 +180,25 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
                     : UserData?.post
                 }, ${UserData.nom?.toUpperCase()} ${UserData.prenom?.toUpperCase()}`
               : null} */}
-
-                       { (HistoriqueData.credit.points_valides >= 2 && HistoriqueData.credit.points_valides < 48 )? "En attente de remontation de" : "" }{" "}
+            {HistoriqueData.credit.points_valides >= 2 &&
+            HistoriqueData.credit.points_valides < 48
+              ? "En attente de remontation de"
+              : ""}{" "}
             {HistoriqueData.credit.points_valides === 2
-              // ? "Cheff Agence"
-              ? "Chef agence central"
+              ? // ? "Cheff Agence"
+                "Chef agence central"
               : HistoriqueData.credit.points_valides === 6
               ? "Chef de département commercial"
               : HistoriqueData.credit.points_valides === 12
               ? "L'Analyse de risque"
-            : HistoriqueData.credit.points_valides === 24
+              : HistoriqueData.credit.points_valides === 24
               ? "Directeur Risque"
-            : HistoriqueData.credit.points_valides === 48
-              ?  "En attente de l'importation du tableau d'amortissement par le chargé de clientèle"
-           :   HistoriqueData.credit.points_valides === 50
-              ?  "En attente de validation par Directeur Engagement"
-            : "En attente de modification de Chargé de clientèle"}
+              : HistoriqueData.credit.points_valides === 48
+              ? "En attente de l'importation du tableau d'amortissement par le chargé de clientèle"
+              : HistoriqueData.credit.points_valides === 50
+              ? "En attente de validation par Directeur Engagement"
+              : "En attente de modification de Chargé de clientèle"}
           </span>
-        </motion.div>
-      )}
-
-      {HistoriqueData?.credit.status === "REJETÉ" && (
-        <motion.div
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 flex items-center space-x-1"
-        >
-          <MdCancel size={20} />
-          <span>
-            {" "}
-            Rejeté par
-            {HanldeRejter().rejectionDetails}
-          </span>
-          <strong> </strong>
         </motion.div>
       )}
 
