@@ -20,7 +20,6 @@ function DemandesParticulier() {
   const [hasSearched, setHasSearched] = useState(false);
 
   const { data: ClientsData, isPending } = useGetClients(valueChercher);
-  console.log("data : ", ClientsData)
   const [openPopupConfirm, setOpenPopupConfirm] = useState<PopconfirmType>({
     open: false,
     client: null,

@@ -28,7 +28,6 @@ export const useDeleteDocument = () => {
 
     },
     onError: (err: any) => {
-      console.log("err est : ", err?.response?.data?.error)
       const errorMessage = handleError(err);
    
       

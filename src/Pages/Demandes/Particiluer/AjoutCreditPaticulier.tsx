@@ -45,7 +45,6 @@ const AjoutCreditParticulier = ({ client, onCloseModal, typeFile }: props) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    console.log("rawVlau");
     setMontant(rawValue);
     setMontantNet(rawValue);
   };
@@ -111,7 +110,6 @@ const AjoutCreditParticulier = ({ client, onCloseModal, typeFile }: props) => {
     nature: nature,
     fichiers: uploadedFiles[client.CLIENT!] || [],
   };
-  console.log("uploadedFiles : ", uploadedFiles);
   return (
     <div className="flex flex-col gap-2 ">
       <div className="flex items-center justify-center space-x-2">

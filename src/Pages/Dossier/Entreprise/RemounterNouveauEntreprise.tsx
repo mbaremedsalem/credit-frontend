@@ -52,13 +52,13 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
   const { data: Credit, isPending: isPendigCredit } =
     useGetSeulCredit(Credit_id);
 
-     const {data:ListCredit} = useGetTypeCredit()
-      
-          const creditOptions = ListCredit?.map((credit) => ({
-        label: credit.libelle,  // Ce qui sera affiché
-        value: credit.libelle       // La valeur associée
-      })) || []
-  console.log("credit : ", Credit);
+  const { data: ListCredit } = useGetTypeCredit();
+
+  const creditOptions =
+    ListCredit?.map((credit) => ({
+      label: credit.libelle,
+      value: credit.libelle,
+    })) || [];
   const getFileIcon = (fileName: string): JSX.Element => {
     const ext = fileName.split(".").pop()?.toLowerCase();
 
@@ -112,7 +112,6 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
     setafficherDocument({ id_client: null, open: false });
   };
   const handeSupprimerDocument = () => {
-    console.log("doc ic :", afficherDocument?.id_client);
     deleteDocument(
       { credit_id: afficherDocument?.id_client! },
       {
@@ -258,11 +257,16 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
     fichiers: uploadedFiles[Credit?.client?.client_code!] || [],
   };
 
-  console.log("credit is : ", credit)
-
-  const docsNormaux = Credit?.documents?.filter(
-  (doc) => doc.createur?.post !== "Analyse de Risque"
-)
+  const docsNormaux = Credit?.documents
+    ? Credit?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document !== "amortissement" &&
+          doc.type_document !== "mourabaha"
+      )
+    : [];
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
       <div className="flex items-center justify-center space-x-3">
@@ -291,8 +295,7 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
             <span className="font-medium">Nom :</span> {Credit?.client?.nom}
           </div>
           <div>
-            <span className="font-medium">NIF :</span>{" "}
-            {Credit?.client?.NIF}
+            <span className="font-medium">NIF :</span> {Credit?.client?.NIF}
           </div>
         </div>
         <motion.div
@@ -317,7 +320,6 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
             <span className="font-medium">Adress:</span>{" "}
             {Credit?.client?.Address}
           </motion.div>
-         
         </motion.div>
       </div>
 
@@ -396,15 +398,13 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
             <label>
               <span className="font-bold text-base">Type Crédit</span>{" "}
               <span style={{ color: "red" }}>*</span>
-              <Select 
-       
-          value={typeCredit}
-            options={creditOptions}
-          className="w-full h-[42px]"
-          onChange={onchangeSelectType}
-          
-          placeholder="Type Crédit"
-          />
+              <Select
+                value={typeCredit}
+                options={creditOptions}
+                className="w-full h-[42px]"
+                onChange={onchangeSelectType}
+                placeholder="Type Crédit"
+              />
             </label>
           </motion.div>
           <motion.div
@@ -415,24 +415,32 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
             <label>
               <span className="font-bold text-base">Nature Crédit</span>{" "}
               <span style={{ color: "red" }}>*</span>
-              <Select 
-              value={nature}
-  options={[
-    {label: "Crédit Immobilier", value: "Crédit Immobilier"},
-    {label: "Crédit Automobile", value: "Crédit Automobile"},
-    {label: "Crédit à la Consommation", value: "Crédit à la Consommation"},
-    {label: "Crédit d'Exploitation", value: "Crédit d'Exploitation"},
-    {label: "Crédit d'Investissement", value: "Crédit d'Investissement"},
-    // {label: "Microcrédit", value: "Microcrédit"},
-    {label: "Découvert", value: "Découvert"},
-    {label: "Crédit Agricole", value: "Crédit Agricole"},
-    {label: "Autre", value: "Autre"},
-
-  ]}
-  className="w-full h-[42px]"
-  onChange={onchangeSelectNature}
-  placeholder="Nature de Crédit"
-/>
+              <Select
+                value={nature}
+                options={[
+                  { label: "Crédit Immobilier", value: "Crédit Immobilier" },
+                  { label: "Crédit Automobile", value: "Crédit Automobile" },
+                  {
+                    label: "Crédit à la Consommation",
+                    value: "Crédit à la Consommation",
+                  },
+                  {
+                    label: "Crédit d'Exploitation",
+                    value: "Crédit d'Exploitation",
+                  },
+                  {
+                    label: "Crédit d'Investissement",
+                    value: "Crédit d'Investissement",
+                  },
+                  // {label: "Microcrédit", value: "Microcrédit"},
+                  { label: "Découvert", value: "Découvert" },
+                  { label: "Crédit Agricole", value: "Crédit Agricole" },
+                  { label: "Autre", value: "Autre" },
+                ]}
+                className="w-full h-[42px]"
+                onChange={onchangeSelectNature}
+                placeholder="Nature de Crédit"
+              />
             </label>
           </motion.div>
         </div>
@@ -554,7 +562,7 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
         footer={null}
         width={375}
         closeIcon={false}
-          maskClosable={false}
+        maskClosable={false}
       >
         <div className="flex flex-col items-center space-y-3 ">
           <div className="flex items-center justify-center space-x-3">
@@ -592,7 +600,7 @@ const RemonterANouveauEntreprise = ({ closeSecondModal, Credit_id }: props) => {
         footer={null}
         width={1200}
         closeIcon={false}
-          maskClosable={false}
+        maskClosable={false}
       >
         <RemonterStepEntreprise2
           closeSecondModal={CancelPopupConfirmDetails}

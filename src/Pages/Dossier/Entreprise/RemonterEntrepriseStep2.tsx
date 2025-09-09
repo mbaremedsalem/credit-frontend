@@ -55,8 +55,6 @@ const RemonterStepEntreprise2 = ({
   credit,
   oncloseFirstModal,
 }: props) => {
-  console.log("ligne : ", ligne);
-  console.log("credit nouveau : ", credit);
   const fullName = AuthService.getFullNameUserConnect();
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
@@ -177,7 +175,6 @@ const RemonterStepEntreprise2 = ({
       fichiers: credit?.fichiers!,
       nature_credit: credit?.nature!,
     };
-    console.log("params : ", params);
     UpdateCredit(params, {
       onSuccess: () => {
         hideModal(),
@@ -196,11 +193,24 @@ const RemonterStepEntreprise2 = ({
       doc.createur?.post === "Directeur Risque"
   );
 
-  const docsNormaux = ligne?.documents?.filter(
-    (doc) =>
-      doc.createur?.post !== "Analyse de Risque" &&
-      doc.createur?.post !== "Directeur Risque"
-  );
+  // const docsNormaux = ligne?.documents?.filter(
+  //   (doc) =>
+  //     doc.createur?.post !== "Analyse de Risque" &&
+  //     doc.createur?.post !== "Directeur Risque"
+  // );
+
+   const docsNormaux = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document !== "amortissement" &&
+          doc.type_document !== "mourabaha"
+      )
+    : [];
+
+  
   return (
     <div className="w-full mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
       <div className="flex items-center justify-center space-x-3">
@@ -514,6 +524,65 @@ const RemonterStepEntreprise2 = ({
           ))}
         </div>
       </div>
+
+      {/* {docsMourabaha && (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 text-gray-700">
+            <FaFileImport size={23} />
+            <span className="text-lg font-semibold">Document Mourabaha</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+            {docsMourabaha.map((fileObj) => (
+              <div
+                key={fileObj.id}
+                className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl text-blue-600">
+                    {getFileIcon(fileObj.fichier)}
+                  </div>
+                  <div className="flex-1 truncate font-medium text-gray-800">
+                    {fileObj.fichier.split("/").pop()}
+                  </div>
+                  <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                    <div className="cursor-pointer">
+                      <DotIcon />
+                    </div>
+                  </Dropdown>
+                </div>
+
+                <div className="text-xs text-gray-500 pl-1 space-y-1">
+                  <div>
+                    <span className="font-medium text-gray-600">Type : </span>
+                    {fileObj.type_document}
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Ajouté le :{" "}
+                    </span>
+                    {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">
+                      Créé par :{" "}
+                    </span>
+                    {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                    {fileObj.createur.nom}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )} */}
 
       <div className="grid  grid-cols-2 gap-3">
         <Button

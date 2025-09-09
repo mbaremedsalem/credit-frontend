@@ -46,7 +46,6 @@ const items: MenuProps["items"] = [
   },
 ];
 
-console.log("post : ", userInfo?.post)
 
 if(isPending){
   return <SpinnerLoader/>

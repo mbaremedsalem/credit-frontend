@@ -15,7 +15,6 @@ async function getHistoriqueLigneCredit(id:string|number): Promise<CreditData> {
           headers: { "Content-Type": "application/json" },
         }
       );
-  console.log(" response data : ", res.data)
   return res.data;
 }
 export const useGetHistoriqueLigneCredit = (id:string|number) => {

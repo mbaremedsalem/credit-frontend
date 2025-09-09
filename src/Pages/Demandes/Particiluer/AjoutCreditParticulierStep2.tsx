@@ -115,7 +115,6 @@ const AjoutCreditParticulierStep2 = ({
       nature_credit: credit?.nature ?? "",
     };
 
-    console.log("params : ", params);
     AddLigne(params, {
       onSuccess: () => {
         closeFirstModal?.();

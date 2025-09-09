@@ -40,12 +40,10 @@ export const useResetPassword = () => {
           message.error("Please Try again !")
         } 
         const errorM = err?.response?.data?.detail
-        console.log("errorM : ",errorM)
         if(errorM){
           message.error(errorM)
           message.error("token expired !")
         }
-        console.log("err : ", errToken)
         
       },
     });

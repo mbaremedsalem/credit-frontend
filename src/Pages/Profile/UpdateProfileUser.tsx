@@ -60,7 +60,6 @@ export  function UpdateProfileAdmin({handleCancel} : Props) {
       else { 
         const file = images[0]?.file;
 
-        console.log("file : ", file)
         const params :UserInfo = {
           email:email,
           nom:nom,
@@ -71,7 +70,6 @@ export  function UpdateProfileAdmin({handleCancel} : Props) {
           image : file
         
         }
-        console.log("user : ", params)
         UpdateProfile(params,{
           onSuccess:()=>{
             handleCancel()

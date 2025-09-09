@@ -26,7 +26,6 @@ type props = {
   typeFile: string;
 };
 const AjoutCreditEntreprise = ({ client, onCloseModal, typeFile }: props) => {
-  console.log("client : ", client);
   const [openPopupConfirm, setOpenPopupConfirm] = useState<PopconfirmType>({
     open: false,
     client: null,
@@ -39,7 +38,7 @@ const AjoutCreditEntreprise = ({ client, onCloseModal, typeFile }: props) => {
 
   const { data: ListCredit } = useGetTypeCredit();
 
-   const creditOptions =
+  const creditOptions =
     ListCredit?.map((credit) => ({
       label: credit.libelle, // Ce qui sera affiché
       value: credit.libelle, // La valeur associée
@@ -112,7 +111,6 @@ const AjoutCreditEntreprise = ({ client, onCloseModal, typeFile }: props) => {
     nature: nature,
     fichiers: uploadedFiles[client.CLIENT!] || [],
   };
-  console.log("uploadedFiles : ", uploadedFiles);
   return (
     <div className="flex flex-col gap-2 ">
       <div className="flex items-center justify-center space-x-2">

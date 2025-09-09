@@ -17,7 +17,6 @@ const NotificationIcon: React.FC<Props> = ({ notifications }) => {
   const notificationRef = useRef<HTMLDivElement | null>(null);
 
   const readNotifications = notifications.filter(not => not.lu === true);
-  console.log("isread : ", readNotifications)
   const { mutate: luNotifications, isPending: isPendingNotifications } = useLuNotifications();
 
   const toggleDropdown = () => {

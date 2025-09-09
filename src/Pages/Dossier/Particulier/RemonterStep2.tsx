@@ -55,8 +55,6 @@ const RemonterStep2 = ({
   credit,
   oncloseFirstModal,
 }: props) => {
-  console.log("ligne : ", ligne);
-  console.log("credit : ", credit);
   const fullName = AuthService.getFullNameUserConnect();
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
@@ -189,17 +187,35 @@ const RemonterStep2 = ({
     });
   };
 
-  const docsRisque = ligne?.documents?.filter(
-    (doc) =>
-      doc.createur?.post === "Analyse de Risque" ||
-      doc.createur?.post === "Directeur Risque"
-  );
+  // const docsRisque = ligne?.documents?.filter(
+  //   (doc) =>
+  //     doc.createur?.post === "Analyse de Risque" ||
+  //     doc.createur?.post === "Directeur Risque"
+  // );
 
-  const docsNormaux = ligne?.documents?.filter(
-    (doc) =>
-      doc.createur?.post !== "Analyse de Risque" &&
-      doc.createur?.post !== "Directeur Risque"
-  );
+   const docsRisque = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post === "Analyse de Risque" ||
+          doc.createur?.post === "Directeur Risque"
+      )
+    : [];
+
+  // const docsNormaux = ligne?.documents?.filter(
+  //   (doc) =>
+  //     doc.createur?.post !== "Analyse de Risque" &&
+  //     doc.createur?.post !== "Directeur Risque"
+  // );
+   const docsNormaux = ligne?.documents
+    ? ligne?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document !== "amortissement" &&
+          doc.type_document !== "mourabaha"
+      )
+    : [];
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
       <div className="flex items-center justify-center space-x-3">

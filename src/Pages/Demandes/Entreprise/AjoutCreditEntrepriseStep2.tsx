@@ -38,7 +38,6 @@ type props = {
   closeFirstModal?: () => void;
 }
 const AjoutCreditEntrepriseStep2= ({client, closeFirstModal, closeSecondModal, credit}:props) => {
-  console.log("credit : ", credit?.montant)
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
   const {data:userInfo} = getUserInfo()
@@ -100,7 +99,6 @@ const onSubmit = () => {
       type_credit: credit?.type_credit! ?? "",
       nature_credit : credit?.nature ?? ""
   }
-  console.log("params : ", params)
 
   AddCreditEntreprise(params, {
     onSuccess: () => {

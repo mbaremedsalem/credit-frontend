@@ -39,7 +39,6 @@ function ForgetPassword(){
           return;
       }
   
-      console.log("on click !");
       setLoading(true);
       setTimeout(() => {
         setLoading(false);

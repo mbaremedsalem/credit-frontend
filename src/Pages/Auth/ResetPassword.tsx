@@ -29,7 +29,6 @@ useEffect(() => {
   }
 }, [token]);
 
-console.log("code : ", currentToken)
 
 const [loading, setLoading] = useState(false);
 
@@ -83,7 +82,6 @@ const onSubmit = () => {
 }
     
    
-console.log(" loading " )
     return (
         <div className=" bg-gray-100 lg:px-[200px] max-lg:p-4">
             <div className="flex items-center justify-around">

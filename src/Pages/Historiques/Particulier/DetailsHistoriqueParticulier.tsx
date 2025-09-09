@@ -81,8 +81,6 @@ const DetailsHistoriquePaticulier = ({ ligne, closeSecondModal }: props) => {
 
   const downloadDocument = async (file: string | File) => {
     if (typeof file === "string") {
-      console.log("type : ", typeof file);
-
       try {
         const response = await fetch(`${BaseUrl}${file}`, {
           method: "GET",

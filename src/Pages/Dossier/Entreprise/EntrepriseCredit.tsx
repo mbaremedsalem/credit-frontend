@@ -77,7 +77,7 @@ function EntrepriseCreditView() {
   const [loading, setLoading] = useState(false);
   const [textContent, setTextContent] = useState<string>("");
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
-    const [previewVisibleMourbaha, setPreviewVisibleMourabaha] =
+  const [previewVisibleMourbaha, setPreviewVisibleMourabaha] =
     useState<boolean>(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const handlePreview = () => {
@@ -87,7 +87,7 @@ function EntrepriseCreditView() {
   const handleCancelPreview = () => {
     setPreviewVisible(false);
   };
-   const handlePreviewMourabaha = () => {
+  const handlePreviewMourabaha = () => {
     setPreviewVisibleMourabaha(true);
   };
 
@@ -339,65 +339,65 @@ function EntrepriseCreditView() {
   const lignesFiltrees = filtrerLignesCredit(onlyPaticulier);
 
   const handleValiderLigne = () => {
-      const errors = [];
-  
-  if (!memoType?.trim()) {
-    errors.push("Le mémo est obligatoire");
-  }
-  
-  if (!avis?.trim()) {
-    errors.push("L'avis est obligatoire");
-  }
-  
-  if (errors.length > 0) {
-    return message.error(errors.join("\n"));
-  }
-      if (!uploadedFile && role === "Analyse de Risque") {
-        return message.error("importer document risque");
-      } else if (!uploadedFile && role === "Directeur Risque") {
-        return message.error("importer pv");
-      } else if (
-        !uploadedFile &&
-        role === "Chargé de clientèle" &&
-        openPopupConfirmValider?.ligne?.points_valides! === 48
-      ) {
-        return message.error("importer tableau d'amortissement");
-      } else if (
-        !uploadedFileMourabaha &&
+    const errors = [];
+
+    if (!memoType?.trim()) {
+      errors.push("Le mémo est obligatoire");
+    }
+
+    if (!avis?.trim()) {
+      errors.push("L'avis est obligatoire");
+    }
+
+    if (errors.length > 0) {
+      return message.error(errors.join("\n"));
+    }
+    if (!uploadedFile && role === "Analyse de Risque") {
+      return message.error("importer document risque");
+    } else if (!uploadedFile && role === "Directeur Risque") {
+      return message.error("importer pv");
+    } else if (
+      !uploadedFile &&
+      role === "Chargé de clientèle" &&
+      openPopupConfirmValider?.ligne?.points_valides! === 48
+    ) {
+      return message.error("importer tableau d'amortissement");
+    } else if (
+      !uploadedFileMourabaha &&
+      role === "Chargé de clientèle" &&
+      openPopupConfirmValider?.ligne?.points_valides! === 48 &&
+      (openPopupConfirmValider.ligne?.type_credit === "CRDT CT- MOURABAHA" ||
+        openPopupConfirmValider.ligne?.type_credit === "CRDT MT- MOURABAHA" ||
+        openPopupConfirmValider.ligne?.type_credit === "CRDT LT- MOURABAHA")
+    ) {
+      return message.error("importer le document mourabaha");
+    }
+    const params: ValiderLigne = {
+      id_credit: Number(openPopupConfirmValider?.ligne?.id),
+      user_id: Number(idUserConnect)!,
+      memo: memoType,
+      motiv: avis,
+      documents:
         role === "Chargé de clientèle" &&
         openPopupConfirmValider?.ligne?.points_valides! === 48 &&
         (openPopupConfirmValider.ligne?.type_credit === "CRDT CT- MOURABAHA" ||
           openPopupConfirmValider.ligne?.type_credit === "CRDT MT- MOURABAHA" ||
           openPopupConfirmValider.ligne?.type_credit === "CRDT LT- MOURABAHA")
-      ) {
-        return message.error("importer le document mourabaha");
-      }
-      const params: ValiderLigne = {
-        id_credit: Number(openPopupConfirmValider?.ligne?.id),
-        user_id: Number(idUserConnect)!,
-        memo: memoType,
-        motiv: avis,
-        documents:
-          role === "Chargé de clientèle" &&
-          openPopupConfirmValider?.ligne?.points_valides! === 48 &&
-          (openPopupConfirmValider.ligne?.type_credit === "CRDT CT- MOURABAHA" ||
-            openPopupConfirmValider.ligne?.type_credit === "CRDT MT- MOURABAHA" ||
-            openPopupConfirmValider.ligne?.type_credit === "CRDT LT- MOURABAHA")
-            ? [uploadedFile?.file!, uploadedFileMourabaha?.file!]
-            : uploadedFile?.file!,
-      };
-  
-      ValiderLigne(params, {
-        onSuccess: () => {
-          setAvis("");
-          setmemoType("");
-          handlecancelValide();
-          setUploadedFileMourabaha(null);
-          setUploadedFile(null);    
-          setTextContent("");
-        },
-      });
+          ? [uploadedFile?.file!, uploadedFileMourabaha?.file!]
+          : uploadedFile?.file!,
     };
+
+    ValiderLigne(params, {
+      onSuccess: () => {
+        setAvis("");
+        setmemoType("");
+        handlecancelValide();
+        setUploadedFileMourabaha(null);
+        setUploadedFile(null);
+        setTextContent("");
+      },
+    });
+  };
 
   const SelectMotiv = (value: string) => {
     setMotiv(value);
@@ -867,7 +867,7 @@ function EntrepriseCreditView() {
             />
           </Modal>
 
-<Modal
+          <Modal
             title={`Aperçu de ${uploadedFileMourabaha?.file.name || "fichier"}`}
             open={previewVisibleMourbaha}
             onCancel={handleCancelPreviewMourabaha}
@@ -993,7 +993,7 @@ function EntrepriseCreditView() {
                 </div>
               ))}
           </Modal>
-         <Modal
+          <Modal
             className="rounded-lg"
             destroyOnClose={true}
             onCancel={handlecancelValide}
@@ -1494,7 +1494,7 @@ function EntrepriseCreditView() {
                     handlecancelValide();
                     setUploadedFile(null);
                     setUploadedFileMourabaha(null);
-                  handlecancelValide();
+                    handlecancelValide();
                     setUploadedFile(null);
                     setAvis("");
                     setmemoType("");
@@ -1507,7 +1507,6 @@ function EntrepriseCreditView() {
                   className="!w-full h-[50.6px] mt-2 primary-button"
                   loading={isPendigValider}
                   onClick={handleValiderLigne}
-                 
                 >
                   Oui, Valider
                 </Button>
@@ -1534,16 +1533,6 @@ function EntrepriseCreditView() {
               <label>Motif</label>
               <Select
                 className="w-full h-[42px]"
-                // options={[
-                //   {
-                //     label: "Dossier incomplete",
-                //     value: "Dossier incomplete",
-                //   },
-                //   {
-                //     label: "Dossier No Conform",
-                //     value: "Dossier No Conform",
-                //   },
-                // ]}
                 options={[
                   {
                     label: "Dossier incomplet",

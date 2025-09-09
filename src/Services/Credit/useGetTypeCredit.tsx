@@ -24,7 +24,6 @@ async function getTypeCredit(): Promise<TypeCredit[]> {
       headers: { "Content-Type": "application/json" },
     }
   );
-  console.log(" response data : ", res.data);
   return res.data;
 }
 export const useGetTypeCredit = () => {

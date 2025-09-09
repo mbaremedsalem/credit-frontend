@@ -30,10 +30,8 @@ const ChartEntrepriseRegimCredit = () => {
     onClick: (event: any, elements: any) => {
       console.log("event : ", event)
       if(elements[0].index === 0){
-        // navigate(`/virement/interne/?agence=2r`);
 
       } else {
-        // navigate(`/virement/externe/?agence=34`);
 
       }
     },

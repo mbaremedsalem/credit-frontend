@@ -51,7 +51,6 @@ export type PopconfirmTypeDetails = {
 const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
   const { data: Credit, isPending: isPendigCredit } =
   useGetSeulCredit(Credit_id);
-  console.log("credit : nature credit :  ", Credit?.nature_credit)
   const [montant, setMontant] = useState(Credit?.montant || 0);
   const [duree, setDuree] = useState(Credit?.duree || 0);
   const [status, setStatus] = useState(Credit?.status || "");
@@ -61,7 +60,6 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
   const [nature, setNature] = useState(Credit?.nature_credit || "");
 
 
-  console.log("credit : ", Credit);
   const getFileIcon = (fileName: string): JSX.Element => {
     const ext = fileName.split(".").pop()?.toLowerCase();
 
@@ -115,7 +113,6 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
     setafficherDocument({ id_client: null, open: false });
   };
   const handeSupprimerDocument = () => {
-    console.log("doc ic :", afficherDocument?.id_client);
     deleteDocument(
       { credit_id: afficherDocument?.id_client! },
       {
@@ -262,9 +259,21 @@ const RemonterANouveau = ({ closeSecondModal, Credit_id }: props) => {
     fichiers: uploadedFiles[Credit?.client?.client_code!] || [],
   };
 
-  const docsNormaux = Credit?.documents?.filter(
-  (doc) => doc.createur?.post !== "Analyse de Risque"
-)
+//   const docsNormaux = Credit?.documents?.filter(
+//   (doc) => doc.createur?.post !== "Analyse de Risque"
+// )
+
+
+  const docsNormaux = Credit?.documents
+    ? Credit?.documents?.filter(
+        (doc) =>
+          doc.createur?.post !== "Analyse de Risque" &&
+          doc.createur?.post !== "Directeur Risque" &&
+          doc.type_document !== "analyse" &&
+          doc.type_document !== "amortissement" &&
+          doc.type_document !== "mourabaha"
+      )
+    : [];
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
       <div className="flex items-center justify-center space-x-3">

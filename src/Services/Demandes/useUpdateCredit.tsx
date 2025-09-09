@@ -31,7 +31,6 @@ export const useUpdateCredit = () => {
     const formData = new FormData();
   const idUserConnect = AuthService.getIDUserConnect()
 
-  console.log("update credit : ", ligne)
     formData.append("montant", ligne?.montant?.toString()!);
     formData.append("duree", ligne?.duree?.toString()!);
     formData.append("avis", ligne?.avis!);
@@ -67,7 +66,6 @@ export const useUpdateCredit = () => {
 
     },
     onError: (err: any) => {
-      console.log("err est : ", err?.response?.data?.error)
       const errorMessage = handleError(err);
       const errorPackage =  err?.response?.data?.error
       if(errorPackage){

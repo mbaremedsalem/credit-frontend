@@ -28,7 +28,6 @@ async function getUsersConnect(username:string): Promise<UserData> {
           headers: { "Content-Type": "application/json" },
         }
       );
-  console.log(" response data : ", res.data)
   return res.data;
 }
 export const useGetUserConnect = (username:string) => {

@@ -49,6 +49,7 @@ import {
   FaUpload,
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
+// import { useGetTypeDocument } from "../../../Services/Demandes/useGetListTypeDocument";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -182,12 +183,10 @@ function ParticulierCreditView() {
   };
 
   const filtrerLignesCredit = (lignes: LigneCredit[] | undefined) => {
-    console.log("ligne : ", lignes);
     if (!lignes) return [];
 
     switch (filtreStatus) {
       case "all":
-        console.log("ligne : ", lignes);
         return lignes;
       case "a_decider":
         return lignes.filter(doitPrendreDecision);
@@ -201,21 +200,18 @@ function ParticulierCreditView() {
     dates[0]!,
     dates[1]!
   );
+    // const {data:DateDocument, isPending:isPendingType} = useGetTypeDocument(type)
+  
   const agenceConnect = AuthService.getAGENCEUserConnect();
 
-  console.log("LigneDaTa : ", LigneDaTa);
-  console.log("LigneDaTa : ", LigneDaTa);
   const isCommercial =
     role === "Chargé de clientèle" || role === "Chef agence central"
       ? LigneDaTa?.filter((agence) => agence.agence === agenceConnect)
       : LigneDaTa;
 
-  console.log("isCommercial : ", isCommercial);
-
   const onlyEnattente = isCommercial?.filter(
     (ligne) => ligne.status === "EN_COURS"
   );
-  console.log("filtrerLignesCredit : ", filtrerLignesCredit);
 
   const onlyPaticulier = onlyEnattente?.filter(
     (credit) => credit.type_dossier === "Particulier"
@@ -227,7 +223,6 @@ function ParticulierCreditView() {
     {lignesFiltrees.length} Dossiers Particuliers
     {filtreStatus !== "all" && ` (filtrés)`}
   </span>;
-  console.log("lignesFiltrees : ", lignesFiltrees);
 
   const { mutate: ValiderLigne, isPending: isPendigValider } =
     useValiderLigne();
@@ -303,13 +298,11 @@ function ParticulierCreditView() {
     setValuecher(cherche.trim());
   };
 
-  console.log("dates : ", dates[0]);
   const handleDateChange = (values: any, dateStrings: [string, string]) => {
     console.log(values);
     setDates(dateStrings);
   };
 
-  console.log("dates : ", dates);
   const handlecancelDetails = () => {
     setopenPopupConfirmDetails({
       open: false,
@@ -360,17 +353,17 @@ function ParticulierCreditView() {
   const handleValiderLigne = () => {
     const errors = [];
 
-if (!memoType?.trim()) {
-  errors.push("Le mémo est obligatoire");
-}
+    if (!memoType?.trim()) {
+      errors.push("Le mémo est obligatoire");
+    }
 
-if (!avis?.trim()) {
-  errors.push("L'avis est obligatoire");
-}
+    if (!avis?.trim()) {
+      errors.push("L'avis est obligatoire");
+    }
 
-if (errors.length > 0) {
-  return message.error(errors.join("\n"));
-}
+    if (errors.length > 0) {
+      return message.error(errors.join("\n"));
+    }
     if (!uploadedFile && role === "Analyse de Risque") {
       return message.error("importer document risque");
     } else if (!uploadedFile && role === "Directeur Risque") {
@@ -412,7 +405,7 @@ if (errors.length > 0) {
         setmemoType("");
         handlecancelValide();
         setUploadedFileMourabaha(null);
-        setUploadedFile(null);    
+        setUploadedFile(null);
         setTextContent("");
       },
     });
@@ -439,7 +432,6 @@ if (errors.length > 0) {
         // motif: motiv,
         motif: motiv === "Autre" ? selectAutre : motiv,
       };
-      console.log("params : ", params);
       rejeterligne(params, {
         onSuccess: () => {
           setMotiv("");
@@ -1530,7 +1522,7 @@ if (errors.length > 0) {
                     handlecancelValide();
                     setUploadedFile(null);
                     setUploadedFileMourabaha(null);
-                  handlecancelValide();
+                    handlecancelValide();
                     setUploadedFile(null);
                     setAvis("");
                     setmemoType("");
@@ -1543,7 +1535,6 @@ if (errors.length > 0) {
                   className="!w-full h-[50.6px] mt-2 primary-button"
                   loading={isPendigValider}
                   onClick={handleValiderLigne}
-                 
                 >
                   Oui, Valider
                 </Button>
@@ -1570,17 +1561,6 @@ if (errors.length > 0) {
               <label>Motif</label>
               <Select
                 className="w-full h-[42px]"
-                // options={[
-                //   {
-                //     label: "Dossier incomplete",
-                //     value: "Dossier incomplete",
-                //   },
-                //   {
-                //     label: "Dossier No Conform",
-                //     value: "Dossier No Conform",
-                //   },
-                // ]}
-
                 options={[
                   {
                     label: "Dossier incomplet",

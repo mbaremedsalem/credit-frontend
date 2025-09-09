@@ -14,11 +14,9 @@ export const useAddCreditEntreprise = () => {
 
   const queryClient = useQueryClient();
   async function addCreditEntreprise(ligne: AddCreditEntreprise) {
-    console.log("ligne credit entreprise : ", ligne);
     const formData = new FormData();
     const agence = AuthService.getAGENCEUserConnect();
     const user_id = AuthService.getIDUserConnect();
-    console.log("agence : ", agence);
     formData.append("CLIENT", ligne?.CLIENT!);
     formData.append("NOM", ligne?.NOM!);
     formData.append("AGENCE", ligne?.AGENCE!);
@@ -41,7 +39,6 @@ export const useAddCreditEntreprise = () => {
       formData.append(`type_document`, doc?.type_document);
     });
 
-    console.log("ligne : ");
 
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
       headers: {
@@ -61,7 +58,6 @@ export const useAddCreditEntreprise = () => {
       navigate("/dossier");
     },
     onError: (err: any) => {
-      console.log("err est : ", err?.response?.data?.error);
       const errorMessage = handleError(err);
       const errorPackage = err?.response?.data?.error;
       if (errorPackage) {

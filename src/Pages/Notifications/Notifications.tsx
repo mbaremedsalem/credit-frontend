@@ -18,7 +18,6 @@ const NotificationPage: React.FC<Props> = ({ notifications }) => {
   const notificationRef = useRef<HTMLDivElement | null>(null);
 
   const readNotifications = notifications?.filter(not => not.lu === false) || [];
-  console.log("isread : ", readNotifications.length)
   const { mutate: luNotifications, isPending: isPendingNotifications } = useLuNotifications();
 
   const toggleDropdown = () => {
@@ -54,7 +53,8 @@ const NotificationPage: React.FC<Props> = ({ notifications }) => {
     <div className="relative" ref={notificationRef}>
       <div onClick={toggleDropdown} className="cursor-pointer relative">
         <IoMdNotifications size={30} className="text-gray-700 hover:text-black transition" />
-        { notifications.length > 0 &&readNotifications.length >0  && (
+        {/* { notifications.length > 0 &&readNotifications.length >0  && ( */}
+          { notifications && notifications.length > 0 && readNotifications.length > 0  && (
           <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold rounded-full px-1.5 h-5 min-w-[20px] flex items-center justify-center shadow-md">
             {notifications.length > 99 ? '99+' : readNotifications.length}
           </span>

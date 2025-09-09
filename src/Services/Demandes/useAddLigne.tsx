@@ -15,7 +15,6 @@ export const useAddligne = () => {
   async function addligne(ligne: AddLigne) {
     const formData = new FormData();
     const agence = AuthService.getAGENCEUserConnect()
-    console.log("ligne : ", ligne)
     formData.append("CLIENT", ligne?.CLIENT!);
     formData.append("IDENTIFIENT", ligne?.IDENTIFIENT!);
     formData.append("PAYSNAIS", ligne?.PAYSNAIS!);
@@ -44,7 +43,6 @@ export const useAddligne = () => {
         formData.append(`documents`, doc?.file); 
         formData.append(`type_document`, doc?.type_document); 
       });
-    console.log("ligne data : ", ligne)
     
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
       headers: {
@@ -64,7 +62,6 @@ export const useAddligne = () => {
       navigate("/dossier")
     },
     onError: (err: any) => {
-      console.log("err est : ", err?.response?.data?.error)
       const errorMessage = handleError(err);
       const errorPackage =  err?.response?.data?.error
       if(errorPackage){

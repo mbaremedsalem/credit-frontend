@@ -28,7 +28,6 @@ async function getStats(): Promise<ValidateurStatus[]> {
       headers: { "Content-Type": "application/json" },
     }
   );
-  console.log(" response data : ", res.data);
   return res.data;
 }
 export const useGetStatusValidateur = () => {

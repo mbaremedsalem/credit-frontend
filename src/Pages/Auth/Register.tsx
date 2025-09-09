@@ -110,10 +110,8 @@ setPost(value)
       
 
         }
-        console.log("params : ", params)
         register(params,{
           onSuccess:()=>{
-            console.log("success ! ")
           }
         })
       }, 1500); 

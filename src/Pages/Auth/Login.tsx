@@ -75,7 +75,6 @@ function Login() {
 
       log(params, {
         onSuccess: () => {
-          console.log("success !");
         },
       });
     }, 2000);

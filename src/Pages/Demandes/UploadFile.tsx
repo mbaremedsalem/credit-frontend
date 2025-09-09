@@ -28,7 +28,6 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({client,documen
     handleFileChange(info, client.CLIENT, type);
   };
 
-  console.log("files : ", DateDocument)
  if(isPending){
   return <SpinnerLoader/>
  }

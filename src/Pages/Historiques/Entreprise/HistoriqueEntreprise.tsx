@@ -55,7 +55,6 @@ function HistoriqueEntreprise() {
     null,
     null,
   ]);
-  console.log("dates : ", dates[0]);
   const handleDateChange = (values: any, dateStrings: [string, string]) => {
     console.log(values);
     setDates(dateStrings);
@@ -83,7 +82,6 @@ function HistoriqueEntreprise() {
       ligne: null,
     });
 
-  console.log("dates : ", dates);
   const handlecancelDetails = () => {
     setopenPopupConfirmDetails({
       open: false,
@@ -247,8 +245,6 @@ function HistoriqueEntreprise() {
   const onlyEntrepriseRejeter = onlyRejeter?.filter(
     (credit) => credit.type_dossier === "Entreprise"
   );
-  console.log(" onlyRejeter : ", onlyEntrepriseRejeter);
-  console.log(" onlyValider : ", onlyEntrepriseValider);
   return (
     <div className="min-h-screen">
       <div className="lg:flex  items-center justify-between ">

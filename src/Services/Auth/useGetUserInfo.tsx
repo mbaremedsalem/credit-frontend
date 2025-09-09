@@ -18,12 +18,9 @@ export type UserInfo = {
 async function getMe():Promise<UserInfo>{
     try{
         const res = await api.get("auth/me/")
-    console.log("res : ", res)
     return res.data
     }catch(error:any){
         if(error.response){
-            console.log("error : ",error.response?.data?.detail)
-            console.log("response :", error?.response?.status)
             
         }
         throw error

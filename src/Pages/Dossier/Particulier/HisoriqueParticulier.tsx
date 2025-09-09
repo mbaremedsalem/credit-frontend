@@ -225,7 +225,6 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
 
             let Icon = null;
             let statutColor = "text-gray-500";
-            console.log("status ,", status);
             if (status === "Créé") {
               Icon = <IoMdCreate size={24} className="text-black" />;
               statutColor = "text-gray-500";

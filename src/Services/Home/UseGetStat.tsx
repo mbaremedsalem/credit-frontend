@@ -33,7 +33,6 @@ async function getStats(): Promise<Stats> {
       headers: { "Content-Type": "application/json" },
     }
   );
-  console.log(" response data : ", res.data);
   return res.data;
 }
 export const useGetStats = () => {

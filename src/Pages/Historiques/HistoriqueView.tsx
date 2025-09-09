@@ -8,7 +8,6 @@ import HistoriqueParticulier from "./Particulier/HistoriqueParticulier";
 export default function HistoriqueView() {
   const [active, setActive] = useState("1")
   const onChange = (key: string) => {
-    console.log("Tab sélectionné:", key);
     setActive(key)
   };
 

@@ -20,21 +20,19 @@ function DemandesEntreprise() {
   const [hasSearched, setHasSearched] = useState(false);
 
   const { data: ClientsData, isPending } = useGetEntreprises(valueChercher);
-  console.log("data : ", ClientsData)
   const [openPopupConfirm, setOpenPopupConfirm] = useState<PopconfirmType>({
     open: false,
     client: null,
   });
 
- 
   const funcCLick = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault(); 
-  if(!cherche){
-    return message.error("entrer le numero de client !")
-  }
-  setHasSearched(true);
-  setValuecher(cherche.trim());
-}
+    e.preventDefault();
+    if (!cherche) {
+      return message.error("entrer le numero de client !");
+    }
+    setHasSearched(true);
+    setValuecher(cherche.trim());
+  };
 
   const showModal = (client: EnterpriseType) => {
     setOpenPopupConfirm({ open: true, client });
@@ -44,70 +42,72 @@ function DemandesEntreprise() {
     setOpenPopupConfirm({ open: false, client: null });
   };
 
-   const columns: ColumnsType<EnterpriseType> = [
-  {
-    title: "Numéro Client",
-    dataIndex: "CLIENT",
-    key: "CLIENT",
-  },
-  {
-    title: "Nature de compte",
-    dataIndex: "Nature_de_compte",
-    key: "Nature_de_compte",
-  },
-  {
-    title: "Compte",
-    dataIndex: "COMPTE",
-    key: "COMPTE",
-  },
-  {
-    title: "Agence",
-    dataIndex: "Agence",
-    key: "Agence",
-  },
-  {
-    title: "Raison sociale",
-    dataIndex: "Raison_sociale",
-    key: "Raison_sociale",
-  },
-  {
-    title: "NIF",
-    dataIndex: "NIF",
-    key: "NIF",
-  },
-  {
-    title: "RC",
-    dataIndex: "RC",
-    key: "RC",
-  },
-  {
-    title: "Adresse",
-    dataIndex: "Address",
-    key: "Address",
-  },
-  {
-    title: "Téléphone",
-    dataIndex: "TEL",
-    key: "TEL",
-  },
-  {
+  const columns: ColumnsType<EnterpriseType> = [
+    {
+      title: "Numéro Client",
+      dataIndex: "CLIENT",
+      key: "CLIENT",
+    },
+    {
+      title: "Nature de compte",
+      dataIndex: "Nature_de_compte",
+      key: "Nature_de_compte",
+    },
+    {
+      title: "Compte",
+      dataIndex: "COMPTE",
+      key: "COMPTE",
+    },
+    {
+      title: "Agence",
+      dataIndex: "Agence",
+      key: "Agence",
+    },
+    {
+      title: "Raison sociale",
+      dataIndex: "Raison_sociale",
+      key: "Raison_sociale",
+    },
+    {
+      title: "NIF",
+      dataIndex: "NIF",
+      key: "NIF",
+    },
+    {
+      title: "RC",
+      dataIndex: "RC",
+      key: "RC",
+    },
+    {
+      title: "Adresse",
+      dataIndex: "Address",
+      key: "Address",
+    },
+    {
+      title: "Téléphone",
+      dataIndex: "TEL",
+      key: "TEL",
+    },
+    {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Button className="auth-button w-full" onClick={() => showModal(record)}>
+        <Button
+          className="auth-button w-full"
+          onClick={() => showModal(record)}
+        >
           Ajouter Crédit <IoAddCircleSharp />
         </Button>
       ),
     },
-];
-
+  ];
 
   useEffect(() => {
-  if (cherche.trim() === "") {
-    setHasSearched(false);   
-    setValuecher("");        
-  }
-}, [cherche]);
+    if (cherche.trim() === "") {
+      setHasSearched(false);
+      setValuecher("");
+    }
+  }, [cherche]);
   return (
     <div className="min-h-screen flex flex-col items-center justify-start p-4">
       {/* Input centré */}
@@ -115,28 +115,29 @@ function DemandesEntreprise() {
         <h1 className="text-xl font-bold">Recherche Entreprise</h1>
         <form className="gap-4 space-y-3" onSubmit={funcCLick}>
           <Input
-          value={cherche}
-          onChange={(e) => setcherche(e.target.value)}
-          prefix={<BiSearch />}
-          suffix={<LuCircleUserRound size={20} />}
-          placeholder="Rechercher par numéro client"
-          className="!rounded-xl !h-12 !text-base"
-          type="number"
-        />
-        <Button htmlType="submit"
-         className="auth-button !w-full !h-11">
-          Rechercher
-        </Button>
+            value={cherche}
+            onChange={(e) => setcherche(e.target.value)}
+            prefix={<BiSearch />}
+            suffix={<LuCircleUserRound size={20} />}
+            placeholder="Rechercher par numéro client"
+            className="!rounded-xl !h-12 !text-base"
+            type="number"
+          />
+          <Button htmlType="submit" className="auth-button !w-full !h-11">
+            Rechercher
+          </Button>
         </form>
       </div>
 
       <div className="w-full mt-8 ">
-        {isPending && <SpinnerLoader/>}
+        {isPending && <SpinnerLoader />}
 
         {!isPending && hasSearched && !ClientsData && (
           <div className="flex flex-col items-center justify-center mt-10 text-red-600">
             <BiErrorCircle size={40} />
-            <p className="mt-2 text-lg font-semibold">Aucun client trouvé pour ce numéro.</p>
+            <p className="mt-2 text-lg font-semibold">
+              Aucun client trouvé pour ce numéro.
+            </p>
           </div>
         )}
 
@@ -159,7 +160,7 @@ function DemandesEntreprise() {
         footer={null}
         width={1400}
         closable={false}
-          maskClosable={false}
+        maskClosable={false}
       >
         <AjoutCreditEntreprise
           typeFile={"entreprise"}

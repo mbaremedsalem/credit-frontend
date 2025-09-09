@@ -35,8 +35,6 @@ export type PopconfirmTypeDetails = {
   open: boolean;
 };
 function HistoriqueParticulier() {
- 
-
   const [active, setactive] = useState<number>(0);
 
   const handletoggleChange = (index: number) => {
@@ -46,7 +44,6 @@ function HistoriqueParticulier() {
   const [cherche, setcherche] = useState("");
   const [valueChercher, setValuecher] = useState("");
 
- 
   const funcCLick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!cherche) {
@@ -63,7 +60,6 @@ function HistoriqueParticulier() {
     null,
     null,
   ]);
-  console.log("dates : ", dates[0]);
   const handleDateChange = (values: any, dateStrings: [string, string]) => {
     console.log(values);
     setDates(dateStrings);
@@ -79,7 +75,6 @@ function HistoriqueParticulier() {
   const onlyRejeter = LigneDaTa?.filter(
     (credit) => credit?.status === "REJETÉ"
   );
-
 
   const [openPopupConfirmDetails, setopenPopupConfirmDetails] =
     useState<PopconfirmTypeDetails>({
@@ -104,7 +99,6 @@ function HistoriqueParticulier() {
 
   const [motiv, setMotiv] = useState("");
 
-  console.log("dates : ", dates);
   const handlecancelDetails = () => {
     setopenPopupConfirmDetails({
       open: false,
@@ -136,13 +130,9 @@ function HistoriqueParticulier() {
     setopenPopupConfirmHistorique({ ligne: ligne, open: true });
   };
 
-  
-
   const SelectMotiv = (value: string) => {
     setMotiv(value);
   };
-
-
 
   const columnsLigne: ColumnsType<LigneCredit> = [
     {
@@ -171,8 +161,11 @@ function HistoriqueParticulier() {
       render: (_, record) => {
         return (
           // <span>{record?.client?.credits?.[0]?.montant.toLocaleString()}</span>
-          <span>{new Intl.NumberFormat('fr-FR').format(Number(record?.client?.credits?.[0]?.montant?.toLocaleString()))}</span>
-
+          <span>
+            {new Intl.NumberFormat("fr-FR").format(
+              Number(record?.client?.credits?.[0]?.montant?.toLocaleString())
+            )}
+          </span>
         );
       },
     },
@@ -275,15 +268,18 @@ function HistoriqueParticulier() {
   const onlyPaticulierRejeter = onlyRejeter?.filter(
     (credit) => credit.type_dossier === "Particulier"
   );
-  console.log(" onlyRejeter : ", onlyPaticulierRejeter)
-  console.log(" onlyValider : ", onlyPaticulierValider)
   return (
     <div className="min-h-screen">
       <div className="lg:flex  items-center justify-between ">
         <div className="flex flex-col ">
-          <span className="text-[18px] font-bold">Historiques Particuliers</span>
+          <span className="text-[18px] font-bold">
+            Historiques Particuliers
+          </span>
           <span className="text-[13px] ">
-            {active === 0 ? onlyPaticulierValider?.length! : onlyPaticulierRejeter?.length!} Historique Crédit {active === 0 ? "Validé" : "Rejeté"}
+            {active === 0
+              ? onlyPaticulierValider?.length!
+              : onlyPaticulierRejeter?.length!}{" "}
+            Historique Crédit {active === 0 ? "Validé" : "Rejeté"}
             {/* {Number(onlyPaticulierValider?.length!) + Number(onlyPaticulierRejeter?.length!)} Historique Crédit */}
           </span>
         </div>
@@ -296,7 +292,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={1300}
             closeIcon={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <DetailsHistoriquePaticulier
               closeSecondModal={handlecancelDetails!}
@@ -311,7 +307,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={900}
             closeIcon={false}
-              maskClosable={false}
+            maskClosable={false}
           >
             <HistoriqueHistoriqueParticulier
               onClose={handlecancelHistorique}
@@ -326,7 +322,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={375}
             closeIcon={false}
-                maskClosable={false}
+            maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">
@@ -345,9 +341,7 @@ function HistoriqueParticulier() {
                 >
                   No, Annuler
                 </Button>
-                <Button
-                  className="w-[153.8px] h-[50.6px] mt-2 primary-button"
-                >
+                <Button className="w-[153.8px] h-[50.6px] mt-2 primary-button">
                   Oui, Valider
                 </Button>
               </div>
@@ -362,8 +356,7 @@ function HistoriqueParticulier() {
             footer={null}
             width={375}
             closeIcon={false}
-              maskClosable={false}
-
+            maskClosable={false}
           >
             <div className="flex flex-col items-center space-y-3 ">
               <div className="flex items-center justify-center space-x-3">
@@ -374,67 +367,56 @@ function HistoriqueParticulier() {
               <label>Motif</label>
               <Select
                 className="w-full h-[42px]"
-                // options={[
-                //   {
-                //     label: "Dossier incomplete",
-                //     value: "Dossier incomplete",
-                //   },
-                //   {
-                //     label: "Dossier No Conform",
-                //     value: "Dossier No Conform",
-                //   },
-                // ]}
-
                 options={[
-  {
-    label: "Dossier incomplet",
-    value: "Dossier incomplet",
-  },
-  {
-    label: "Dossier non conforme",
-    value: "Dossier non conforme",
-  },
-  {
-    label: "Capacité de remboursement insuffisante",
-    value: "Capacité de remboursement insuffisante",
-  },
-  {
-    label: "Historique de crédit défavorable",
-    value: "Historique de crédit défavorable",
-  },
-  {
-    label: "Endettement trop élevé",
-    value: "Endettement trop élevé",
-  },
-  {
-    label: "Revenus instables ou insuffisants",
-    value: "Revenus instables ou insuffisants",
-  },
-  {
-    label: "Garanties insuffisantes",
-    value: "Garanties insuffisantes",
-  },
-  {
-    label: "Secteur d'activité à risque",
-    value: "Secteur d'activité à risque",
-  },
-  {
-    label: "Ancienneté professionnelle insuffisante",
-    value: "Ancienneté professionnelle insuffisante",
-  },
-  {
-    label: "Montant demandé trop important",
-    value: "Montant demandé trop important",
-  },
-  {
-    label: "Durée de remboursement inadaptée",
-    value: "Durée de remboursement inadaptée",
-  },
-  {
-    label: "Autre motif (préciser)",
-    value: "Autre motif",
-  }
-]}
+                  {
+                    label: "Dossier incomplet",
+                    value: "Dossier incomplet",
+                  },
+                  {
+                    label: "Dossier non conforme",
+                    value: "Dossier non conforme",
+                  },
+                  {
+                    label: "Capacité de remboursement insuffisante",
+                    value: "Capacité de remboursement insuffisante",
+                  },
+                  {
+                    label: "Historique de crédit défavorable",
+                    value: "Historique de crédit défavorable",
+                  },
+                  {
+                    label: "Endettement trop élevé",
+                    value: "Endettement trop élevé",
+                  },
+                  {
+                    label: "Revenus instables ou insuffisants",
+                    value: "Revenus instables ou insuffisants",
+                  },
+                  {
+                    label: "Garanties insuffisantes",
+                    value: "Garanties insuffisantes",
+                  },
+                  {
+                    label: "Secteur d'activité à risque",
+                    value: "Secteur d'activité à risque",
+                  },
+                  {
+                    label: "Ancienneté professionnelle insuffisante",
+                    value: "Ancienneté professionnelle insuffisante",
+                  },
+                  {
+                    label: "Montant demandé trop important",
+                    value: "Montant demandé trop important",
+                  },
+                  {
+                    label: "Durée de remboursement inadaptée",
+                    value: "Durée de remboursement inadaptée",
+                  },
+                  {
+                    label: "Autre motif (préciser)",
+                    value: "Autre motif",
+                  },
+                ]}
                 value={motiv}
                 onChange={SelectMotiv}
                 placeholder="motif"
@@ -450,9 +432,7 @@ function HistoriqueParticulier() {
                 >
                   No, Annuler
                 </Button>
-                <Button
-                  className="w-[153.8px] h-[50.6px] mt-2 primary-button"
-                >
+                <Button className="w-[153.8px] h-[50.6px] mt-2 primary-button">
                   Oui, Réjeter
                 </Button>
               </div>
@@ -471,23 +451,23 @@ function HistoriqueParticulier() {
       {active === 0 ? (
         <>
           <div className="flex items-center max-lg:flex-col justify-center space-x-2 mt-2">
-         <form className="space-x-2 flex" onSubmit={funcCLick}>
-          <Input
-            type="number"
-            value={cherche ?? ""}
-            onChange={(e) => setcherche(e.target.value)}
-            prefix={(<BiSearch />) as unknown as string}
-            suffix={(<LuCircleUserRound size={20} />) as unknown as string}
-            placeholder={"Rechercher par numéro client"}
-            className="custom- lg:!w-[350px] max-lg:!w-full !h-[46px] flex !rounded-[10px]"
-          />
-          <Button
-            className=" !w-[150px] !h-[46px] text-[13px] auth-button "
-            htmlType="submit"
-          >
-            Rechercher
-          </Button>
-        </form>
+            <form className="space-x-2 flex" onSubmit={funcCLick}>
+              <Input
+                type="number"
+                value={cherche ?? ""}
+                onChange={(e) => setcherche(e.target.value)}
+                prefix={(<BiSearch />) as unknown as string}
+                suffix={(<LuCircleUserRound size={20} />) as unknown as string}
+                placeholder={"Rechercher par numéro client"}
+                className="custom- lg:!w-[350px] max-lg:!w-full !h-[46px] flex !rounded-[10px]"
+              />
+              <Button
+                className=" !w-[150px] !h-[46px] text-[13px] auth-button "
+                htmlType="submit"
+              >
+                Rechercher
+              </Button>
+            </form>
 
             <RangePicker
               className="w-[350px] max-lg:w-[100px] border border-[#e7e7e7] rounded-[10px] h-[46px] "
@@ -497,7 +477,6 @@ function HistoriqueParticulier() {
           </div>
           <div className="!max-w-full mt-4 md:!max-w-full overflow-x-auto">
             {(onlyPaticulierValider?.length ?? 0) > 0 ? (
-              
               <Table<LigneCredit>
                 dataSource={onlyPaticulierValider}
                 columns={columnsLigne}
@@ -521,22 +500,22 @@ function HistoriqueParticulier() {
         <>
           <div className="flex items-center max-lg:flex-col justify-center space-x-2 mt-2">
             <form className="space-x-2 flex" onSubmit={funcCLick}>
-          <Input
-            type="number"
-            value={cherche ?? ""}
-            onChange={(e) => setcherche(e.target.value)}
-            prefix={(<BiSearch />) as unknown as string}
-            suffix={(<LuCircleUserRound size={20} />) as unknown as string}
-            placeholder={"Rechercher par numéro client"}
-            className="custom- lg:!w-[350px] max-lg:!w-full !h-[46px] flex !rounded-[10px]"
-          />
-          <Button
-            className=" !w-[150px] !h-[46px] text-[13px] auth-button "
-            htmlType="submit"
-          >
-            Rechercher
-          </Button>
-        </form>
+              <Input
+                type="number"
+                value={cherche ?? ""}
+                onChange={(e) => setcherche(e.target.value)}
+                prefix={(<BiSearch />) as unknown as string}
+                suffix={(<LuCircleUserRound size={20} />) as unknown as string}
+                placeholder={"Rechercher par numéro client"}
+                className="custom- lg:!w-[350px] max-lg:!w-full !h-[46px] flex !rounded-[10px]"
+              />
+              <Button
+                className=" !w-[150px] !h-[46px] text-[13px] auth-button "
+                htmlType="submit"
+              >
+                Rechercher
+              </Button>
+            </form>
 
             <RangePicker
               className="w-[350px] max-lg:w-[100px] border border-[#e7e7e7] rounded-[10px] h-[46px] "
@@ -559,7 +538,7 @@ function HistoriqueParticulier() {
               <div className="col-span-full flex flex-col items-center justify-center min-h-[300px] text-center">
                 <HiOutlineInbox className="text-5xl text-main-color mb-4 rotate-45" />
                 <p className="text-lg text-gray-500">
-                  Aucune  crédit particulier Rejeté à afficher
+                  Aucune crédit particulier Rejeté à afficher
                 </p>
               </div>
             )}
