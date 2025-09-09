@@ -49,6 +49,7 @@ import {
   FaUpload,
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
+import { useGetTypeDocument } from "../../../Services/Demandes/useGetListTypeDocument";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -77,6 +78,8 @@ function EntrepriseCreditView() {
   const [loading, setLoading] = useState(false);
   const [textContent, setTextContent] = useState<string>("");
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
+  const [selectTypeDocument, setSelectTypeDocument] = useState("");
+
   const [previewVisibleMourbaha, setPreviewVisibleMourabaha] =
     useState<boolean>(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -119,8 +122,6 @@ function EntrepriseCreditView() {
       open: false,
       ligne: null,
     });
-
-  const [motiv, setMotiv] = useState("");
 
   const [filtreStatus, setFiltreStatus] = useState<string>("all");
 
@@ -311,6 +312,8 @@ function EntrepriseCreditView() {
       open: false,
       ligne: null,
     });
+    setSelectAutre("");
+    setSelectTypeDocument("");
   };
   const showModalDetails = (ligne: LigneCredit) => {
     setopenPopupConfirmDetails({ ligne: ligne, open: true });
@@ -328,6 +331,10 @@ function EntrepriseCreditView() {
   const showModalRejeter = (ligne: LigneCredit) => {
     setopenPopupConfirmRejeter({ ligne: ligne, open: true });
   };
+
+  const selectDocument = (value: string) => {
+    setSelectTypeDocument(value);
+  };
   const onlyEnattente = isCommercial?.filter(
     (ligne) => ligne.status === "EN_COURS"
   );
@@ -336,6 +343,17 @@ function EntrepriseCreditView() {
     (credit) => credit.type_dossier === "Entreprise"
   );
 
+  // const {data:DateDocument, isPending:isPendingType} = useGetTypeDocument("particulier")
+
+  // const PartiCiluerDocument = DateDocument?.
+  const { data: DateDocument, isPending: isPendingType } =
+    useGetTypeDocument("entreprise");
+
+  const PartiCiluerDocument =
+    DateDocument?.map((credit) => ({
+      label: credit.nom, // Ce qui sera affiché
+      value: credit.nom, // La valeur associée
+    })) || [];
   const lignesFiltrees = filtrerLignesCredit(onlyPaticulier);
 
   const handleValiderLigne = () => {
@@ -399,17 +417,19 @@ function EntrepriseCreditView() {
     });
   };
 
-  const SelectMotiv = (value: string) => {
-    setMotiv(value);
-  };
+  // const SelectMotiv = (value: string) => {
+  //   setMotiv(value);
+  // };
 
   const handleRejeterLigne = () => {
-    if (!motiv) {
-      return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
+    if (!selectTypeDocument) {
+      return enqueueSnackbar("Veuillez Selectionner le motif ! ", {
         variant: "error",
       });
-    } else if (motiv === "Autre" && !selectAutre) {
-      return message.error("Veuillez saisir le motif de rejet !");
+    } else if (!selectAutre) {
+      return enqueueSnackbar("Veuillez saisir le motif de rejet !", {
+        variant: "error",
+      });
     }
     setLoading(true);
     setTimeout(() => {
@@ -417,11 +437,13 @@ function EntrepriseCreditView() {
       const params: RejeterLigne = {
         id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
         user_id: Number(idUserConnect)!,
-        motif: motiv === "Autre" ? selectAutre : motiv,
+        // motif: motiv === "Autre" ? selectAutre : motiv,
+        motif: selectTypeDocument + " |=> " + selectAutre,
+        // selectAutre  + selectTypeDocument
       };
+      console.log("params : ", params)
       rejeterligne(params, {
         onSuccess: () => {
-          setMotiv("");
           handlecancelRejeter();
           setAvis("");
           setmemoType("");
@@ -1524,14 +1546,17 @@ function EntrepriseCreditView() {
             closeIcon={false}
             maskClosable={false}
           >
-            <div className="flex flex-col items-center space-y-3 ">
-              <div className="flex items-center justify-center space-x-3">
-                <h1 className="text-xl font-bold text-gray-800">Rejeter</h1>
-                <MdCancel size={32} className="text-red-500" />
-              </div>
+            {isPendingType ? (
+              <SpinnerLoader />
+            ) : (
+              <div className="flex flex-col items-center space-y-3 ">
+                <div className="flex items-center justify-center space-x-3">
+                  <h1 className="text-xl font-bold text-gray-800">Rejeter</h1>
+                  <MdCancel size={32} className="text-red-500" />
+                </div>
 
-              <label>Motif</label>
-              <Select
+                <label>Motif</label>
+                {/* <Select
                 className="w-full h-[42px]"
                 options={[
                   {
@@ -1586,8 +1611,14 @@ function EntrepriseCreditView() {
                 value={motiv}
                 onChange={SelectMotiv}
                 placeholder="motif"
-              />
-              {motiv === "Autre" && (
+              /> */}
+                <Select
+                  className="w-full h-[42px]"
+                  options={PartiCiluerDocument}
+                  value={selectTypeDocument}
+                  onChange={selectDocument}
+                  placeholder="Select Document"
+                />
                 <label>
                   Motif de Rejet
                   <Input
@@ -1595,27 +1626,27 @@ function EntrepriseCreditView() {
                     onChange={(e) => setSelectAutre(e.target.value)}
                   />
                 </label>
-              )}
 
-              <p className=" my-2 text-[15px] text-center">
-                Êtes-vous sûr de vouloir réjeter ce ligne ?
-              </p>
-              <div className="flex items-center justify-end gap-x-2">
-                <Button
-                  className="w-[143px] h-[50.6px]   mt-2 secondary-button"
-                  onClick={handlecancelRejeter}
-                >
-                  Annuler
-                </Button>
-                <Button
-                  className="w-[153.8px] h-[50.6px] mt-2 primary-button"
-                  loading={isPendigRejeter}
-                  onClick={handleRejeterLigne}
-                >
-                  Réjeter
-                </Button>
+                <p className=" my-2 text-[15px] text-center">
+                  Êtes-vous sûr de vouloir réjeter ce ligne ?
+                </p>
+                <div className="flex items-center justify-end gap-x-2">
+                  <Button
+                    className="w-[143px] h-[50.6px]   mt-2 secondary-button"
+                    onClick={handlecancelRejeter}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    className="w-[153.8px] h-[50.6px] mt-2 primary-button"
+                    loading={isPendigRejeter}
+                    onClick={handleRejeterLigne}
+                  >
+                    Réjeter
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </Modal>
           {loading && <SpinnerLoader />}
         </div>

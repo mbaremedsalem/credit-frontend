@@ -100,7 +100,8 @@ function ParticulierCreditView() {
       ligne: null,
     });
 
-  const [motiv, setMotiv] = useState("");
+  // const [motiv, setMotiv] = useState("");
+  // const [selectTypeDocument, setSelectTypeDocument] = useState("");
 
   const [dates, setDates] = useState<[string | null, string | null]>([
     null,
@@ -200,8 +201,17 @@ function ParticulierCreditView() {
     dates[0]!,
     dates[1]!
   );
-    // const {data:DateDocument, isPending:isPendingType} = useGetTypeDocument(type)
-  
+  // const {data:DateDocument, isPending:isPendingType} = useGetTypeDocument("particulier")
+
+  // const PartiCiluerDocument = DateDocument?.
+
+  //  const PartiCiluerDocument =
+  //   DateDocument?.map((credit) => ({
+  //     label: credit.nom, // Ce qui sera affiché
+  //     value: credit.nom, // La valeur associée
+  //   })) || [];
+
+
   const agenceConnect = AuthService.getAGENCEUserConnect();
 
   const isCommercial =
@@ -411,16 +421,19 @@ function ParticulierCreditView() {
     });
   };
 
-  const SelectMotiv = (value: string) => {
-    setMotiv(value);
-  };
-
+//   const SelectMotiv = (value: string) => {
+//     setMotiv(value);
+//   };
+//  const selectDocument = (value: string) => {
+//     setSelectTypeDocument(value);
+//   };
   const handleRejeterLigne = () => {
-    if (!motiv) {
-      return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
-        variant: "error",
-      });
-    } else if (motiv === "Autre" && !selectAutre) {
+    // if (!motiv) {
+    //   return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
+    //     variant: "error",
+    //   });
+    // }
+     if (!selectAutre) {
       return message.error("Veuillez saisir le motif de rejet !");
     }
     setLoading(true);
@@ -430,11 +443,12 @@ function ParticulierCreditView() {
         id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
         user_id: Number(idUserConnect)!,
         // motif: motiv,
-        motif: motiv === "Autre" ? selectAutre : motiv,
+        // motif: motiv === "Autre" ? selectAutre : motiv,
+        motif: selectAutre
       };
       rejeterligne(params, {
         onSuccess: () => {
-          setMotiv("");
+          // setMotiv("");
           handlecancelRejeter();
           setAvis("");
           setmemoType("");
@@ -1558,7 +1572,7 @@ function ParticulierCreditView() {
                 <MdCancel size={32} className="text-red-500" />
               </div>
 
-              <label>Motif</label>
+              {/* <label>Motif</label>
               <Select
                 className="w-full h-[42px]"
                 options={[
@@ -1570,42 +1584,42 @@ function ParticulierCreditView() {
                     label: "Dossier non conforme",
                     value: "Dossier non conforme",
                   },
-                  {
-                    label: "Capacité de remboursement insuffisante",
-                    value: "Capacité de remboursement insuffisante",
-                  },
-                  {
-                    label: "Historique de crédit défavorable",
-                    value: "Historique de crédit défavorable",
-                  },
-                  {
-                    label: "Endettement trop élevé",
-                    value: "Endettement trop élevé",
-                  },
-                  {
-                    label: "Revenus instables ou insuffisants",
-                    value: "Revenus instables ou insuffisants",
-                  },
-                  {
-                    label: "Garanties insuffisantes",
-                    value: "Garanties insuffisantes",
-                  },
-                  {
-                    label: "Secteur d'activité à risque",
-                    value: "Secteur d'activité à risque",
-                  },
-                  {
-                    label: "Ancienneté professionnelle insuffisante",
-                    value: "Ancienneté professionnelle insuffisante",
-                  },
-                  {
-                    label: "Montant demandé trop important",
-                    value: "Montant demandé trop important",
-                  },
-                  {
-                    label: "Durée de remboursement inadaptée",
-                    value: "Durée de remboursement inadaptée",
-                  },
+                  // {
+                  //   label: "Capacité de remboursement insuffisante",
+                  //   value: "Capacité de remboursement insuffisante",
+                  // },
+                  // {
+                  //   label: "Historique de crédit défavorable",
+                  //   value: "Historique de crédit défavorable",
+                  // },
+                  // {
+                  //   label: "Endettement trop élevé",
+                  //   value: "Endettement trop élevé",
+                  // },
+                  // {
+                  //   label: "Revenus instables ou insuffisants",
+                  //   value: "Revenus instables ou insuffisants",
+                  // },
+                  // {
+                  //   label: "Garanties insuffisantes",
+                  //   value: "Garanties insuffisantes",
+                  // },
+                  // {
+                  //   label: "Secteur d'activité à risque",
+                  //   value: "Secteur d'activité à risque",
+                  // },
+                  // {
+                  //   label: "Ancienneté professionnelle insuffisante",
+                  //   value: "Ancienneté professionnelle insuffisante",
+                  // },
+                  // {
+                  //   label: "Montant demandé trop important",
+                  //   value: "Montant demandé trop important",
+                  // },
+                  // {
+                  //   label: "Durée de remboursement inadaptée",
+                  //   value: "Durée de remboursement inadaptée",
+                  // },
                   {
                     label: "Autre motif (préciser)",
                     value: "Autre",
@@ -1615,7 +1629,18 @@ function ParticulierCreditView() {
                 onChange={SelectMotiv}
                 placeholder="motif"
               />
-              {motiv === "Autre" && (
+              { motiv&& <><label>Document</label>
+
+                 <Select
+                className="w-full h-[42px]"
+                options={PartiCiluerDocument}
+                value={selectTypeDocument}
+                onChange={selectDocument}
+                placeholder="Select Document"
+              /></>}
+               */}
+
+           
                 <label>
                   Motif de Rejet
                   <Input
@@ -1623,7 +1648,7 @@ function ParticulierCreditView() {
                     onChange={(e) => setSelectAutre(e.target.value)}
                   />
                 </label>
-              )}
+           
               <p className=" my-2 text-[15px] text-center">
                 Êtes-vous sûr de vouloir réjeter ce ligne ?
               </p>
