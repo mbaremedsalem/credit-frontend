@@ -33,11 +33,16 @@ type props = {
   closeFirstModal?: () => void;
 };
 const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
-  const [isExpandedAvis, setIsExpandedAvis] = useState(false);
-  const [isExpandedMemo, setIsExpandedMemo] = useState(false);
+  const useTextExpansion = (defaultExpanded = false) => {
+    const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
-  const handleToggleAvis = () => setIsExpandedAvis(!isExpandedAvis);
-  const handleToggleMemo = () => setIsExpandedMemo(!isExpandedMemo);
+    const toggle = () => setIsExpanded(!isExpanded);
+
+    return { isExpanded, toggle };
+  };
+
+  const { isExpanded: isAvisExpanded, toggle: toggleAvis } = useTextExpansion();
+  const { isExpanded: isMemoExpanded, toggle: toggleMemo } = useTextExpansion();
 
   const truncateText = (text: string, limit: number) => {
     if (text.length <= limit) return text;
@@ -133,7 +138,7 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
     },
   ];
 
-    const docsRisque = ligne?.documents
+  const docsRisque = ligne?.documents
     ? ligne?.documents?.filter(
         (doc) =>
           doc.createur?.post === "Analyse de Risque" ||
@@ -175,7 +180,9 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
       <div className="flex items-center justify-center space-x-3">
-        <h1 className="text-3xl font-bold text-gray-800">Details Crédit Entreprise</h1>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Details Crédit Entreprise
+        </h1>
         <TbListDetails size={28} />
       </div>
 
@@ -194,8 +201,7 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
             <span className="font-medium">Nom :</span> {ligne?.client?.nom}
           </div>
           <div>
-            <span className="font-medium">NIF :</span>{" "}
-            {ligne?.client?.NIF}
+            <span className="font-medium">NIF :</span> {ligne?.client?.NIF}
           </div>
           <div>
             <span className="font-medium">Telephone :</span>{" "}
@@ -205,7 +211,6 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
             <span className="font-medium">Address :</span>{" "}
             {ligne?.client?.Address}
           </div>
-         
         </div>
       </div>
 
@@ -236,23 +241,26 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
             <div>
               <span className="font-medium">Avis :</span>
               <p className="text-gray-700">
-                {isExpandedAvis ? ligne.avis : truncateText(ligne.avis, 150)}
-                <button
-                  className="text-blue-500 ml-2 inline-flex items-center"
-                  onClick={handleToggleAvis}
-                >
-                  {isExpandedAvis && ligne.avis.length >= 250 ? (
-                    <>
-                      Voir moins
-                      <ChevronUpIcon className="h-4 w-4 ml-1" />
-                    </>
-                  ) : ligne.avis.length >= 350 ? (
-                    <>
-                      Voir plus
-                      <ChevronDownIcon className="h-4 w-4 ml-1" />
-                    </>
-                  ) : null}
-                </button>
+                {isAvisExpanded ? ligne.avis : truncateText(ligne.avis, 200)}
+                {ligne.avis.length > 200 && (
+                  <button
+                    className="text-blue-500 ml-2 inline-flex items-center hover:text-blue-700 transition-colors"
+                    onClick={toggleAvis}
+                    aria-expanded={isAvisExpanded}
+                  >
+                    {isAvisExpanded ? (
+                      <>
+                        Voir moins
+                        <ChevronUpIcon className="h-4 w-4 ml-1" />
+                      </>
+                    ) : (
+                      <>
+                        Voir plus
+                        <ChevronDownIcon className="h-4 w-4 ml-1" />
+                      </>
+                    )}
+                  </button>
+                )}
               </p>
             </div>
           )}
@@ -261,12 +269,12 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
             <div>
               <span className="font-medium">Mémo :</span>
               <p className="text-gray-700">
-                {isExpandedMemo ? ligne.memo : truncateText(ligne.memo, 150)}
+                {isMemoExpanded ? ligne.memo : truncateText(ligne.memo, 200)}
                 <button
                   className="text-blue-500 ml-2 inline-flex items-center"
-                  onClick={handleToggleMemo}
+                  onClick={toggleMemo}
                 >
-                  {isExpandedMemo && ligne.memo.length >= 250 ? (
+                  {isMemoExpanded && ligne.memo.length >= 250 ? (
                     <>
                       Voir moins
                       <ChevronUpIcon className="h-4 w-4 ml-1" />
@@ -291,157 +299,176 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
         <hr />
       </div>
 
-    <div className="space-y-4">
-  <div className="flex items-center space-x-2 text-gray-700">
-    <FaFileImport size={23} />
-    <span className="text-lg font-semibold">
-      Informations sur les Importations
-    </span>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-    {docsNormaux.map((fileObj) => (
-      <div key={fileObj.id} className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{getFileIcon(fileObj.fichier)}</div>
-          <div className="flex-1 truncate font-medium text-gray-800 text-[13px]">
-            {fileObj.fichier.split("/").pop()}
-          </div>
-          <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
-            <div className="cursor-pointer">
-              <DotIcon />
-            </div>
-          </Dropdown>
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">
+            Informations sur les Importations
+          </span>
         </div>
 
-        <div className="text-xs text-gray-500 pl-1 space-y-1">
-          <div>
-            <span className="font-medium text-gray-600">Type : </span>
-            {fileObj.type_document}
-          </div>
-       <div>
-  <span className="font-medium text-gray-600">Ajouté le : </span>
-  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-      second: "2-digit",
-  })}
-</div>
-          <div>
-            <span className="font-medium text-gray-600">Créé par : </span>
-           {fileObj.createur.post} {fileObj.createur.prenom} {fileObj.createur.nom} 
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+          {docsNormaux.map((fileObj) => (
+            <div
+              key={fileObj.id}
+              className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl text-blue-600">
+                  {getFileIcon(fileObj.fichier)}
+                </div>
+                <div className="flex-1 truncate font-medium text-gray-800 text-[13px]">
+                  {fileObj.fichier.split("/").pop()}
+                </div>
+                <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                  <div className="cursor-pointer">
+                    <DotIcon />
+                  </div>
+                </Dropdown>
+              </div>
+
+              <div className="text-xs text-gray-500 pl-1 space-y-1">
+                <div>
+                  <span className="font-medium text-gray-600">Type : </span>
+                  {fileObj.type_document}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Ajouté le :{" "}
+                  </span>
+                  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Créé par : </span>
+                  {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                  {fileObj.createur.nom}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
-<div className="space-y-4">
-  <div className="flex items-center space-x-2 text-gray-700">
-    <FaFileImport size={23} />
-    <span className="text-lg font-semibold">
-      Informations sur les Importations de Risque
-    </span>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-    {docsRisque.map((fileObj) => (
-      <div key={fileObj.id} className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{getFileIcon(fileObj.fichier)}</div>
-          <div className="flex-1 truncate font-medium text-gray-800">
-            {fileObj.fichier.split("/").pop()}
-          </div>
-          <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
-            <div className="cursor-pointer">
-              <DotIcon />
-            </div>
-          </Dropdown>
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">
+            Informations sur les Importations de Risque
+          </span>
         </div>
 
-        <div className="text-xs text-gray-500 pl-1 space-y-1">
-          <div>
-            <span className="font-medium text-gray-600">Type : </span>
-            {fileObj.type_document}
-          </div>
-       <div>
-  <span className="font-medium text-gray-600">Ajouté le : </span>
-  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  })}
-</div>
-          <div>
-            <span className="font-medium text-gray-600">Créé par : </span>
-          {fileObj.createur.post}  {fileObj.createur.prenom} {fileObj.createur.nom} 
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+          {docsRisque.map((fileObj) => (
+            <div
+              key={fileObj.id}
+              className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl text-blue-600">
+                  {getFileIcon(fileObj.fichier)}
+                </div>
+                <div className="flex-1 truncate font-medium text-gray-800">
+                  {fileObj.fichier.split("/").pop()}
+                </div>
+                <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                  <div className="cursor-pointer">
+                    <DotIcon />
+                  </div>
+                </Dropdown>
+              </div>
+
+              <div className="text-xs text-gray-500 pl-1 space-y-1">
+                <div>
+                  <span className="font-medium text-gray-600">Type : </span>
+                  {fileObj.type_document}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Ajouté le :{" "}
+                  </span>
+                  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Créé par : </span>
+                  {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                  {fileObj.createur.nom}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
-<div className="space-y-4">
-  <div className="flex items-center space-x-2 text-gray-700">
-    <FaFileImport size={23} />
-    <span className="text-lg font-semibold">
-    Table d'amortissement
-    </span>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-    {docsAMortissement.map((fileObj) => (
-      <div key={fileObj.id} className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{getFileIcon(fileObj.fichier)}</div>
-          <div className="flex-1 truncate font-medium text-gray-800">
-            {fileObj.fichier.split("/").pop()}
-          </div>
-          <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
-            <div className="cursor-pointer">
-              <DotIcon />
-            </div>
-          </Dropdown>
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">Table d'amortissement</span>
         </div>
 
-        <div className="text-xs text-gray-500 pl-1 space-y-1">
-          <div>
-            <span className="font-medium text-gray-600">Type : </span>
-            {fileObj.type_document}
-          </div>
-       <div>
-  <span className="font-medium text-gray-600">Ajouté le : </span>
-  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  })}
-</div>
-          <div>
-            <span className="font-medium text-gray-600">Créé par : </span>
-          {fileObj.createur.post}  {fileObj.createur.prenom} {fileObj.createur.nom} 
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
+          {docsAMortissement.map((fileObj) => (
+            <div
+              key={fileObj.id}
+              className="bg-white rounded-xl shadow p-4 space-y-2 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="text-2xl text-blue-600">
+                  {getFileIcon(fileObj.fichier)}
+                </div>
+                <div className="flex-1 truncate font-medium text-gray-800">
+                  {fileObj.fichier.split("/").pop()}
+                </div>
+                <Dropdown menu={{ items: generateItems(fileObj.fichier) }}>
+                  <div className="cursor-pointer">
+                    <DotIcon />
+                  </div>
+                </Dropdown>
+              </div>
+
+              <div className="text-xs text-gray-500 pl-1 space-y-1">
+                <div>
+                  <span className="font-medium text-gray-600">Type : </span>
+                  {fileObj.type_document}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">
+                    Ajouté le :{" "}
+                  </span>
+                  {new Date(fileObj.date_creation).toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Créé par : </span>
+                  {fileObj.createur.post} {fileObj.createur.prenom}{" "}
+                  {fileObj.createur.nom}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
-   {docsMourabaha && (
+      {docsMourabaha && (
         <div className="space-y-4">
           <div className="flex items-center space-x-2 text-gray-700">
             <FaFileImport size={23} />
