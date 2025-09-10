@@ -179,9 +179,11 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
             {HistoriqueData.credit.points_valides === 2
               ? // ? "Cheff Agence"
                 "Chef agence central"
-              // : HistoriqueData.credit.points_valides === 6 && isMourabahaType("")
+              // : HistoriqueData.credit.points_valides === 6 && !isMourabahaType(HistoriqueData?.credit?.type_credit)
               : HistoriqueData.credit.points_valides === 6
               ? "Chef de département commercial"
+              // : HistoriqueData.credit.points_valides === 6 && isMourabahaType(HistoriqueData?.credit?.type_credit)
+              // ? "Directeur de département Islamique"
               : HistoriqueData.credit.points_valides === 12
               ? "L'Analyse de risque"
               : HistoriqueData.credit.points_valides === 24

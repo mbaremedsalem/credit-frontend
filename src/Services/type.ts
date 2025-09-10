@@ -135,6 +135,7 @@ export type CreditData = {
       motif_rejet : string,
       date_rejet:string
       agence:string
+      type_credit : string
     };
     validations: {
       validateur: {

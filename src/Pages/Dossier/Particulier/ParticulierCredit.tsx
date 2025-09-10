@@ -164,6 +164,9 @@ function ParticulierCreditView() {
     setFiltreStatus("a_decider");
   }, [dates]);
 
+  // function isMourabahaType(type:string) {
+//     return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+// }
   const doitPrendreDecision = (ligne: LigneCredit): boolean => {
     const dossierPoints = ligne.points_valides ?? 0;
     const dossierStatus = ligne.status;
@@ -176,35 +179,26 @@ function ParticulierCreditView() {
     if (role === "Chargé de clientèle" && dossierPoints === 0) return true;
     if (role === "Chargé de clientèle" && dossierPoints === 48) return true;
     if (role === "Chef agence central" && dossierPoints === 2) return true;
-    if (
+    // if (
+    //   role === "Chef de département commercial" &&
+    //   dossierPoints === 6 && !isMourabahaType(typeCredit))
+    //   return true;
+      if (
       role === "Chef de département commercial" &&
-      dossierPoints === 6 &&
-      typeCredit !== "CRDT CT- MOURABAHA" &&
-      typeCredit !== "CRDT MT- MOURABAHA" &&
-      typeCredit !== "CRDT LT- MOURABAHA"
-    )
+      dossierPoints === 6 )
       return true;
+      
     if (role === "Analyse de Risque" && dossierPoints === 12) return true;
     if (role === "Directeur Risque" && dossierPoints === 24) return true;
     if (role === "Directeur Engagement" && dossierPoints === 50) return true;
 
-    // {(openPopupConfirmValider.ligne?.type_credit ===
-    //                   "CRDT CT- MOURABAHA" ||
-    //                   openPopupConfirmValider.ligne?.type_credit ===
-    //                     "CRDT MT- MOURABAHA" ||
-    //                   openPopupConfirmValider.ligne?.type_credit ===
-    //                     "CRDT LT- MOURABAHA") && (
+ 
 
-    //                 )}
-
-    if (
-      role === "Directeur de département Islamique" &&
-      dossierPoints === 6 &&
-      (typeCredit === "CRDT CT- MOURABAHA" ||
-        typeCredit === "CRDT MT- MOURABAHA" ||
-        typeCredit === "CRDT LT- MOURABAHA")
-    )
-      return true;
+    // if (
+    //   role === "Directeur de département Islamique" &&
+    //   dossierPoints === 6 &&
+    //   isMourabahaType(typeCredit))
+    //   return true;
 
     return false;
   };
@@ -384,9 +378,7 @@ function ParticulierCreditView() {
   const showModalRejeter = (ligne: LigneCredit) => {
     setopenPopupConfirmRejeter({ ligne: ligne, open: true });
   };
-function isMourabahaType(type:string) {
-    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
-}
+
   const handleValiderLigne = () => {
     const errors = [];
 
@@ -606,11 +598,13 @@ function isMourabahaType(type:string) {
         } else if (role === "Chef de département commercial") {
           console.log("ici thiam")
 
+
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
-          ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
+          // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
+          ) : record.points_valides === 6 && record.status === "EN_COURS"? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -619,23 +613,26 @@ function isMourabahaType(type:string) {
           ) : (
             ""
           );
-        }  else if (role === "Directeur de département Islamique") {
-          console.log("ici nany : ", !isMourabahaType(record?.type_credit!))
-          console.log("type credit : ", record.type_credit!)
-          return record?.points_valides! > 6 ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-            </Tag>
-          ) : record.points_valides === 6 && record.status === "EN_COURS" &&  isMourabahaType(record?.type_credit!)  ? (
-            <Tag color="orange">En attente de votre décision</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 6 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        } else if (role === "Analyse de Risque") {
+        }  
+        // else if (role === "Directeur de département Islamique") {
+
+        //   console.log("type credit : ", record.type_credit!)
+        //   return record?.points_valides! > 6 ? (
+        //     <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+        //       {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+        //     </Tag>
+        //   ) : record.points_valides === 6 && record.status === "EN_COURS" &&  isMourabahaType(record?.type_credit!)  ? (
+        //   // ) : record.points_valides === 6 && record.status === "EN_COURS"  ? (
+        //     <Tag color="orange">En attente de votre décision</Tag>
+        //   ) : record.status === "REJETÉ" ? (
+        //     <Tag color="red">Déjà Rejeté</Tag>
+        //   ) : record?.points_valides! < 6 ? (
+        //     <Tag color="yellow">En cours d'instruction</Tag>
+        //   ) : (
+        //     ""
+        //   );
+        // }
+         else if (role === "Analyse de Risque") {
           return record?.points_valides! > 12 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
@@ -763,7 +760,8 @@ function isMourabahaType(type:string) {
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
+            // dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
+            dossierPoints === 6 
           ) {
             items.push(
               {
@@ -789,33 +787,34 @@ function isMourabahaType(type:string) {
             );
           }
 
-           if (
-            connectedUser.post === "Directeur de département Islamique" &&
-            dossierPoints === 6 && isMourabahaType(record?.type_credit!)
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Remonter</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "5",
-                onClick: () => showModalValider(record),
-              },
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Réjeter</span>
-                    <MdCancel color="red" size={17} />
-                  </div>
-                ),
-                key: "6",
-                onClick: () => showModalRejeter(record),
-              }
-            );
-          }
+          //  if (
+          //   connectedUser.post === "Directeur de département Islamique" &&
+          //   dossierPoints === 6 && isMourabahaType(record?.type_credit!)
+          //   // dossierPoints === 6  
+          // ) {
+          //   items.push(
+          //     {
+          //       label: (
+          //         <div className="flex items-center justify-between space-x-3">
+          //           <span>Remonter</span>
+          //           <GrValidate color="green" size={17} />
+          //         </div>
+          //       ),
+          //       key: "5",
+          //       onClick: () => showModalValider(record),
+          //     },
+          //     {
+          //       label: (
+          //         <div className="flex items-center justify-between space-x-3">
+          //           <span>Réjeter</span>
+          //           <MdCancel color="red" size={17} />
+          //         </div>
+          //       ),
+          //       key: "6",
+          //       onClick: () => showModalRejeter(record),
+          //     }
+          //   );
+          // }
 
           if (
             connectedUser.post === "Analyse de Risque" &&
