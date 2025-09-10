@@ -44,9 +44,9 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
     }).format(date);
   };
 
-  function isMourabahaType(type:string) {
-    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
-}
+//   function isMourabahaType(type:string) {
+//     return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+// }
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -55,7 +55,7 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
         <h1 className="text-2xl font-bold text-gray-800">Historique Crédit</h1>
       </div>
       <div className="flex items-center space-x-3 mb-2 justify-center">
-        <h1 className="text-lg font-bold text-gray-800">Statut actuel : </h1>
+        <h1 className="text-lg font-bold text-gray-800">Status actuel : </h1>
         <Tag
           color={
             HistoriqueData?.credit?.status === "EN_COURS"
@@ -179,7 +179,8 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
             {HistoriqueData.credit.points_valides === 2
               ? // ? "Cheff Agence"
                 "Chef agence central"
-              : HistoriqueData.credit.points_valides === 6 && isMourabahaType("")
+              // : HistoriqueData.credit.points_valides === 6 && isMourabahaType("")
+              : HistoriqueData.credit.points_valides === 6
               ? "Chef de département commercial"
               : HistoriqueData.credit.points_valides === 12
               ? "L'Analyse de risque"
