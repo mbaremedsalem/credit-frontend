@@ -39,7 +39,6 @@ export const useAddCreditEntreprise = () => {
       formData.append(`type_document`, doc?.type_document);
     });
 
-
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -59,28 +58,30 @@ export const useAddCreditEntreprise = () => {
     },
     onError: (err: any) => {
       const errorMessage = handleError(err);
-      const errorPackage = err?.response?.data?.error;
-      if (errorPackage) {
-        return enqueueSnackbar(errorPackage, { variant: "error" });
+
+      const errorUpload = err?.response?.data?.message
+      // const errorStatusIci = err?.reponse?.data?.status
+
+      console.log("error upload : ", err?.response?.data?.status)
+      
+      if(errorUpload){
+        return enqueueSnackbar(errorUpload, { variant: "error" });
+
       }
-      if (
-        err?.response?.data?.error ===
-        "UNIQUE constraint failed: commite_client.client_code"
-      ) {
-        return enqueueSnackbar("L'utilisateur existe déjà !", {
-          variant: "error",
-        });
-      }
-      if (
-        err?.response?.data?.error ===
-        "['“null” value has an invalid date format. It must be in YYYY-MM-DD format.']"
-      ) {
-        return enqueueSnackbar(
-          "La date d'expiration du carte ou passport client est null dans CoreBanking et doit être ajoutée !",
-          { variant: "error" }
-        );
-      } else {
+      else if(err?.response?.data?.error === "UNIQUE constraint failed: commite_client.client_code") {
+       
+              return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
+      }else  if (err?.response?.data?.error === "['“null” value has an invalid date format. It must be in YYYY-MM-DD format.']") {
+  return enqueueSnackbar(
+    "La date d'expiration du carte ou passport client est null dans CoreBanking et doit être ajoutée !",
+    { variant: "error" }
+  );
+} else if(errorUpload){
+      return enqueueSnackbar(errorUpload, { variant: "error" });
+  // return message.error(errorUpload)
+  }  else  {
         message.error(errorMessage);
+
       }
     },
   });

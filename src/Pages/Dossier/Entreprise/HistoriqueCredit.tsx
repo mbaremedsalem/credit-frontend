@@ -44,6 +44,10 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
     }).format(date);
   };
 
+  function isMourabahaType(type:string) {
+    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+}
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <div className="flex items-center space-x-3 mb-6 justify-center">
@@ -175,7 +179,7 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
             {HistoriqueData.credit.points_valides === 2
               ? // ? "Cheff Agence"
                 "Chef agence central"
-              : HistoriqueData.credit.points_valides === 6
+              : HistoriqueData.credit.points_valides === 6 && isMourabahaType("")
               ? "Chef de département commercial"
               : HistoriqueData.credit.points_valides === 12
               ? "L'Analyse de risque"

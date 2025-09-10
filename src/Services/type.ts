@@ -92,7 +92,7 @@ export type LigneCredit = {
         motif_rejet?:string,
         date_rejet?:string, 
         agence?:string,
-        type_credit?:string,
+        type_credit:string,
         nature_credit?:string,
         type_dossier?:string
 };

@@ -49,7 +49,7 @@ import {
   FaUpload,
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
-// import { useGetTypeDocument } from "../../../Services/Demandes/useGetListTypeDocument";
+
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -64,6 +64,8 @@ export type PopconfirmTypeDetails = {
 };
 function ParticulierCreditView() {
   const role = AuthService.getPostUserConnect();
+
+
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [uploadedFileMourabaha, setUploadedFileMourabaha] =
     useState<UploadedFile | null>(null);
@@ -99,9 +101,6 @@ function ParticulierCreditView() {
       open: false,
       ligne: null,
     });
-
-  // const [motiv, setMotiv] = useState("");
-  // const [selectTypeDocument, setSelectTypeDocument] = useState("");
 
   const [dates, setDates] = useState<[string | null, string | null]>([
     null,
@@ -168,17 +167,44 @@ function ParticulierCreditView() {
   const doitPrendreDecision = (ligne: LigneCredit): boolean => {
     const dossierPoints = ligne.points_valides ?? 0;
     const dossierStatus = ligne.status;
+    const typeCredit = ligne.type_credit;
+
+    console.log("doit prend : ", typeCredit)
 
     if (dossierStatus !== "EN_COURS") return false;
 
     if (role === "Chargé de clientèle" && dossierPoints === 0) return true;
     if (role === "Chargé de clientèle" && dossierPoints === 48) return true;
     if (role === "Chef agence central" && dossierPoints === 2) return true;
-    if (role === "Chef de département commercial" && dossierPoints === 6)
+    if (
+      role === "Chef de département commercial" &&
+      dossierPoints === 6 &&
+      typeCredit !== "CRDT CT- MOURABAHA" &&
+      typeCredit !== "CRDT MT- MOURABAHA" &&
+      typeCredit !== "CRDT LT- MOURABAHA"
+    )
       return true;
     if (role === "Analyse de Risque" && dossierPoints === 12) return true;
     if (role === "Directeur Risque" && dossierPoints === 24) return true;
     if (role === "Directeur Engagement" && dossierPoints === 50) return true;
+
+    // {(openPopupConfirmValider.ligne?.type_credit ===
+    //                   "CRDT CT- MOURABAHA" ||
+    //                   openPopupConfirmValider.ligne?.type_credit ===
+    //                     "CRDT MT- MOURABAHA" ||
+    //                   openPopupConfirmValider.ligne?.type_credit ===
+    //                     "CRDT LT- MOURABAHA") && (
+
+    //                 )}
+
+    if (
+      role === "Directeur de département Islamique" &&
+      dossierPoints === 6 &&
+      (typeCredit === "CRDT CT- MOURABAHA" ||
+        typeCredit === "CRDT MT- MOURABAHA" ||
+        typeCredit === "CRDT LT- MOURABAHA")
+    )
+      return true;
 
     return false;
   };
@@ -210,7 +236,6 @@ function ParticulierCreditView() {
   //     label: credit.nom, // Ce qui sera affiché
   //     value: credit.nom, // La valeur associée
   //   })) || [];
-
 
   const agenceConnect = AuthService.getAGENCEUserConnect();
 
@@ -359,7 +384,9 @@ function ParticulierCreditView() {
   const showModalRejeter = (ligne: LigneCredit) => {
     setopenPopupConfirmRejeter({ ligne: ligne, open: true });
   };
-
+function isMourabahaType(type:string) {
+    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+}
   const handleValiderLigne = () => {
     const errors = [];
 
@@ -421,19 +448,19 @@ function ParticulierCreditView() {
     });
   };
 
-//   const SelectMotiv = (value: string) => {
-//     setMotiv(value);
-//   };
-//  const selectDocument = (value: string) => {
-//     setSelectTypeDocument(value);
-//   };
+  //   const SelectMotiv = (value: string) => {
+  //     setMotiv(value);
+  //   };
+  //  const selectDocument = (value: string) => {
+  //     setSelectTypeDocument(value);
+  //   };
   const handleRejeterLigne = () => {
     // if (!motiv) {
     //   return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
     //     variant: "error",
     //   });
     // }
-     if (!selectAutre) {
+    if (!selectAutre) {
       return message.error("Veuillez saisir le motif de rejet !");
     }
     setLoading(true);
@@ -444,7 +471,7 @@ function ParticulierCreditView() {
         user_id: Number(idUserConnect)!,
         // motif: motiv,
         // motif: motiv === "Autre" ? selectAutre : motiv,
-        motif: selectAutre
+        motif: selectAutre,
       };
       rejeterligne(params, {
         onSuccess: () => {
@@ -577,11 +604,29 @@ function ParticulierCreditView() {
             ""
           );
         } else if (role === "Chef de département commercial") {
+          console.log("ici thiam")
+
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
-          ) : record.points_valides === 6 && record.status === "EN_COURS" ? (
+          ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
+            <Tag color="orange">En attente de votre décision</Tag>
+          ) : record.status === "REJETÉ" ? (
+            <Tag color="red">Déjà Rejeté</Tag>
+          ) : record?.points_valides! < 6 ? (
+            <Tag color="yellow">En cours d'instruction</Tag>
+          ) : (
+            ""
+          );
+        }  else if (role === "Directeur de département Islamique") {
+          console.log("ici nany : ", !isMourabahaType(record?.type_credit!))
+          console.log("type credit : ", record.type_credit!)
+          return record?.points_valides! > 6 ? (
+            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+            </Tag>
+          ) : record.points_valides === 6 && record.status === "EN_COURS" &&  isMourabahaType(record?.type_credit!)  ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -718,7 +763,35 @@ function ParticulierCreditView() {
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6
+            dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
+          ) {
+            items.push(
+              {
+                label: (
+                  <div className="flex items-center justify-between space-x-3">
+                    <span>Remonter</span>
+                    <GrValidate color="green" size={17} />
+                  </div>
+                ),
+                key: "5",
+                onClick: () => showModalValider(record),
+              },
+              {
+                label: (
+                  <div className="flex items-center justify-between space-x-3">
+                    <span>Réjeter</span>
+                    <MdCancel color="red" size={17} />
+                  </div>
+                ),
+                key: "6",
+                onClick: () => showModalRejeter(record),
+              }
+            );
+          }
+
+           if (
+            connectedUser.post === "Directeur de département Islamique" &&
+            dossierPoints === 6 && isMourabahaType(record?.type_credit!)
           ) {
             items.push(
               {
@@ -1640,15 +1713,14 @@ function ParticulierCreditView() {
               /></>}
                */}
 
-           
-                <label>
-                  Motif de Rejet
-                  <Input
-                    value={selectAutre}
-                    onChange={(e) => setSelectAutre(e.target.value)}
-                  />
-                </label>
-           
+              <label>
+                Motif de Rejet
+                <Input
+                  value={selectAutre}
+                  onChange={(e) => setSelectAutre(e.target.value)}
+                />
+              </label>
+
               <p className=" my-2 text-[15px] text-center">
                 Êtes-vous sûr de vouloir réjeter ce ligne ?
               </p>
