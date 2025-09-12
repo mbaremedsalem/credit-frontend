@@ -2,12 +2,15 @@ import { Button, CheckboxProps } from "antd";
 import img from "../../assets/images/image.png";
 import SpinnerLoader from "../../Ui/Spinner";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CustomCheckbox from "../../Ui/CustomChekbox";
 import { useEffect, useState } from "react";
 import { LoginParams, useLogin } from "../../Services/Auth/useLogin";
 import { enqueueSnackbar } from "notistack";
-import { CredantialsParams, useGetUserCredantiels } from "../../Services/Auth/GetUserCredantiles";
+import {
+  CredantialsParams,
+  useGetUserCredantiels,
+} from "../../Services/Auth/GetUserCredantiles";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,40 +21,46 @@ function Login() {
   const [passType, setPassType] = useState("password");
   const [rememberMe, setRememberMe] = useState(false);
   const { mutate: log, isPending } = useLogin();
-  const [username, setUserName] = useState("")
+  const [username, setUserName] = useState("");
   const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
-  console.log("username : ", username)
-  const {mutate:GetCredantials, isPending:isPendingCredantials} = useGetUserCredantiels()
-  
+  const navigate = useNavigate();
+  console.log("username : ", username);
+  const { mutate: GetCredantials, isPending: isPendingCredantials } =
+    useGetUserCredantiels();
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const usernameParam = params.get("username");
 
     if (usernameParam) {
       setUserName(usernameParam);
-      
+
       // Appeler l'API pour récupérer les informations d'identification
-      const params : CredantialsParams = {
-        username: usernameParam
+      const params: CredantialsParams = {
+        username: usernameParam,
       };
-      
+
       GetCredantials(params, {
         onSuccess: (data) => {
           // Remplir automatiquement les champs avec les données reçues
           setEmail(data.username);
           setPassword(data.password);
-          
+
           // Afficher un message de succès
-          enqueueSnackbar("Identifiants récupérés avec succès", { variant: "success" });
-          
+          enqueueSnackbar("Identifiants récupérés avec succès", {
+            variant: "success",
+          });
+
           // Exécuter automatiquement la connexion
           executeAutoLogin(data.username, data.password);
         },
         onError: (error) => {
-          console.log("error : ", error)
+          console.log("error : ", error);
           // Gérer les erreurs
-          enqueueSnackbar("Erreur lors de la récupération des identifiants", { variant: "error" });
-        }
+          enqueueSnackbar("Erreur lors de la récupération des identifiants", {
+            variant: "error",
+          });
+        },
       });
     }
   }, []);
@@ -59,7 +68,7 @@ function Login() {
   // Fonction pour exécuter la connexion automatique
   const executeAutoLogin = (username: string, password: string) => {
     setLoading(true);
-    
+
     const params: LoginParams = {
       password: password,
       username: username,
@@ -69,12 +78,13 @@ function Login() {
       onSuccess: () => {
         setLoading(false);
         setAutoLoginAttempted(true);
+           navigate("/", { replace: true }); 
       },
       onError: (error) => {
         setLoading(false);
         setAutoLoginAttempted(true);
         console.log("Erreur lors de la connexion automatique:", error);
-      }
+      },
     });
   };
 
@@ -133,8 +143,7 @@ function Login() {
       }
 
       log(params, {
-        onSuccess: () => {
-        },
+        onSuccess: () => {},
       });
     }, 2000);
   };
@@ -142,6 +151,16 @@ function Login() {
   const onChange: CheckboxProps["onChange"] = (e) => {
     setRememberMe(e.target.checked);
   };
+
+  if (isPendingCredantials || loading || !autoLoginAttempted) {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <SpinnerLoader />
+      <p className="text-sm text-blue-2a mt-2">Connexion automatique...</p>
+    </div>
+  );
+}
+
 
   return (
     <div className="bg-gray-100 lg:px-[200px] max-lg:p-2">
@@ -153,14 +172,18 @@ function Login() {
           {isPendingCredantials && (
             <div className="mb-4 text-center">
               <SpinnerLoader />
-              <p className="text-sm text-blue-2a mt-2">Récupération des identifiants...</p>
+              <p className="text-sm text-blue-2a mt-2">
+                Récupération des identifiants...
+              </p>
             </div>
           )}
 
           {loading && !autoLoginAttempted && (
             <div className="mb-4 text-center">
               <SpinnerLoader />
-              <p className="text-sm text-blue-2a mt-2">Connexion automatique en cours...</p>
+              <p className="text-sm text-blue-2a mt-2">
+                Connexion automatique en cours...
+              </p>
             </div>
           )}
 
@@ -245,7 +268,9 @@ function Login() {
               htmlType="submit"
               disabled={isPendingCredantials}
             >
-              {isPendingCredantials ? "Récupération des identifiants..." : "Connecter"}
+              {isPendingCredantials
+                ? "Récupération des identifiants..."
+                : "Connecter"}
             </Button>
           </form>
 
@@ -253,7 +278,9 @@ function Login() {
 
           <div className="mt-8 pt-4 border-t border-gray-200 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-sm font-medium text-gray-600">AUB Crédit</span>
+              <span className="text-sm font-medium text-gray-600">
+                AUB Crédit
+              </span>
             </div>
             <p className="text-xs text-gray-500">
               Fait par Direction Informatique (DSI)
