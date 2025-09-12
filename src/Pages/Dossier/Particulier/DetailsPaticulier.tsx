@@ -17,6 +17,7 @@ import {
 import { IoEyeOutline } from "react-icons/io5";
 import { LigneCredit, NewClient } from "../../../Services/type";
 import { BaseUrl } from "../../../api/BaseUrl";
+import AuthService from "../../../Auth-Services/AuthService";
 
 type CreditInfo = {
   montant: number;
@@ -38,7 +39,9 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
 
   const handleToggleAvis = () => setIsExpandedAvis(!isExpandedAvis);
   const handleToggleMemo = () => setIsExpandedMemo(!isExpandedMemo);
+  const post = AuthService.getPostUserConnect();
 
+  console.log("user connect : ", post);
   const truncateText = (text: string, limit: number) => {
     if (text.length <= limit) return text;
     return text.slice(0, limit) + "...";
@@ -81,7 +84,6 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
 
   const downloadDocument = async (file: string | File) => {
     if (typeof file === "string") {
-
       try {
         const response = await fetch(`${BaseUrl}${file}`, {
           method: "GET",
@@ -353,7 +355,20 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
         </div>
       </div>
 
-      <div className="space-y-4">
+
+      {(post === "Analyse de Risque" ||
+        post === "Directeur Risque" ||
+
+          post === "Directeur commercial" ||
+        post === "Chef de département commercial" ||
+
+        post === "Directeur d'Audit" ||
+      
+        post === "Directeur juridique" ||
+        post === "Directeur Engagement" )
+        
+        &&
+          <div className="space-y-4">
         <div className="flex items-center space-x-2 text-gray-700">
           <FaFileImport size={23} />
           <span className="text-lg font-semibold">
@@ -409,6 +424,8 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
           ))}
         </div>
       </div>
+        }
+    
 
       <div className="space-y-4">
         <div className="flex items-center space-x-2 text-gray-700">

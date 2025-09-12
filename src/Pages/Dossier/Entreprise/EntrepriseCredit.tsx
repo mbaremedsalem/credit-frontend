@@ -612,10 +612,8 @@ function EntrepriseCreditView() {
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
-          ) : record.points_valides === 6 &&
-            record.status === "EN_COURS" 
+          ) : record.points_valides === 6 && record.status === "EN_COURS" ? (
             // && !isMourabahaType(record?.type_credit!) ? (
-            ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -624,7 +622,7 @@ function EntrepriseCreditView() {
           ) : (
             ""
           );
-        } 
+        }
         // else if (role === "Directeur de département Islamique") {
         //   console.log("ici nany : ", !isMourabahaType(record?.type_credit!));
         //   console.log("type credit : ", record.type_credit!);
@@ -644,7 +642,6 @@ function EntrepriseCreditView() {
         //     ""
         //   );
         // }
-        
         else if (role === "Analyse de Risque") {
           return record?.points_valides! > 12 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
@@ -773,9 +770,8 @@ function EntrepriseCreditView() {
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6 
+            dossierPoints === 6
             // && !isMourabahaType(record?.type_credit!)
-          
           ) {
             items.push(
               {
@@ -803,7 +799,7 @@ function EntrepriseCreditView() {
 
           // if (
           //   connectedUser.post === "Directeur de département Islamique" &&
-          //   dossierPoints === 6 
+          //   dossierPoints === 6
           //   &&  isMourabahaType(record?.type_credit!)
           // ) {
           //   items.push(
@@ -1153,7 +1149,9 @@ function EntrepriseCreditView() {
 
                 {role === "Analyse de Risque" && (
                   <div className="mt-3">
-                    PV Commité (Draft) <span style={{ color: "red" }}>*</span>
+                    {/* PV Commité (Draft) <span style={{ color: "red" }}>*</span> */}
+                    Contre Analyse Risque{" "}
+                    <span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -1169,7 +1167,7 @@ function EntrepriseCreditView() {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer PV Commité (Draft)
+                          Contre Analyse Risque
                         </Button>
                       </div>
                     </Upload>
@@ -1251,7 +1249,8 @@ function EntrepriseCreditView() {
                 )}
                 {role === "Directeur Risque" && (
                   <div className="mt-3">
-                    PV Signé <span style={{ color: "red" }}>*</span>
+                    {/* PV Signé <span style={{ color: "red" }}>*</span> */}
+                    PV Commité<span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -1267,7 +1266,7 @@ function EntrepriseCreditView() {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer PV Signé
+                          PV Commité
                         </Button>
                       </div>
                     </Upload>

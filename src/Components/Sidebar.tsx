@@ -24,7 +24,8 @@ function Sidebar({setIsSidebarOpen, isSidebarOpen} : props){
     setTimeout(()=>{
         setLoading(false)
         logout()
-        window.location.href="/login"
+        // window.location.href="/login"
+         window.location.href = "http://aubstream:9060/";
     }, 1000)
    }
     const navsAdmin = [

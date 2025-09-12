@@ -74,6 +74,7 @@ const RemonterStepEntreprise2 = ({
     setOpenModal(false);
   };
   const { mutate: UpdateCredit, isPending } = useUpdateCredit();
+  const post = AuthService.getPostUserConnect();
 
   const getFileIcon = (fileName: string): JSX.Element => {
     const ext = fileName.split(".").pop()?.toLowerCase();
@@ -465,7 +466,17 @@ const RemonterStepEntreprise2 = ({
         </div>
       </div>
       <hr />
-      <div className="space-y-4">
+
+     { (post === "Analyse de Risque" ||
+        post === "Directeur Risque" ||
+
+          post === "Directeur commercial" ||
+        post === "Chef de département commercial" ||
+
+        post === "Directeur d'Audit" ||
+      
+        post === "Directeur juridique" ||
+        post === "Directeur Engagement" ) &&   <div className="space-y-4">
         <div className="flex items-center space-x-2 text-gray-700">
           <FaFileImport size={23} />
           <span className="text-lg font-semibold">
@@ -523,7 +534,8 @@ const RemonterStepEntreprise2 = ({
             </motion.div>
           ))}
         </div>
-      </div>
+      </div>}
+    
 
       {/* {docsMourabaha && (
         <div className="space-y-4">

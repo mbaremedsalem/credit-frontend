@@ -65,7 +65,6 @@ export type PopconfirmTypeDetails = {
 function ParticulierCreditView() {
   const role = AuthService.getPostUserConnect();
 
-
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [uploadedFileMourabaha, setUploadedFileMourabaha] =
     useState<UploadedFile | null>(null);
@@ -165,14 +164,14 @@ function ParticulierCreditView() {
   }, [dates]);
 
   // function isMourabahaType(type:string) {
-//     return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
-// }
+  //     return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+  // }
   const doitPrendreDecision = (ligne: LigneCredit): boolean => {
     const dossierPoints = ligne.points_valides ?? 0;
     const dossierStatus = ligne.status;
     const typeCredit = ligne.type_credit;
 
-    console.log("doit prend : ", typeCredit)
+    console.log("doit prend : ", typeCredit);
 
     if (dossierStatus !== "EN_COURS") return false;
 
@@ -183,16 +182,12 @@ function ParticulierCreditView() {
     //   role === "Chef de département commercial" &&
     //   dossierPoints === 6 && !isMourabahaType(typeCredit))
     //   return true;
-      if (
-      role === "Chef de département commercial" &&
-      dossierPoints === 6 )
+    if (role === "Chef de département commercial" && dossierPoints === 6)
       return true;
-      
+
     if (role === "Analyse de Risque" && dossierPoints === 12) return true;
     if (role === "Directeur Risque" && dossierPoints === 24) return true;
     if (role === "Directeur Engagement" && dossierPoints === 50) return true;
-
- 
 
     // if (
     //   role === "Directeur de département Islamique" &&
@@ -596,15 +591,14 @@ function ParticulierCreditView() {
             ""
           );
         } else if (role === "Chef de département commercial") {
-          console.log("ici thiam")
-
+          console.log("ici thiam");
 
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
-          // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
-          ) : record.points_valides === 6 && record.status === "EN_COURS"? (
+          ) : // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
+          record.points_valides === 6 && record.status === "EN_COURS" ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -613,7 +607,7 @@ function ParticulierCreditView() {
           ) : (
             ""
           );
-        }  
+        }
         // else if (role === "Directeur de département Islamique") {
 
         //   console.log("type credit : ", record.type_credit!)
@@ -632,7 +626,7 @@ function ParticulierCreditView() {
         //     ""
         //   );
         // }
-         else if (role === "Analyse de Risque") {
+        else if (role === "Analyse de Risque") {
           return record?.points_valides! > 12 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
@@ -761,7 +755,7 @@ function ParticulierCreditView() {
           if (
             connectedUser.post === "Chef de département commercial" &&
             // dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
-            dossierPoints === 6 
+            dossierPoints === 6
           ) {
             items.push(
               {
@@ -790,7 +784,7 @@ function ParticulierCreditView() {
           //  if (
           //   connectedUser.post === "Directeur de département Islamique" &&
           //   dossierPoints === 6 && isMourabahaType(record?.type_credit!)
-          //   // dossierPoints === 6  
+          //   // dossierPoints === 6
           // ) {
           //   items.push(
           //     {
@@ -1152,7 +1146,9 @@ function ParticulierCreditView() {
 
                 {role === "Analyse de Risque" && (
                   <div className="mt-3">
-                    PV Commité (Draft) <span style={{ color: "red" }}>*</span>
+                    {/* PV Commité (Draft) <span style={{ color: "red" }}>*</span> */}
+                    Contre Analyse Risque{" "}
+                    <span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -1168,7 +1164,7 @@ function ParticulierCreditView() {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer PV Commité (Draft)
+                          Contre Analyse Risque
                         </Button>
                       </div>
                     </Upload>
@@ -1250,7 +1246,8 @@ function ParticulierCreditView() {
                 )}
                 {role === "Directeur Risque" && (
                   <div className="mt-3">
-                    PV Signé <span style={{ color: "red" }}>*</span>
+                    {/* PV Signé <span style={{ color: "red" }}>*</span> */}
+                    PV Commité<span style={{ color: "red" }}>*</span>
                     <Upload
                       accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"
                       beforeUpload={() => false}
@@ -1266,7 +1263,7 @@ function ParticulierCreditView() {
                           className="!h-[43px] rounded-lg flex justify-center items-center gap-2 w-full"
                           icon={<FaUpload />}
                         >
-                          Importer PV Signé
+                          PV Commité
                         </Button>
                       </div>
                     </Upload>

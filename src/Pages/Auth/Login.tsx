@@ -1,6 +1,5 @@
 import { Button, CheckboxProps } from "antd";
 import img from "../../assets/images/image.png";
-
 import SpinnerLoader from "../../Ui/Spinner";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -8,6 +7,7 @@ import CustomCheckbox from "../../Ui/CustomChekbox";
 import { useEffect, useState } from "react";
 import { LoginParams, useLogin } from "../../Services/Auth/useLogin";
 import { enqueueSnackbar } from "notistack";
+import { CredantialsParams, useGetUserCredantiels } from "../../Services/Auth/GetUserCredantiles";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,6 +18,65 @@ function Login() {
   const [passType, setPassType] = useState("password");
   const [rememberMe, setRememberMe] = useState(false);
   const { mutate: log, isPending } = useLogin();
+  const [username, setUserName] = useState("")
+  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
+  console.log("username : ", username)
+  const {mutate:GetCredantials, isPending:isPendingCredantials} = useGetUserCredantiels()
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const usernameParam = params.get("username");
+
+    if (usernameParam) {
+      setUserName(usernameParam);
+      
+      // Appeler l'API pour récupérer les informations d'identification
+      const params : CredantialsParams = {
+        username: usernameParam
+      };
+      
+      GetCredantials(params, {
+        onSuccess: (data) => {
+          // Remplir automatiquement les champs avec les données reçues
+          setEmail(data.username);
+          setPassword(data.password);
+          
+          // Afficher un message de succès
+          enqueueSnackbar("Identifiants récupérés avec succès", { variant: "success" });
+          
+          // Exécuter automatiquement la connexion
+          executeAutoLogin(data.username, data.password);
+        },
+        onError: (error) => {
+          console.log("error : ", error)
+          // Gérer les erreurs
+          enqueueSnackbar("Erreur lors de la récupération des identifiants", { variant: "error" });
+        }
+      });
+    }
+  }, []);
+
+  // Fonction pour exécuter la connexion automatique
+  const executeAutoLogin = (username: string, password: string) => {
+    setLoading(true);
+    
+    const params: LoginParams = {
+      password: password,
+      username: username,
+    };
+
+    log(params, {
+      onSuccess: () => {
+        setLoading(false);
+        setAutoLoginAttempted(true);
+      },
+      onError: (error) => {
+        setLoading(false);
+        setAutoLoginAttempted(true);
+        console.log("Erreur lors de la connexion automatique:", error);
+      }
+    });
+  };
 
   function showHidePass() {
     setPassType((prev) => (prev === "password" ? "text" : "password"));
@@ -89,6 +148,21 @@ function Login() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="shadow-2xl p-16 max-lg:p-4 rounded-lg bg-white lg:w-[550px] max-lg:w-full">
           <img src={img} className="mb-4" />
+
+          {/* Afficher un message pendant la connexion automatique */}
+          {isPendingCredantials && (
+            <div className="mb-4 text-center">
+              <SpinnerLoader />
+              <p className="text-sm text-blue-2a mt-2">Récupération des identifiants...</p>
+            </div>
+          )}
+
+          {loading && !autoLoginAttempted && (
+            <div className="mb-4 text-center">
+              <SpinnerLoader />
+              <p className="text-sm text-blue-2a mt-2">Connexion automatique en cours...</p>
+            </div>
+          )}
 
           {/* FORMULAIRE */}
           <form
@@ -167,10 +241,11 @@ function Login() {
 
             <Button
               className="w-full bg-main-color text-white mt-4 h-[43px] primary-button"
-              loading={isPending}
+              loading={isPending || isPendingCredantials}
               htmlType="submit"
+              disabled={isPendingCredantials}
             >
-              Connecter
+              {isPendingCredantials ? "Récupération des identifiants..." : "Connecter"}
             </Button>
           </form>
 
