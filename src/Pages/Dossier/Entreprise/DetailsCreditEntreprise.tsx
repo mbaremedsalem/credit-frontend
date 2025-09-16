@@ -368,6 +368,7 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
         post === "Directeur d'Audit" ||
       
         post === "Directeur juridique" ||
+        post === "Directeur Général" ||
         post === "Directeur Engagement" ) && <div className="space-y-4">
         <div className="flex items-center space-x-2 text-gray-700">
           <FaFileImport size={23} />

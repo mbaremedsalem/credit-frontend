@@ -363,6 +363,7 @@ const DetailsPaticulier = ({ ligne, closeSecondModal }: props) => {
         post === "Chef de département commercial" ||
 
         post === "Directeur d'Audit" ||
+        post === "Directeur Général" ||
       
         post === "Directeur juridique" ||
         post === "Directeur Engagement" )
