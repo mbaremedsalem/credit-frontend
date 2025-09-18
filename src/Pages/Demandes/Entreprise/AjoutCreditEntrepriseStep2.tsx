@@ -41,7 +41,10 @@ const AjoutCreditEntrepriseStep2= ({client, closeFirstModal, closeSecondModal, c
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
   const {data:userInfo} = getUserInfo()
-  
+  const [progress, setProgress] = useState(0);
+
+// Et cet useEffect pour animer la progression
+
 
   const handleToggleAvis = () => setIsExpandedAvis(!isExpandedAvis);
   const handleToggleMemo = () => setIsExpandedMemo(!isExpandedMemo);
@@ -59,6 +62,34 @@ const AjoutCreditEntrepriseStep2= ({client, closeFirstModal, closeSecondModal, c
   
     setShow(true)
   }
+
+useEffect(() => {
+  let interval: ReturnType<typeof setInterval>;
+
+  if (isPending) {
+    setProgress(0);
+    interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 95) {
+          return 95; // on bloque à 95% tant que c’est pending
+        }
+        return prev + 1;
+      });
+    }, 50);
+  } else {
+    // quand isPending passe à false, on finit la barre
+    setProgress(100);
+    const timeout = setTimeout(() => setProgress(0), 500); // reset après un petit délai
+    return () => clearTimeout(timeout);
+  }
+
+  return () => clearInterval(interval);
+}, [isPending]);
+
+
+
+
+
   const getFileIcon = (fileName: string): JSX.Element => {
     const ext = fileName.split('.').pop()?.toLowerCase();
   
@@ -274,41 +305,82 @@ const onSubmit = () => {
         <Button className='secondary-button !h-[44px]' onClick={closeSecondModal}>Annuler</Button>
         <Button className='auth-button !h-[44px]' onClick={showModal}>Valider</Button>
       </div>
-      <Modal
-            className="rounded-lg"
-            destroyOnClose={true}
-            onCancel={handlecancel}
-            open={Show}
-            footer={null}
-            width={375}
-            closeIcon={false}
-              maskClosable={false}
-          >
-            <div className="flex flex-col items-center space-y-3 ">
-            <div className="flex items-center justify-center space-x-3">
-        <h1 className="text-xl font-bold text-gray-800">Confirmation</h1>
-        <GiConfirmed size={32} className="text-green-500" />
+
+<Modal
+  className="rounded-lg"
+  destroyOnClose={true}
+  onCancel={handlecancel}
+  open={Show}
+  footer={null}
+  width={400}
+  closeIcon={!isPending}
+  maskClosable={false}
+  closable={!isPending}
+>
+  <div className="flex flex-col items-center space-y-4 p-5">
+    {isPending ? (
+      <div className="w-full flex flex-col items-center space-y-5">
+        <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-2"></div>
+        <h3 className="text-lg font-semibold text-gray-800">Traitement en cours</h3>
+        
+        {/* Barre de progression avec pourcentage */}
+     <div className="w-full space-y-2">
+  <div className="flex justify-between text-sm text-gray-600">
+    <span>Progression</span>
+    <span className="font-medium text-blue-600">{progress}%</span>
+  </div>
+  <div className="w-full bg-gray-200 rounded-full h-2.5">
+    <div 
+      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+      style={{ width: `${progress}%` }}
+    ></div>
+  </div>
+</div>
+        
+        <p className="text-sm text-gray-500 text-center mt-2">
+          Veuillez patienter pendant le traitement de votre demande...
+        </p>
       </div>
-              <p className=" my-2 text-[15px] text-center">
-              Êtes-vous sûr de vouloir confirmer ce crédit ?
-              </p>
-              <div className="flex items-center justify-end gap-x-2">
-                <Button
-                  className="w-[143px] h-[50.6px]   mt-2 secondary-button"
-                  onClick={handlecancel}
-                >
-                  No, Annuler
-                </Button>
-                <Button
-                  className="w-[153.8px] h-[50.6px] mt-2 primary-button"
-                  loading={isPending}
-                  onClick={onSubmit}
-                >
-                 Oui, Confirmer
-                </Button>
-              </div>
-            </div>
-          </Modal>
+    ) : (
+      <>
+        <div className="flex items-center justify-center space-x-3">
+          <h1 className="text-xl font-bold text-gray-800">Confirmation</h1>
+          <GiConfirmed size={32} className="text-green-500" />
+        </div>
+        <p className="my-2 text-[15px] text-center text-gray-600">
+          Êtes-vous sûr de vouloir confirmer ce crédit ?
+        </p>
+      </>
+    )}
+    
+    <div className="flex items-center justify-end gap-x-3 w-full pt-2">
+      <Button
+        className={`w-[140px] h-[50px] rounded-lg transition-colors ${
+          isPending 
+            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
+            : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+        }`}
+        onClick={handlecancel}
+        disabled={isPending}
+      >
+        Non, Annuler
+      </Button>
+      <Button
+        className={`w-[150px] h-[50px] rounded-lg transition-colors ${
+          isPending 
+            ? 'bg-blue-400 cursor-not-allowed' 
+            : 'bg-blue-600 hover:bg-blue-700'
+        } text-white`}
+        loading={isPending}
+        onClick={onSubmit}
+        disabled={isPending}
+      >
+        {isPending ? "Traitement..." : "Oui, Confirmer"}
+      </Button>
+    </div>
+  </div>
+</Modal>
+
     </div>
   );
 };

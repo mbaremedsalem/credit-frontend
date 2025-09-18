@@ -11,32 +11,34 @@ import { useNavigate } from "react-router-dom";
 
 export const useAddCreditEntreprise = () => {
   const navigate = useNavigate();
-
   const queryClient = useQueryClient();
+  
   async function addCreditEntreprise(ligne: AddCreditEntreprise) {
     const formData = new FormData();
     const agence = AuthService.getAGENCEUserConnect();
     const user_id = AuthService.getIDUserConnect();
-    formData.append("CLIENT", ligne?.CLIENT!);
-    formData.append("NOM", ligne?.NOM!);
-    formData.append("AGENCE", ligne?.AGENCE!);
-    formData.append("TEL", ligne?.TEL!);
-
-    formData.append("montant", ligne?.montant.toString()!);
-    formData.append("duree", ligne?.duree.toString()!);
-    formData.append("avis", ligne?.avis!);
-    formData.append("memo", ligne?.memo!);
+    
+    // Ajout des champs obligatoires
+    formData.append("CLIENT", ligne.CLIENT!);
+    formData.append("NOM", ligne.NOM!);
+    formData.append("AGENCE", ligne.AGENCE!);
+    formData.append("TEL", ligne.TEL!);
+    formData.append("montant", ligne.montant.toString());
+    formData.append("duree", ligne.duree.toString());
+    formData.append("avis", ligne.avis!);
+    formData.append("memo", ligne.memo!);
     formData.append("user_id", String(user_id));
     formData.append("agnece", agence!);
-    formData.append("type_credit", ligne?.type_credit!);
+    formData.append("type_credit", ligne.type_credit!);
     formData.append("nature_credit", ligne.nature_credit!);
     formData.append("type_dossier", "Entreprise");
-    formData.append("NIF", ligne?.NIF);
-    formData.append("Address", ligne?.Address);
+    formData.append("NIF", ligne.NIF!);
+    formData.append("Address", ligne.Address!);
 
+    // Ajout des fichiers
     ligne.fichiers?.forEach((doc) => {
-      formData.append(`documents`, doc?.file);
-      formData.append(`type_document`, doc?.type_document);
+      formData.append("documents", doc.file);
+      formData.append("type_document", doc.type_document);
     });
 
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
@@ -46,6 +48,7 @@ export const useAddCreditEntreprise = () => {
     });
     return res.data;
   }
+  
   return useMutation({
     mutationFn: addCreditEntreprise,
     mutationKey: LIGNES_KEY,
@@ -53,35 +56,40 @@ export const useAddCreditEntreprise = () => {
       queryClient.invalidateQueries({
         queryKey: LIGNES_KEY,
       });
-      enqueueSnackbar("Crédit ajoutée avec succès !", { variant: "success" });
+      enqueueSnackbar("Crédit ajouté avec succès !", { variant: "success" });
       navigate("/dossier");
     },
     onError: (err: any) => {
       const errorMessage = handleError(err);
+      const responseData = err?.response?.data;
+      const errorUpload = responseData?.message;
+      const isExist = responseData?.error;
+      const errorStatus = responseData?.status;
 
-      const errorUpload = err?.response?.data?.message
-      // const errorStatusIci = err?.reponse?.data?.status
-
-      console.log("error upload : ", err?.response?.data?.status)
+      console.log("Erreur détectée : ", isExist);
+      console.log("Statut de l'erreur : ", errorStatus);
       
-      if(errorUpload){
+      // Gestion des erreurs spécifiques
+      if (errorUpload) {
         return enqueueSnackbar(errorUpload, { variant: "error" });
-
       }
-      else if(err?.response?.data?.error === "UNIQUE constraint failed: commite_client.client_code") {
-       
-              return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
-      }else  if (err?.response?.data?.error === "['“null” value has an invalid date format. It must be in YYYY-MM-DD format.']") {
-  return enqueueSnackbar(
-    "La date d'expiration du carte ou passport client est null dans CoreBanking et doit être ajoutée !",
-    { variant: "error" }
-  );
-} else if(errorUpload){
-      return enqueueSnackbar(errorUpload, { variant: "error" });
-  // return message.error(errorUpload)
-  }  else  {
+      else if (isExist === "Une demande pour ce client existe déjà et n'est pas rejetée.") {
+        return enqueueSnackbar(isExist, { variant: "warning" });
+      }
+      else if (isExist === "UNIQUE constraint failed: commite_client.client_code") {
+        return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
+      }
+      else if (isExist?.includes("null") && isExist?.includes("date format") && isExist?.includes("YYYY-MM-DD")) {
+        return enqueueSnackbar(
+          "La date d'expiration de la carte ou du passeport du client est manquante dans CoreBanking et doit être ajoutée !",
+          { variant: "error" }
+        );
+      }
+      else if (isExist) {
+        return enqueueSnackbar(isExist, { variant: "error" });
+      }
+      else {
         message.error(errorMessage);
-
       }
     },
   });

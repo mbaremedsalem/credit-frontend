@@ -48,7 +48,7 @@ api.interceptors.response.use(
             const result = await ALert_Retourne_Login()
                 if (result.isConfirmed) {
                 AuthService.clearTokens()
-                window.location.href = '/login'
+                window.location.href = "http://aubstream:9060/"
                 }
           }
             

@@ -1745,7 +1745,7 @@ function EntrepriseCreditView() {
       </div>
 
       <div className="flex items-center max-lg:flex-col justify-center space-x-2 mt-2">
-        <label className="w-[200px]">
+       {role !== "Directeur Général" &&  <label className="w-[200px]">
           <Select
             value={filtreStatus}
             onChange={(value) => setFiltreStatus(value)}
@@ -1756,7 +1756,7 @@ function EntrepriseCreditView() {
             ]}
             placeholder="Filtrer par statut"
           />
-        </label>
+        </label>  } 
 
         <form className="space-x-2 flex" onSubmit={funcCLick}>
           <Input
@@ -1785,7 +1785,7 @@ function EntrepriseCreditView() {
       <div className="!max-w-full mt-4 md:!max-w-full overflow-x-auto">
         {(LigneDaTa?.length ?? 0) > 0 ? (
           <Table<LigneCredit>
-            dataSource={lignesFiltrees}
+            dataSource={role === "Directeur Général" ? onlyPaticulier :   lignesFiltrees}
             columns={columnsLigne}
             loading={isPending}
             pagination={false}

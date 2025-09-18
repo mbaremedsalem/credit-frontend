@@ -1742,7 +1742,7 @@ function ParticulierCreditView() {
       </div>
 
       <div className="flex items-center max-lg:flex-col justify-center space-x-2 mt-2">
-        <label className="w-[200px]">
+      {role !== "Directeur Général"  && <label className="w-[200px]">
           <Select
             value={filtreStatus}
             onChange={(value) => setFiltreStatus(value)}
@@ -1757,7 +1757,7 @@ function ParticulierCreditView() {
             placeholder="Filtrer par statut"
           />
         </label>
-
+}
         {/* Filtre existant par numéro client */}
         <form className="space-x-2 flex" onSubmit={funcCLick}>
           <Input
@@ -1796,7 +1796,7 @@ function ParticulierCreditView() {
           //   rowClassName={() => "custom-row-height"}
           // />
           <Table<LigneCredit>
-            dataSource={lignesFiltrees}
+            dataSource={ role === "Directeur Général"? onlyPaticulier : lignesFiltrees}
             columns={columnsLigne}
             loading={isPending}
             pagination={false}

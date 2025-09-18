@@ -10,39 +10,41 @@ import AuthService from "../../Auth-Services/AuthService";
 import { useNavigate } from "react-router-dom";
 
 export const useAddligne = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  
   async function addligne(ligne: AddLigne) {
     const formData = new FormData();
-    const agence = AuthService.getAGENCEUserConnect()
-    formData.append("CLIENT", ligne?.CLIENT!);
-    formData.append("IDENTIFIENT", ligne?.IDENTIFIENT!);
-    formData.append("PAYSNAIS", ligne?.PAYSNAIS!);
-    formData.append("DATNAIS", ligne?.DATNAIS!);
-    formData.append("NOM", ligne?.NOM!);
-    formData.append("PRENOM", ligne?.PRENOM!);
-    formData.append("TEL", ligne?.TEL!);
-    formData.append("SEXE", ligne?.SEXE!);
-    formData.append("TYPE_DOCUMENT", ligne?.TYPE_DOCUMENT!);
+    const agence = AuthService.getAGENCEUserConnect();
+    
+    // Ajout des champs obligatoires
+    formData.append("CLIENT", ligne.CLIENT!);
+    formData.append("IDENTIFIENT", ligne.IDENTIFIENT!);
+    formData.append("PAYSNAIS", ligne.PAYSNAIS!);
+    formData.append("DATNAIS", ligne.DATNAIS!);
+    formData.append("NOM", ligne.NOM!);
+    formData.append("PRENOM", ligne.PRENOM!);
+    formData.append("TEL", ligne.TEL!);
+    formData.append("SEXE", ligne.SEXE!);
+    formData.append("TYPE_DOCUMENT", ligne.TYPE_DOCUMENT!);
     formData.append("NNI", ligne.NNI!);
-    formData.append("AGENCE", ligne?.AGENCE!);
-    formData.append("TYPE_CLIENT", ligne?.TYPE_CLIENT!);
-    formData.append("montant", ligne?.montant.toString()!);
-    formData.append("duree", ligne?.duree.toString()!);
-    formData.append("avis", ligne?.avis!);
-    formData.append("memo", ligne?.memo!);
-    formData.append("user_id", String(ligne?.user_id!));
+    formData.append("AGENCE", ligne.AGENCE!);
+    formData.append("TYPE_CLIENT", ligne.TYPE_CLIENT!);
+    formData.append("montant", ligne.montant.toString());
+    formData.append("duree", ligne.duree.toString());
+    formData.append("avis", ligne.avis!);
+    formData.append("memo", ligne.memo!);
+    formData.append("user_id", String(ligne.user_id!));
     formData.append("agnece", agence!);
-    formData.append("type_credit", ligne?.type_credit!);
+    formData.append("type_credit", ligne.type_credit!);
     formData.append("nature_credit", ligne.nature_credit!);
     formData.append("type_dossier", "Particulier");
     
-   
-
+    // Ajout des fichiers
     ligne.fichiers?.forEach((doc) => {
-        formData.append(`documents`, doc?.file); 
-        formData.append(`type_document`, doc?.type_document); 
-      });
+      formData.append("documents", doc.file); 
+      formData.append("type_document", doc.type_document); 
+    });
     
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
       headers: {
@@ -51,6 +53,7 @@ export const useAddligne = () => {
     });
     return res.data;
   }
+  
   return useMutation({
     mutationFn: addligne,
     mutationKey: LIGNES_KEY,
@@ -58,35 +61,38 @@ export const useAddligne = () => {
       queryClient.invalidateQueries({
         queryKey: LIGNES_KEY,
       });
-      enqueueSnackbar("Crédit ajoutée avec succès !", { variant: "success" });
-      navigate("/dossier")
+      enqueueSnackbar("Crédit ajouté avec succès !", { variant: "success" });
+      navigate("/dossier");
     },
-  onError: (err: any) => {
+    onError: (err: any) => {
       const errorMessage = handleError(err);
+      const responseData = err?.response?.data;
+      const errorUpload = responseData?.message;
+      const isExist = responseData?.error;
+      const errorStatus = responseData?.status;
 
-      const errorUpload = err?.response?.data?.message
-      // const errorStatusIci = err?.reponse?.data?.status
-
-      console.log("error upload : ", err?.response?.data?.status)
+      console.log("Erreur détectée : ", isExist);
+      console.log("Statut de l'erreur : ", errorStatus);
       
-      if(errorUpload){
-        return enqueueSnackbar(errorUpload, { variant: "error" });
-
+      // Gestion des erreurs spécifiques
+      if (isExist === "Une demande pour ce client existe déjà et n'est pas rejetée.") {
+        // Gestion spécifique pour les demandes existantes
+        return enqueueSnackbar(isExist, { variant: "warning" });
       }
-      else if(err?.response?.data?.error === "UNIQUE constraint failed: commite_client.client_code") {
-       
-              return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
-      }else  if (err?.response?.data?.error === "['“null” value has an invalid date format. It must be in YYYY-MM-DD format.']") {
-  return enqueueSnackbar(
-    "La date d'expiration du carte ou passport client est null dans CoreBanking et doit être ajoutée !",
-    { variant: "error" }
-  );
-} else if(errorUpload){
-      return enqueueSnackbar(errorUpload, { variant: "error" });
-  // return message.error(errorUpload)
-  }  else  {
+      else if (isExist === "UNIQUE constraint failed: commite_client.client_code") {
+        return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
+      }
+      else if (isExist?.includes("null") && isExist?.includes("date format") && isExist?.includes("YYYY-MM-DD")) {
+        return enqueueSnackbar(
+          "La date d'expiration de la carte ou du passeport du client est manquante dans CoreBanking et doit être ajoutée !",
+          { variant: "error" }
+        );
+      }
+      else if (errorUpload) {
+        return enqueueSnackbar(errorUpload, { variant: "error" });
+      }
+      else {
         message.error(errorMessage);
-
       }
     },
   });

@@ -24,7 +24,7 @@ export const ALert_Retourne_Login = (): Promise<SweetAlertResult> => {
         if (!result.isConfirmed) {
           setTimeout(() => {
             AuthService.clearTokens();
-            window.location.href = '/login';
+            window.location.href = "http://aubstream:9060/";
           }, timeoutDuration);
         }
       });
