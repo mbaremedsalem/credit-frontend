@@ -90,7 +90,7 @@ const DetailsEntreprise = ({ ligne, closeSecondModal }: props) => {
   const downloadDocument = async (file: string | File) => {
     if (typeof file === "string") {
       try {
-        const response = await fetch(`${BaseUrl}${file}`, {
+        const response = await fetch(`http://192.168.10.15:9010${file}`, {
           method: "GET",
         });
 
