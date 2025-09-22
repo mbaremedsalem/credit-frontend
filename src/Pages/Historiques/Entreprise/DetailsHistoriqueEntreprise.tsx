@@ -355,6 +355,7 @@ const DetailsHistoriqueEntreprise = ({ ligne, closeSecondModal }: props) => {
 
           post === "Directeur commercial" ||
         post === "Chef de département commercial" ||
+        post === "Directeur de département Islamique" ||
 
         post === "Directeur d'Audit" ||
       

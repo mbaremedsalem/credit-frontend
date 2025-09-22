@@ -473,6 +473,8 @@ const RemonterStep2 = ({
         post === "Directeur Risque" ||
         post === "Directeur commercial" ||
         post === "Chef de département commercial" ||
+        post === "Directeur de département Islamique" ||
+
         post === "Directeur d'Audit" ||
         post === "Directeur juridique" ||
            post === "Directeur Général" ||

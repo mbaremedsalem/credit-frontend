@@ -163,9 +163,9 @@ function ParticulierCreditView() {
     setFiltreStatus("a_decider");
   }, [dates]);
 
-  // function isMourabahaType(type:string) {
-  //     return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
-  // }
+  function isMourabahaType(type:string) {
+      return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+  }
   const doitPrendreDecision = (ligne: LigneCredit): boolean => {
     const dossierPoints = ligne.points_valides ?? 0;
     const dossierStatus = ligne.status;
@@ -189,11 +189,11 @@ function ParticulierCreditView() {
     if (role === "Directeur Risque" && dossierPoints === 24) return true;
     if (role === "Directeur Engagement" && dossierPoints === 50) return true;
 
-    // if (
-    //   role === "Directeur de département Islamique" &&
-    //   dossierPoints === 6 &&
-    //   isMourabahaType(typeCredit))
-    //   return true;
+    if (
+      role === "Directeur de département Islamique" &&
+      dossierPoints === 6 &&
+      isMourabahaType(typeCredit))
+      return true;
 
     return false;
   };
@@ -608,24 +608,24 @@ function ParticulierCreditView() {
             ""
           );
         }
-        // else if (role === "Directeur de département Islamique") {
+        else if (role === "Directeur de département Islamique") {
 
-        //   console.log("type credit : ", record.type_credit!)
-        //   return record?.points_valides! > 6 ? (
-        //     <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-        //       {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-        //     </Tag>
-        //   ) : record.points_valides === 6 && record.status === "EN_COURS" &&  isMourabahaType(record?.type_credit!)  ? (
-        //   // ) : record.points_valides === 6 && record.status === "EN_COURS"  ? (
-        //     <Tag color="orange">En attente de votre décision</Tag>
-        //   ) : record.status === "REJETÉ" ? (
-        //     <Tag color="red">Déjà Rejeté</Tag>
-        //   ) : record?.points_valides! < 6 ? (
-        //     <Tag color="yellow">En cours d'instruction</Tag>
-        //   ) : (
-        //     ""
-        //   );
-        // }
+          console.log("type credit : ", record.type_credit!)
+          return record?.points_valides! > 6 ? (
+            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+            </Tag>
+          ) : record.points_valides === 6 && record.status === "EN_COURS" &&  isMourabahaType(record?.type_credit!)  ? (
+          // ) : record.points_valides === 6 && record.status === "EN_COURS"  ? (
+            <Tag color="orange">En attente de votre décision</Tag>
+          ) : record.status === "REJETÉ" ? (
+            <Tag color="red">Déjà Rejeté</Tag>
+          ) : record?.points_valides! < 6 ? (
+            <Tag color="yellow">En cours d'instruction</Tag>
+          ) : (
+            ""
+          );
+        }
         else if (role === "Analyse de Risque") {
           return record?.points_valides! > 12 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
