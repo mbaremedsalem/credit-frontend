@@ -70,8 +70,8 @@ return (
 
             <div className="flex flex-col items-center cursor-pointer">
             <div>
-            <span className="text-[15px]"> {userInfo?.prenom} </span>
             <span className="text-[15px]"> {userInfo?.nom} </span>
+            <span className="text-[15px]"> {userInfo?.prenom} </span>
             </div>
            <div className="flex items-center gap-2">
              <span className="text-[12px]"> {userInfo?.post} </span>

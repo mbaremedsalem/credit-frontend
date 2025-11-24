@@ -114,6 +114,11 @@ const AjoutCreditParticulierStep2 = ({
       type_credit: credit?.type_credit ?? "",
       nature_credit: credit?.nature ?? "",
     };
+    
+    console.log("params : ", params)
+    console.log("---------- : ", )
+    console.log("type credit : ", credit?.type_credit)
+
 
     AddLigne(params, {
       onSuccess: () => {

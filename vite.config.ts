@@ -10,6 +10,10 @@ export default {
   theme: {
     extend: {},
   },
+  // server : {
+  //   port : 2025,
+  //   host : '10.99.1.2'
+  // },
 
   plugins: [flowbiteReact()],
 }

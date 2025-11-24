@@ -12,12 +12,11 @@ import { useNavigate } from "react-router-dom";
 export const useAddligne = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  
+
   async function addligne(ligne: AddLigne) {
     const formData = new FormData();
     const agence = AuthService.getAGENCEUserConnect();
-    
-    // Ajout des champs obligatoires
+
     formData.append("CLIENT", ligne.CLIENT!);
     formData.append("IDENTIFIENT", ligne.IDENTIFIENT!);
     formData.append("PAYSNAIS", ligne.PAYSNAIS!);
@@ -39,13 +38,12 @@ export const useAddligne = () => {
     formData.append("type_credit", ligne.type_credit!);
     formData.append("nature_credit", ligne.nature_credit!);
     formData.append("type_dossier", "Particulier");
-    
-    // Ajout des fichiers
+
     ligne.fichiers?.forEach((doc) => {
-      formData.append("documents", doc.file); 
-      formData.append("type_document", doc.type_document); 
+      formData.append("documents", doc.file);
+      formData.append("type_document", doc.type_document);
     });
-    
+
     const res = await axios.post(`${BaseUrl}api/createdemande/`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -53,7 +51,7 @@ export const useAddligne = () => {
     });
     return res.data;
   }
-  
+
   return useMutation({
     mutationFn: addligne,
     mutationKey: LIGNES_KEY,
@@ -71,27 +69,31 @@ export const useAddligne = () => {
       const isExist = responseData?.error;
       const errorStatus = responseData?.status;
 
-      console.log("Erreur détectée : ", isExist);
       console.log("Statut de l'erreur : ", errorStatus);
-      
-      // Gestion des erreurs spécifiques
-      if (isExist === "Une demande pour ce client existe déjà et n'est pas rejetée.") {
-        // Gestion spécifique pour les demandes existantes
+
+      if (
+        isExist ===
+        "Une demande pour ce client existe déjà et n'est pas rejetée."
+      ) {
         return enqueueSnackbar(isExist, { variant: "warning" });
-      }
-      else if (isExist === "UNIQUE constraint failed: commite_client.client_code") {
-        return enqueueSnackbar("L'utilisateur existe déjà !", { variant: "error" });
-      }
-      else if (isExist?.includes("null") && isExist?.includes("date format") && isExist?.includes("YYYY-MM-DD")) {
+      } else if (
+        isExist === "UNIQUE constraint failed: commite_client.client_code"
+      ) {
+        return enqueueSnackbar("L'utilisateur existe déjà !", {
+          variant: "error",
+        });
+      } else if (
+        isExist?.includes("null") &&
+        isExist?.includes("date format") &&
+        isExist?.includes("YYYY-MM-DD")
+      ) {
         return enqueueSnackbar(
           "La date d'expiration de la carte ou du passeport du client est manquante dans CoreBanking et doit être ajoutée !",
           { variant: "error" }
         );
-      }
-      else if (errorUpload) {
+      } else if (errorUpload) {
         return enqueueSnackbar(errorUpload, { variant: "error" });
-      }
-      else {
+      } else {
         message.error(errorMessage);
       }
     },

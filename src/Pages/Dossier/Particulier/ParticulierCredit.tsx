@@ -163,27 +163,30 @@ function ParticulierCreditView() {
     setFiltreStatus("a_decider");
   }, [dates]);
 
-  function isMourabahaType(type:string) {
-      return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+  function isMourabahaType(type: string) {
+    return [
+      "CRDT CT- MOURABAHA",
+      "CRDT MT- MOURABAHA",
+      "CRDT LT- MOURABAHA",
+      "DECOUVERT"
+    ].includes(type);
   }
   const doitPrendreDecision = (ligne: LigneCredit): boolean => {
     const dossierPoints = ligne.points_valides ?? 0;
     const dossierStatus = ligne.status;
     const typeCredit = ligne.type_credit;
 
-    console.log("doit prend : ", typeCredit);
-
     if (dossierStatus !== "EN_COURS") return false;
 
     if (role === "Chargé de clientèle" && dossierPoints === 0) return true;
     if (role === "Chargé de clientèle" && dossierPoints === 48) return true;
     if (role === "Chef agence central" && dossierPoints === 2) return true;
-    // if (
-    //   role === "Chef de département commercial" &&
-    //   dossierPoints === 6 && !isMourabahaType(typeCredit))
-    //   return true;
-    if (role === "Chef de département commercial" && dossierPoints === 6)
+    if (
+      role === "Chef de département commercial" &&
+      dossierPoints === 6 && !isMourabahaType(typeCredit))
       return true;
+    // if (role === "Chef de département commercial" && dossierPoints === 6)
+    //   return true;
 
     if (role === "Analyse de Risque" && dossierPoints === 12) return true;
     if (role === "Directeur Risque" && dossierPoints === 24) return true;
@@ -192,7 +195,8 @@ function ParticulierCreditView() {
     if (
       role === "Directeur de département Islamique" &&
       dossierPoints === 6 &&
-      isMourabahaType(typeCredit))
+      isMourabahaType(typeCredit)
+    )
       return true;
 
     return false;
@@ -448,7 +452,8 @@ function ParticulierCreditView() {
     //   });
     // }
     if (!selectAutre) {
-      return message.error("Veuillez saisir le motif de rejet !");
+      // return message.error("Veuillez saisir le motif de rejet !");
+      return message.error("Merci de préciser le motif du rejet");
     }
     setLoading(true);
     setTimeout(() => {
@@ -591,14 +596,12 @@ function ParticulierCreditView() {
             ""
           );
         } else if (role === "Chef de département commercial") {
-          console.log("ici thiam");
-
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
           ) : // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
-          record.points_valides === 6 && record.status === "EN_COURS" ? (
+          record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!) ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -607,16 +610,14 @@ function ParticulierCreditView() {
           ) : (
             ""
           );
-        }
-        else if (role === "Directeur de département Islamique") {
-
-          console.log("type credit : ", record.type_credit!)
+        } else if (role === "Directeur de département Islamique") {
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
-          ) : record.points_valides === 6 && record.status === "EN_COURS" &&  isMourabahaType(record?.type_credit!)  ? (
-          // ) : record.points_valides === 6 && record.status === "EN_COURS"  ? (
+          ) : record.points_valides === 6 &&
+            record.status === "EN_COURS" &&
+            isMourabahaType(record?.type_credit!) ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -625,8 +626,7 @@ function ParticulierCreditView() {
           ) : (
             ""
           );
-        }
-        else if (role === "Analyse de Risque") {
+        } else if (role === "Analyse de Risque") {
           return record?.points_valides! > 12 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
@@ -754,8 +754,8 @@ function ParticulierCreditView() {
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            // dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
-            dossierPoints === 6
+            dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
+            // dossierPoints === 6
           ) {
             items.push(
               {
@@ -781,34 +781,33 @@ function ParticulierCreditView() {
             );
           }
 
-          //  if (
-          //   connectedUser.post === "Directeur de département Islamique" &&
-          //   dossierPoints === 6 && isMourabahaType(record?.type_credit!)
-          //   // dossierPoints === 6
-          // ) {
-          //   items.push(
-          //     {
-          //       label: (
-          //         <div className="flex items-center justify-between space-x-3">
-          //           <span>Remonter</span>
-          //           <GrValidate color="green" size={17} />
-          //         </div>
-          //       ),
-          //       key: "5",
-          //       onClick: () => showModalValider(record),
-          //     },
-          //     {
-          //       label: (
-          //         <div className="flex items-center justify-between space-x-3">
-          //           <span>Réjeter</span>
-          //           <MdCancel color="red" size={17} />
-          //         </div>
-          //       ),
-          //       key: "6",
-          //       onClick: () => showModalRejeter(record),
-          //     }
-          //   );
-          // }
+           if (
+            connectedUser.post === "Directeur de département Islamique" &&
+            dossierPoints === 6 && isMourabahaType(record?.type_credit!)
+          ) {
+            items.push(
+              {
+                label: (
+                  <div className="flex items-center justify-between space-x-3">
+                    <span>Remonter</span>
+                    <GrValidate color="green" size={17} />
+                  </div>
+                ),
+                key: "5",
+                onClick: () => showModalValider(record),
+              },
+              {
+                label: (
+                  <div className="flex items-center justify-between space-x-3">
+                    <span>Réjeter</span>
+                    <MdCancel color="red" size={17} />
+                  </div>
+                ),
+                key: "6",
+                onClick: () => showModalRejeter(record),
+              }
+            );
+          }
 
           if (
             connectedUser.post === "Analyse de Risque" &&
@@ -1092,7 +1091,7 @@ function ParticulierCreditView() {
             onCancel={handlecancelHistorique}
             open={openPopupConfirmHistorique.open}
             footer={null}
-            width={900}
+            width={930}
             closeIcon={false}
             maskClosable={false}
           >
@@ -1742,22 +1741,23 @@ function ParticulierCreditView() {
       </div>
 
       <div className="flex items-center max-lg:flex-col justify-center space-x-2 mt-2">
-      {role !== "Directeur Général"  && <label className="w-[200px]">
-          <Select
-            value={filtreStatus}
-            onChange={(value) => setFiltreStatus(value)}
-            className="w-full h-[42px]"
-            options={[
-              { value: "all", label: "Tous les dossiers" },
-              { value: "a_decider", label: "À décider par moi" },
-              // { value: "en_cours", label: "En cours d'instruction" },
-              // { value: "valides", label: "Dossiers validés" },
-              // { value: "rejetes", label: "Dossiers rejetés" },
-            ]}
-            placeholder="Filtrer par statut"
-          />
-        </label>
-}
+        {role !== "Directeur Général" && (
+          <label className="w-[200px]">
+            <Select
+              value={filtreStatus}
+              onChange={(value) => setFiltreStatus(value)}
+              className="w-full h-[42px]"
+              options={[
+                { value: "all", label: "Tous les dossiers" },
+                { value: "a_decider", label: "À décider par moi" },
+                // { value: "en_cours", label: "En cours d'instruction" },
+                // { value: "valides", label: "Dossiers validés" },
+                // { value: "rejetes", label: "Dossiers rejetés" },
+              ]}
+              placeholder="Filtrer par statut"
+            />
+          </label>
+        )}
         {/* Filtre existant par numéro client */}
         <form className="space-x-2 flex" onSubmit={funcCLick}>
           <Input
@@ -1796,7 +1796,9 @@ function ParticulierCreditView() {
           //   rowClassName={() => "custom-row-height"}
           // />
           <Table<LigneCredit>
-            dataSource={ role === "Directeur Général"? onlyPaticulier : lignesFiltrees}
+            dataSource={
+              role === "Directeur Général" ? onlyPaticulier : lignesFiltrees
+            }
             columns={columnsLigne}
             loading={isPending}
             pagination={false}

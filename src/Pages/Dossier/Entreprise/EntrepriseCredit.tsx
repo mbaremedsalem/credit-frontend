@@ -98,8 +98,14 @@ function EntrepriseCreditView() {
   const handleCancelPreviewMourabaha = () => {
     setPreviewVisibleMourabaha(false);
   };
-    function isMourabahaType(type:string) {
-      return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+  function isMourabahaType(type: string) {
+    return [
+      "CRDT CT- MOURABAHA",
+      "CRDT MT- MOURABAHA",
+      "CRDT LT- MOURABAHA",
+      "DECOUVERT"
+
+    ].includes(type);
   }
 
   const [openPopupConfirmDetails, setopenPopupConfirmDetails] =
@@ -164,10 +170,6 @@ function EntrepriseCreditView() {
     const dossierStatus = ligne.status;
     const typeCredit = ligne.type_credit;
 
-    // console.log("ici type credit ici : ", !isMourabahaType(typeCredit))
-
-    console.log("doit prend : ", typeCredit);
-
     if (dossierStatus !== "EN_COURS") return false;
 
     if (role === "Chargé de clientèle" && dossierPoints === 0) return true;
@@ -175,8 +177,8 @@ function EntrepriseCreditView() {
     if (role === "Chef agence central" && dossierPoints === 2) return true;
     if (
       role === "Chef de département commercial" &&
-      // dossierPoints === 6 && !isMourabahaType(typeCredit))
-      dossierPoints === 6
+      dossierPoints === 6 &&
+      !isMourabahaType(typeCredit)
     )
       return true;
 
@@ -365,16 +367,13 @@ function EntrepriseCreditView() {
     (credit) => credit.type_dossier === "Entreprise"
   );
 
-  // const {data:DateDocument, isPending:isPendingType} = useGetTypeDocument("particulier")
-
-  // const PartiCiluerDocument = DateDocument?.
   const { data: DateDocument, isPending: isPendingType } =
     useGetTypeDocument("entreprise");
 
   const PartiCiluerDocument =
     DateDocument?.map((credit) => ({
-      label: credit.nom, // Ce qui sera affiché
-      value: credit.nom, // La valeur associée
+      label: credit.nom,
+      value: credit.nom,
     })) || [];
   const lignesFiltrees = filtrerLignesCredit(onlyPaticulier);
 
@@ -439,17 +438,13 @@ function EntrepriseCreditView() {
     });
   };
 
-  // const SelectMotiv = (value: string) => {
-  //   setMotiv(value);
-  // };
-
   const handleRejeterLigne = () => {
     if (!selectTypeDocument) {
       return enqueueSnackbar("Veuillez Selectionner le motif ! ", {
         variant: "error",
       });
     } else if (!selectAutre) {
-      return enqueueSnackbar("Veuillez saisir le motif de rejet !", {
+      return enqueueSnackbar("Merci de préciser le motif du rejet", {
         variant: "error",
       });
     }
@@ -459,11 +454,8 @@ function EntrepriseCreditView() {
       const params: RejeterLigne = {
         id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
         user_id: Number(idUserConnect)!,
-        // motif: motiv === "Autre" ? selectAutre : motiv,
         motif: selectTypeDocument + " |=> " + selectAutre,
-        // selectAutre  + selectTypeDocument
       };
-      console.log("params : ", params);
       rejeterligne(params, {
         onSuccess: () => {
           handlecancelRejeter();
@@ -606,14 +598,13 @@ function EntrepriseCreditView() {
             ""
           );
         } else if (role === "Chef de département commercial") {
-          console.log("ici thiam");
-
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
-          ) : record.points_valides === 6 && record.status === "EN_COURS" ? (
-            // && !isMourabahaType(record?.type_credit!) ? (
+          ) : record.points_valides === 6 &&
+            record.status === "EN_COURS" &&
+            !isMourabahaType(record?.type_credit!) ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -622,10 +613,7 @@ function EntrepriseCreditView() {
           ) : (
             ""
           );
-        }
-        else if (role === "Directeur de département Islamique") {
-          console.log("ici nany : ", !isMourabahaType(record?.type_credit!));
-          console.log("type credit : ", record.type_credit!);
+        } else if (role === "Directeur de département Islamique") {
           return record?.points_valides! > 6 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
@@ -641,8 +629,7 @@ function EntrepriseCreditView() {
           ) : (
             ""
           );
-        }
-        else if (role === "Analyse de Risque") {
+        } else if (role === "Analyse de Risque") {
           return record?.points_valides! > 12 ? (
             <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
@@ -770,8 +757,8 @@ function EntrepriseCreditView() {
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6
-            // && !isMourabahaType(record?.type_credit!)
+            dossierPoints === 6 &&
+            !isMourabahaType(record?.type_credit!)
           ) {
             items.push(
               {
@@ -797,34 +784,34 @@ function EntrepriseCreditView() {
             );
           }
 
-          // if (
-          //   connectedUser.post === "Directeur de département Islamique" &&
-          //   dossierPoints === 6
-          //   &&  isMourabahaType(record?.type_credit!)
-          // ) {
-          //   items.push(
-          //     {
-          //       label: (
-          //         <div className="flex items-center justify-between space-x-3">
-          //           <span>Remonter</span>
-          //           <GrValidate color="green" size={17} />
-          //         </div>
-          //       ),
-          //       key: "5",
-          //       onClick: () => showModalValider(record),
-          //     },
-          //     {
-          //       label: (
-          //         <div className="flex items-center justify-between space-x-3">
-          //           <span>Réjeter</span>
-          //           <MdCancel color="red" size={17} />
-          //         </div>
-          //       ),
-          //       key: "6",
-          //       onClick: () => showModalRejeter(record),
-          //     }
-          //   );
-          // }
+          if (
+            connectedUser.post === "Directeur de département Islamique" &&
+            dossierPoints === 6 &&
+            isMourabahaType(record?.type_credit!)
+          ) {
+            items.push(
+              {
+                label: (
+                  <div className="flex items-center justify-between space-x-3">
+                    <span>Remonter</span>
+                    <GrValidate color="green" size={17} />
+                  </div>
+                ),
+                key: "5",
+                onClick: () => showModalValider(record),
+              },
+              {
+                label: (
+                  <div className="flex items-center justify-between space-x-3">
+                    <span>Réjeter</span>
+                    <MdCancel color="red" size={17} />
+                  </div>
+                ),
+                key: "6",
+                onClick: () => showModalRejeter(record),
+              }
+            );
+          }
 
           if (
             connectedUser.post === "Analyse de Risque" &&
@@ -1053,7 +1040,7 @@ function EntrepriseCreditView() {
             onCancel={handlecancelHistorique}
             open={openPopupConfirmHistorique.open}
             footer={null}
-            width={900}
+            width={930}
             closeIcon={false}
             maskClosable={false}
           >
@@ -1648,62 +1635,7 @@ function EntrepriseCreditView() {
                 </div>
 
                 <label>Motif</label>
-                {/* <Select
-                className="w-full h-[42px]"
-                options={[
-                  {
-                    label: "Dossier incomplet",
-                    value: "Dossier incomplet",
-                  },
-                  {
-                    label: "Dossier non conforme",
-                    value: "Dossier non conforme",
-                  },
-                  {
-                    label: "Capacité de remboursement insuffisante",
-                    value: "Capacité de remboursement insuffisante",
-                  },
-                  {
-                    label: "Historique de crédit défavorable",
-                    value: "Historique de crédit défavorable",
-                  },
-                  {
-                    label: "Endettement trop élevé",
-                    value: "Endettement trop élevé",
-                  },
-                  {
-                    label: "Revenus instables ou insuffisants",
-                    value: "Revenus instables ou insuffisants",
-                  },
-                  {
-                    label: "Garanties insuffisantes",
-                    value: "Garanties insuffisantes",
-                  },
-                  {
-                    label: "Secteur d'activité à risque",
-                    value: "Secteur d'activité à risque",
-                  },
-                  {
-                    label: "Ancienneté professionnelle insuffisante",
-                    value: "Ancienneté professionnelle insuffisante",
-                  },
-                  {
-                    label: "Montant demandé trop important",
-                    value: "Montant demandé trop important",
-                  },
-                  {
-                    label: "Durée de remboursement inadaptée",
-                    value: "Durée de remboursement inadaptée",
-                  },
-                  {
-                    label: "Autre motif (préciser)",
-                    value: "Autre",
-                  },
-                ]}
-                value={motiv}
-                onChange={SelectMotiv}
-                placeholder="motif"
-              /> */}
+
                 <Select
                   className="w-full h-[42px]"
                   options={PartiCiluerDocument}
@@ -1745,18 +1677,20 @@ function EntrepriseCreditView() {
       </div>
 
       <div className="flex items-center max-lg:flex-col justify-center space-x-2 mt-2">
-       {role !== "Directeur Général" &&  <label className="w-[200px]">
-          <Select
-            value={filtreStatus}
-            onChange={(value) => setFiltreStatus(value)}
-            className="w-full h-[42px]"
-            options={[
-              { value: "all", label: "Tous les dossiers" },
-              { value: "a_decider", label: "À décider par moi" },
-            ]}
-            placeholder="Filtrer par statut"
-          />
-        </label>  } 
+        {role !== "Directeur Général" && (
+          <label className="w-[200px]">
+            <Select
+              value={filtreStatus}
+              onChange={(value) => setFiltreStatus(value)}
+              className="w-full h-[42px]"
+              options={[
+                { value: "all", label: "Tous les dossiers" },
+                { value: "a_decider", label: "À décider par moi" },
+              ]}
+              placeholder="Filtrer par statut"
+            />
+          </label>
+        )}
 
         <form className="space-x-2 flex" onSubmit={funcCLick}>
           <Input
@@ -1785,7 +1719,9 @@ function EntrepriseCreditView() {
       <div className="!max-w-full mt-4 md:!max-w-full overflow-x-auto">
         {(LigneDaTa?.length ?? 0) > 0 ? (
           <Table<LigneCredit>
-            dataSource={role === "Directeur Général" ? onlyPaticulier :   lignesFiltrees}
+            dataSource={
+              role === "Directeur Général" ? onlyPaticulier : lignesFiltrees
+            }
             columns={columnsLigne}
             loading={isPending}
             pagination={false}

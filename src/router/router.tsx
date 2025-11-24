@@ -1,3 +1,6 @@
+
+
+
 import {
   createBrowserRouter,
   Navigate,
@@ -11,11 +14,19 @@ import PublicLayout from "../Layout/PublicLayout";
 import ErrorPage from "../Pages/ErrorPage";
 import { useAuth } from "../Services/Auth/AuthProvider";
 import SpinnerLoader from "../Ui/Spinner";
+import { useAutoLogout } from "../Services/Auth/useAutoLogout";
 
 const Router = () => {
   const { loading, isAuthenticated } = useAuth();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  const { resetTimer } = useAutoLogout();
+
+     useEffect(() => {
+    if (isAuthenticated) {
+      resetTimer();
+    }
+  }, [isAuthenticated, resetTimer]);
   useEffect(() => {
     if (!loading) {
       setIsCheckingAuth(false);

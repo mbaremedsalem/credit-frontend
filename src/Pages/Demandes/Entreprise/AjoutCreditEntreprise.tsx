@@ -39,10 +39,10 @@ const AjoutCreditEntreprise = ({ client, onCloseModal, typeFile }: props) => {
   const { data: ListCredit } = useGetTypeCredit();
 
   const creditOptions =
-    ListCredit?.map((credit) => ({
+    (ListCredit?.map((credit) => ({
       label: credit.libelle, // Ce qui sera affiché
       value: credit.libelle, // La valeur associée
-    })) || [];
+    })) || []).concat({ label: "DECOUVERT", value: "DECOUVERT" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;

@@ -4,7 +4,7 @@ import { FcHighPriority, FcLock } from "react-icons/fc";
 import notFoundImage from "../assets/images/not.png"; // Remplacez par votre image
 
 type ErrorPageProps = {
-  status?: "404" | "403" | "error";
+  status?: "404" | "403" | "500"| "error";
   message?: string;
 };
 
@@ -20,6 +20,11 @@ function ErrorPage({ status = "error", message = "Something went wrong" }: Error
     "403": {
       title: "403",
       subTitle: "Désolé, vous n'êtes pas autorisé à accéder à cette page.",
+      icon: <FcLock className="text-8xl mx-auto mb-6" />,
+    },
+     "500": {
+      title: "500",
+      subTitle: "Error !!",
       icon: <FcLock className="text-8xl mx-auto mb-6" />,
     },
     error: {

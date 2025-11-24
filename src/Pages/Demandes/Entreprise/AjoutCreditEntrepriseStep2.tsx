@@ -369,7 +369,7 @@ const onSubmit = () => {
         className={`w-[150px] h-[50px] rounded-lg transition-colors ${
           isPending 
             ? 'bg-blue-400 cursor-not-allowed' 
-            : 'bg-blue-600 hover:bg-blue-700'
+            : '  !bg-main-color'
         } text-white`}
         loading={isPending}
         onClick={onSubmit}

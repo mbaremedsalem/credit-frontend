@@ -66,10 +66,8 @@ export const useAddCreditEntreprise = () => {
       const isExist = responseData?.error;
       const errorStatus = responseData?.status;
 
-      console.log("Erreur détectée : ", isExist);
       console.log("Statut de l'erreur : ", errorStatus);
       
-      // Gestion des erreurs spécifiques
       if (errorUpload) {
         return enqueueSnackbar(errorUpload, { variant: "error" });
       }

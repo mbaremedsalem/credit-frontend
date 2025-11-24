@@ -28,11 +28,12 @@ type props = {
 const AjoutCreditParticulier = ({ client, onCloseModal, typeFile }: props) => {
   const { data: ListCredit } = useGetTypeCredit();
 
-  const creditOptions =
+  const creditOptions = (
     ListCredit?.map((credit) => ({
       label: credit.libelle, // Ce qui sera affiché
       value: credit.libelle, // La valeur associée
-    })) || [];
+    })) || []
+  ).concat({ label: "DECOUVERT", value: "DECOUVERT" });
   const [openPopupConfirm, setOpenPopupConfirm] = useState<PopconfirmType>({
     open: false,
     client: null,

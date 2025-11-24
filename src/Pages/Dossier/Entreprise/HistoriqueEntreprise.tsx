@@ -45,7 +45,7 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
   };
 
   function isMourabahaType(type:string) {
-    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
+    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA", "DECOUVERT"].includes(type);
 }
 
   return (
