@@ -168,7 +168,7 @@ function ParticulierCreditView() {
       "CRDT CT- MOURABAHA",
       "CRDT MT- MOURABAHA",
       "CRDT LT- MOURABAHA",
-      "DECOUVERT"
+      // "DECOUVERT"
     ].includes(type);
   }
   const doitPrendreDecision = (ligne: LigneCredit): boolean => {

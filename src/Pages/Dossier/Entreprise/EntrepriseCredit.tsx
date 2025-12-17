@@ -103,7 +103,7 @@ function EntrepriseCreditView() {
       "CRDT CT- MOURABAHA",
       "CRDT MT- MOURABAHA",
       "CRDT LT- MOURABAHA",
-      "DECOUVERT"
+      // "DECOUVERT"
 
     ].includes(type);
   }

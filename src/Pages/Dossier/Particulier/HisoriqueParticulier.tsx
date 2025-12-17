@@ -30,9 +30,13 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
 
   const { data: HistoriqueData } = useGetHistoriqueLigneCredit(credit);
 
-function isMourabahaType(type:string) {
-    return ["CRDT CT- MOURABAHA", "CRDT MT- MOURABAHA", "CRDT LT- MOURABAHA"].includes(type);
-}
+  function isMourabahaType(type: string) {
+    return [
+      "CRDT CT- MOURABAHA",
+      "CRDT MT- MOURABAHA",
+      "CRDT LT- MOURABAHA",
+    ].includes(type);
+  }
 
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return "";
@@ -189,10 +193,12 @@ function isMourabahaType(type:string) {
             {HistoriqueData.credit.points_valides === 2
               ? // ? "Cheff Agence"
                 "Chef agence central"
-               : HistoriqueData.credit.points_valides === 6 && !isMourabahaType(HistoriqueData?.credit?.type_credit)
-              //  : HistoriqueData.credit.points_valides === 6
-              ? "Chef de département commercial"
-              : HistoriqueData.credit.points_valides === 6 && isMourabahaType(HistoriqueData?.credit?.type_credit)
+              : HistoriqueData.credit.points_valides === 6 &&
+                !isMourabahaType(HistoriqueData?.credit?.type_credit)
+              ? //  : HistoriqueData.credit.points_valides === 6
+                "Chef de département commercial"
+              : HistoriqueData.credit.points_valides === 6 &&
+                isMourabahaType(HistoriqueData?.credit?.type_credit)
               ? "Directeur de département Islamique"
               : HistoriqueData.credit.points_valides === 12
               ? "L'Analyse de risque"
