@@ -41,7 +41,7 @@ export const useLogin = () => {
     mutationFn: login,
     onSuccess: (data) => {
       if (data.status === 200) {
-        setTimeout(() => {
+        // setTimeout(() => {
           // window.location.href = "/";
           setAuthState({
             loading: false,
@@ -49,7 +49,7 @@ export const useLogin = () => {
           });
           navigate("/", { replace: true });
           return navigate("/", { replace: true });
-        }, 500);
+        // }, 500);
         const message = "Bienvenue " + data.nom;
         return enqueueSnackbar(message, { variant: "success" });
       } else {

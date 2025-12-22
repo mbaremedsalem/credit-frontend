@@ -451,7 +451,7 @@ function EntrepriseCreditView() {
       });
     }
     setLoading(true);
-    setTimeout(() => {
+    // setTimeout(() => {
       setLoading(false);
       const params: RejeterLigne = {
         id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
@@ -468,7 +468,7 @@ function EntrepriseCreditView() {
           });
         },
       });
-    }, 2000);
+    // }, 2000);
   };
 
   const columnsLigne: ColumnsType<LigneCredit> = [

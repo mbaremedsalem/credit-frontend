@@ -59,6 +59,61 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
         <RiFolderHistoryFill size={30} />
         <h1 className="text-2xl font-bold text-gray-800">Historique Crédit</h1>
       </div>
+
+
+       <motion.div 
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  }}
+  className="space-y-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200"
+>
+  <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.5, ease: "easeOut" }}
+    className="flex items-center space-x-2"
+  >
+    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+    <span className="font-medium text-gray-700">Dossier N° :</span>
+    <span className="font-semibold text-gray-900">{HistoriqueData?.credit?.id}</span>
+  </motion.div>
+
+  <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+    className="flex items-center space-x-2"
+  >
+    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+    <span className="font-medium text-gray-700">Entreprise N° :</span>
+    <span className="font-semibold text-gray-900">{HistoriqueData?.credit?.client?.client_code}</span>
+  </motion.div>
+
+  <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+    className="flex items-center space-x-2"
+  >
+    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+    <span className="font-medium text-gray-700">Enptreprise Nom :</span>
+    <span className="font-semibold text-gray-900">
+      {HistoriqueData?.credit?.client?.nom} {HistoriqueData?.credit?.client?.prenom}
+    </span>
+  </motion.div>
+</motion.div>
+
+
+
       <div className="flex items-center space-x-3 mb-2 justify-center">
         <h1 className="text-lg font-bold text-gray-800">Status actuel : </h1>
         <Tag

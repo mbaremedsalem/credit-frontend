@@ -13,8 +13,8 @@ type props = {
 };
 
 const HistoriqueHistoriqueParticulier = ({ credit, onClose }: props) => {
-  const [showHistoriqueTest, setShowHistoriqueTest] = useState(false);
-  const [showHistoriqueLigne, setShowHistoriqueLigne] = useState(false);
+  const [showHistoriqueTest, setShowHistoriqueTest] = useState(true);
+  const [showHistoriqueLigne, setShowHistoriqueLigne] = useState(true);
 
   const toggleHistoriqueTest = () => setShowHistoriqueTest((prev) => !prev);
   const toggleHistoriqueLigne = () => setShowHistoriqueLigne((prev) => !prev);
@@ -65,6 +65,63 @@ const HistoriqueHistoriqueParticulier = ({ credit, onClose }: props) => {
                 : HistoriqueData?.credit?.status}
             </Tag>
           </div>
+
+
+               <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.2,
+            },
+          },
+        }}
+        className="space-y-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200"
+      >
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex items-center space-x-2"
+        >
+          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+          <span className="font-medium text-gray-700">Dossier N° :</span>
+          <span className="font-semibold text-gray-900">
+            {HistoriqueData?.credit?.id}
+          </span>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+          className="flex items-center space-x-2"
+        >
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span className="font-medium text-gray-700">Client N° :</span>
+          <span className="font-semibold text-gray-900">
+            {HistoriqueData?.credit?.client?.client_code}
+          </span>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+          className="flex items-center space-x-2"
+        >
+          <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+          <span className="font-medium text-gray-700">Client Nom :</span>
+          <span className="font-semibold text-gray-900">
+            {HistoriqueData?.credit?.client?.nom}{" "}
+            {HistoriqueData?.credit?.client?.prenom}
+          </span>
+        </motion.div>
+      </motion.div>
 
           {HistoriqueData?.validations?.map((credit, index) => {
             const { status } = credit || {};

@@ -61,7 +61,7 @@ const onSubmit = () => {
     setErrorPasswordConfirm(false)
      setLoading(true); 
       
-      setTimeout(() => {
+      // setTimeout(() => {
         setLoading(false);
 
       const params : ResetPasswordParams =  {
@@ -77,7 +77,7 @@ const onSubmit = () => {
   
     })
     
-    }, (2000));
+    // }, (2000));
  
 }
     

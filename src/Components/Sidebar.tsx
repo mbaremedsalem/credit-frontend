@@ -21,12 +21,12 @@ function Sidebar({setIsSidebarOpen, isSidebarOpen} : props){
     const [loading, setLoading] = useState(false)
   const LogoutFun = () => {
     setLoading(true)
-    setTimeout(()=>{
+    // setTimeout(()=>{
         setLoading(false)
         logout()
          window.location.href = "http://aubstream:9060/";
         //  window.location.href = "http://10.99.1.2:5173/";
-    }, 1000)
+    // }, 1000)
    }
     const navsAdmin = [
         { name: ("Accueil"), link: "/", icon: <LiaWarehouseSolid size={20} /> },

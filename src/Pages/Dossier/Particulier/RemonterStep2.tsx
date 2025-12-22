@@ -182,18 +182,14 @@ const RemonterStep2 = ({
         hideModal(),
           closeSecondModal!(),
           oncloseFirstModal!(),
-          setTimeout(() => {
+          // setTimeout(() => {
             message.success("credit remonte avec success !");
-          }, 1000);
+          // }, 1000);
       },
     });
   };
 
-  // const docsRisque = ligne?.documents?.filter(
-  //   (doc) =>
-  //     doc.createur?.post === "Analyse de Risque" ||
-  //     doc.createur?.post === "Directeur Risque"
-  // );
+
 
   const docsRisque = ligne?.documents
     ? ligne?.documents?.filter(

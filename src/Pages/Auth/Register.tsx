@@ -92,7 +92,7 @@ setPost(value)
   seterrorUsername(false)
       setLoading(true); 
       
-      setTimeout(() => {
+      // setTimeout(() => {
         setLoading(false);
         const params : RegisterParams = {
           password : password,
@@ -114,7 +114,7 @@ setPost(value)
           onSuccess:()=>{
           }
         })
-      }, 1500); 
+      // }, 1500); 
     };
 
     

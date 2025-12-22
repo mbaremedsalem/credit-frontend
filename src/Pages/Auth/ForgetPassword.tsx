@@ -40,7 +40,7 @@ function ForgetPassword(){
       }
   
       setLoading(true);
-      setTimeout(() => {
+      // setTimeout(() => {
         setLoading(false);
         const params : forgetPassword = {
           email : email
@@ -50,7 +50,7 @@ function ForgetPassword(){
             message.success("success email !")
           }
         })
-      }, 2000);
+      // }, 2000);
   };
   
    const [errorUsername, seterrorUsername] = useState(false)

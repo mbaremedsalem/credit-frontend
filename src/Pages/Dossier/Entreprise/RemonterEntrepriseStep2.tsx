@@ -181,9 +181,9 @@ const RemonterStepEntreprise2 = ({
         hideModal(),
           closeSecondModal!(),
           oncloseFirstModal!(),
-          setTimeout(() => {
+          // setTimeout(() => {
             message.success("credit remonte avec success !");
-          }, 1000);
+          // }, 1000);
       },
     });
   };

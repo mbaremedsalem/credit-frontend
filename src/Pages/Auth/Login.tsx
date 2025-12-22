@@ -125,7 +125,8 @@ function Login() {
     seterrorUsername(false);
     setLoading(true);
 
-    setTimeout(() => {
+    // setTimeout(() => {
+
       setLoading(false);
       const params: LoginParams = {
         password: password,
@@ -145,7 +146,7 @@ function Login() {
       log(params, {
         onSuccess: () => {},
       });
-    }, 2000);
+    // }, 2000);
   };
 
   const onChange: CheckboxProps["onChange"] = (e) => {

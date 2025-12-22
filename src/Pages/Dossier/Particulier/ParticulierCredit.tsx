@@ -435,12 +435,7 @@ function ParticulierCreditView() {
     });
   };
 
-  //   const SelectMotiv = (value: string) => {
-  //     setMotiv(value);
-  //   };
-  //  const selectDocument = (value: string) => {
-  //     setSelectTypeDocument(value);
-  //   };
+  
   const handleRejeterLigne = () => {
     // if (!motiv) {
     //   return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
@@ -452,13 +447,11 @@ function ParticulierCreditView() {
       return message.error("Merci de préciser le motif du rejet");
     }
     setLoading(true);
-    setTimeout(() => {
+    // setTimeout(() => {
       setLoading(false);
       const params: RejeterLigne = {
         id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
         user_id: Number(idUserConnect)!,
-        // motif: motiv,
-        // motif: motiv === "Autre" ? selectAutre : motiv,
         motif: selectAutre,
       };
       rejeterligne(params, {
@@ -472,7 +465,7 @@ function ParticulierCreditView() {
           });
         },
       });
-    }, 2000);
+    // }, 2000);
   };
 
   const columnsLigne: ColumnsType<LigneCredit> = [
