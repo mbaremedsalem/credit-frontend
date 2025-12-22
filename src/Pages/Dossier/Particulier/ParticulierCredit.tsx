@@ -49,6 +49,7 @@ import {
   FaUpload,
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
+import GetAgenceBYcode from "../../../Lib/CustomFunction";
 
 export type PopconfirmType = {
   client?: CLientT | null;
@@ -183,7 +184,9 @@ function ParticulierCreditView() {
     if (role === "Chef agence central" && dossierPoints === 2) return true;
     if (
       role === "Chef de département commercial" &&
-      dossierPoints === 6 && !isMourabahaType(typeCredit))
+      dossierPoints === 6 &&
+      !isMourabahaType(typeCredit)
+    )
       return true;
     // if (role === "Chef de département commercial" && dossierPoints === 6)
     //   return true;
@@ -216,25 +219,18 @@ function ParticulierCreditView() {
     }
   };
   const { data: LigneDaTa, isPending } = useGetLingeCredit(
-    valueChercher,
-    dates[0]!,
-    dates[1]!
+    valueChercher ?? "",
+    dates?.[0] ?? null!,
+    dates?.[1] ?? null!
   );
-  // const {data:DateDocument, isPending:isPendingType} = useGetTypeDocument("particulier")
-
-  // const PartiCiluerDocument = DateDocument?.
-
-  //  const PartiCiluerDocument =
-  //   DateDocument?.map((credit) => ({
-  //     label: credit.nom, // Ce qui sera affiché
-  //     value: credit.nom, // La valeur associée
-  //   })) || [];
 
   const agenceConnect = AuthService.getAGENCEUserConnect();
 
   const isCommercial =
     role === "Chargé de clientèle" || role === "Chef agence central"
-      ? LigneDaTa?.filter((agence) => agence.agence === agenceConnect)
+      ? LigneDaTa
+        ? LigneDaTa?.filter((agence) => agence?.agence === agenceConnect)
+        : []
       : LigneDaTa;
 
   const onlyEnattente = isCommercial?.filter(
@@ -481,6 +477,11 @@ function ParticulierCreditView() {
 
   const columnsLigne: ColumnsType<LigneCredit> = [
     {
+      title: "N° Credit",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
       title: "Numéro Client",
       dataIndex: ["client", "client_code"],
       key: "client_code",
@@ -543,9 +544,7 @@ function ParticulierCreditView() {
 
       key: "agence",
       render: (_, record) => {
-        return (
-          <div> {record?.agence === "00001" ? "Nouakchott" : "Nouadhibou"}</div>
-        );
+        return <div> {GetAgenceBYcode(record?.agence!)}</div>;
       },
     },
 
@@ -601,7 +600,9 @@ function ParticulierCreditView() {
               {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
             </Tag>
           ) : // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
-          record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!) ? (
+          record.points_valides === 6 &&
+            record.status === "EN_COURS" &&
+            !isMourabahaType(record?.type_credit!) ? (
             <Tag color="orange">En attente de votre décision</Tag>
           ) : record.status === "REJETÉ" ? (
             <Tag color="red">Déjà Rejeté</Tag>
@@ -754,7 +755,8 @@ function ParticulierCreditView() {
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6 && !isMourabahaType(record?.type_credit!)
+            dossierPoints === 6 &&
+            !isMourabahaType(record?.type_credit!)
             // dossierPoints === 6
           ) {
             items.push(
@@ -781,9 +783,10 @@ function ParticulierCreditView() {
             );
           }
 
-           if (
+          if (
             connectedUser.post === "Directeur de département Islamique" &&
-            dossierPoints === 6 && isMourabahaType(record?.type_credit!)
+            dossierPoints === 6 &&
+            isMourabahaType(record?.type_credit!)
           ) {
             items.push(
               {

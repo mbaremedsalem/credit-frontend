@@ -22,6 +22,8 @@ import Toggle from "../../../Ui/Toggle";
 import { useGetLingeCredit } from "../../../Services/Demandes/useGetLigneCredit";
 import DetailsHistoriqueHistoriqueEntreprise from "./DetailsHistoriqueEntreprise";
 import HistoriqueHistoriqueEntreprise from "./HistoriqueHistoriqueEntreprise";
+import GetAgenceBYcode from "../../../Lib/CustomFunction";
+import AuthService from "../../../Auth-Services/AuthService";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -38,6 +40,19 @@ function HistoriqueEntreprise() {
 
   const [cherche, setcherche] = useState("");
   const [valueChercher, setValuecher] = useState("");
+  const [openPopupConfirmDetails, setopenPopupConfirmDetails] =
+    useState<PopconfirmTypeDetails>({
+      open: false,
+      ligne: null,
+    });
+  const [openPopupConfirmHistorique, setopenPopupConfirmHistorique] =
+    useState<PopconfirmTypeDetails>({
+      open: false,
+      ligne: null,
+    });
+
+  const role = AuthService.getPostUserConnect();
+  const agenceConnect = AuthService.getAGENCEUserConnect();
 
   const funcCLick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,28 +74,24 @@ function HistoriqueEntreprise() {
     console.log(values);
     setDates(dateStrings);
   };
-  const { data: LigneDaTa, isPending } = useGetLingeCredit(
-    valueChercher,
-    dates[0]!,
-    dates[1]!
-  );
-  const onlyValidated = LigneDaTa?.filter(
-    (credit) => credit?.status === "VALIDÉ"
-  );
-  const onlyRejeter = LigneDaTa?.filter(
-    (credit) => credit?.status === "REJETÉ"
+  const { data: LigneDaTa = [], isPending } = useGetLingeCredit(
+    valueChercher ?? "",
+    dates?.[0] ?? null!,
+    dates?.[1] ?? null!
   );
 
-  const [openPopupConfirmDetails, setopenPopupConfirmDetails] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
-  const [openPopupConfirmHistorique, setopenPopupConfirmHistorique] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
+  const isCommercial =
+    role === "Chargé de clientèle" || role === "Chef agence central"
+      ? LigneDaTa?.filter((agence) => agence?.agence === agenceConnect)
+      : LigneDaTa;
+
+  const onlyValidated = isCommercial?.filter(
+    (credit) => credit?.status === "VALIDÉ"
+  );
+
+  const onlyRejeter = isCommercial?.filter(
+    (credit) => credit?.status === "REJETÉ"
+  );
 
   const handlecancelDetails = () => {
     setopenPopupConfirmDetails({
@@ -103,6 +114,11 @@ function HistoriqueEntreprise() {
   };
 
   const columnsLigne: ColumnsType<LigneCredit> = [
+     {
+      title: "N° Credit",
+      dataIndex: "id",
+      key: "id",
+    },
     {
       title: "Numéro Client",
       dataIndex: ["client", "client_code"],
@@ -177,9 +193,7 @@ function HistoriqueEntreprise() {
 
       key: "agence",
       render: (_, record) => {
-        return (
-          <div> {record?.agence === "00001" ? "Nouakchott" : "Nouadhibou"}</div>
-        );
+        return <div> {GetAgenceBYcode(record?.agence!)}</div>;
       },
     },
     {
@@ -281,8 +295,7 @@ function HistoriqueEntreprise() {
             footer={null}
             width={900}
             closeIcon={false}
-              maskClosable={false}
-
+            maskClosable={false}
           >
             <HistoriqueHistoriqueEntreprise
               onClose={handlecancelHistorique}

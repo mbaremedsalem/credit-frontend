@@ -26,6 +26,8 @@ import Toggle from "../../../Ui/Toggle";
 import { useGetLingeCredit } from "../../../Services/Demandes/useGetLigneCredit";
 import DetailsHistoriquePaticulier from "./DetailsHistoriqueParticulier";
 import HistoriqueHistoriqueParticulier from "./HistoriqueHistoriqueParticulier";
+import GetAgenceBYcode from "../../../Lib/CustomFunction";
+import AuthService from "../../../Auth-Services/AuthService";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -43,6 +45,8 @@ function HistoriqueParticulier() {
 
   const [cherche, setcherche] = useState("");
   const [valueChercher, setValuecher] = useState("");
+  const role = AuthService.getPostUserConnect();
+  const agenceConnect = AuthService.getAGENCEUserConnect();
 
   const funcCLick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,15 +68,22 @@ function HistoriqueParticulier() {
     console.log(values);
     setDates(dateStrings);
   };
-  const { data: LigneDaTa, isPending } = useGetLingeCredit(
-    valueChercher,
-    dates[0]!,
-    dates[1]!
+  const { data: LigneDaTa = [], isPending } = useGetLingeCredit(
+    valueChercher ?? "",
+    dates?.[0] ?? null!,
+    dates?.[1] ?? null!
   );
-  const onlyValidated = LigneDaTa?.filter(
+
+  const isCommercial =
+    role === "Chargé de clientèle" || role === "Chef agence central"
+      ? LigneDaTa.filter((agence) => agence?.agence === agenceConnect)
+      : LigneDaTa;
+
+  const onlyValidated = isCommercial.filter(
     (credit) => credit?.status === "VALIDÉ"
   );
-  const onlyRejeter = LigneDaTa?.filter(
+
+  const onlyRejeter = isCommercial.filter(
     (credit) => credit?.status === "REJETÉ"
   );
 
@@ -135,6 +146,11 @@ function HistoriqueParticulier() {
   };
 
   const columnsLigne: ColumnsType<LigneCredit> = [
+    {
+      title: "N° Credit",
+      dataIndex: "id",
+      key: "id",
+    },
     {
       title: "Numéro Client",
       dataIndex: ["client", "client_code"],
@@ -199,9 +215,7 @@ function HistoriqueParticulier() {
 
       key: "agence",
       render: (_, record) => {
-        return (
-          <div> {record?.agence === "00001" ? "Nouakchott" : "Nouadhibou"}</div>
-        );
+        return <div> {GetAgenceBYcode(record?.agence!)}</div>;
       },
     },
 
@@ -263,10 +277,10 @@ function HistoriqueParticulier() {
   ];
 
   const onlyPaticulierValider = onlyValidated?.filter(
-    (credit) => credit.type_dossier === "Particulier"
+    (credit) => credit?.type_dossier === "Particulier"
   );
   const onlyPaticulierRejeter = onlyRejeter?.filter(
-    (credit) => credit.type_dossier === "Particulier"
+    (credit) => credit?.type_dossier === "Particulier"
   );
   return (
     <div className="min-h-screen">
@@ -280,7 +294,6 @@ function HistoriqueParticulier() {
               ? onlyPaticulierValider?.length!
               : onlyPaticulierRejeter?.length!}{" "}
             Historique Crédit {active === 0 ? "Validé" : "Rejeté"}
-            {/* {Number(onlyPaticulierValider?.length!) + Number(onlyPaticulierRejeter?.length!)} Historique Crédit */}
           </span>
         </div>
         <div className="flex items-center gap-x-[13px] justify-center mt-3">
@@ -550,3 +563,5 @@ function HistoriqueParticulier() {
 }
 
 export default HistoriqueParticulier;
+
+

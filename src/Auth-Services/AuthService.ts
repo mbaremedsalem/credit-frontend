@@ -54,7 +54,8 @@ const AuthService = {
     },
   
     isAuthenticated: () => {
-      return !!AuthService.getAccessToken() && !AuthService.isAccessTokenExpired()
+      // return !!AuthService.getAccessToken() && !AuthService.isAccessTokenExpired()
+      return !!AuthService.getAccessToken();
     }
   }
   

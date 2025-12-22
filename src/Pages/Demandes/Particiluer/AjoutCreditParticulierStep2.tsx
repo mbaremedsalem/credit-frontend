@@ -114,10 +114,6 @@ const AjoutCreditParticulierStep2 = ({
       type_credit: credit?.type_credit ?? "",
       nature_credit: credit?.nature ?? "",
     };
-    
-    console.log("params : ", params)
-    console.log("---------- : ", )
-    console.log("type credit : ", credit?.type_credit)
 
 
     AddLigne(params, {
@@ -168,9 +164,7 @@ const AjoutCreditParticulierStep2 = ({
           <div>
             <span className="font-medium">Prenom :</span> {client?.PRENOM}
           </div>
-          {/* <div>
-            <span className="font-medium">Référence Dossier :</span> 34
-          </div> */}
+      
         </div>
       </div>
 
@@ -327,7 +321,6 @@ const AjoutCreditParticulierStep2 = ({
             <h1 className="text-xl font-bold text-gray-800">Confirmation</h1>
             <GiConfirmed size={32} className="text-green-500" />
           </div>
-          {/* <p className="font-bold text-lg text-center">Confirm Credit </p> */}
           <p className=" my-2 text-[15px] text-center">
             Êtes-vous sûr de vouloir confirmer ce crédit ?
           </p>

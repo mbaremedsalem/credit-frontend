@@ -49,6 +49,7 @@ api.interceptors.response.use(
                 if (result.isConfirmed) {
                 AuthService.clearTokens()
                 window.location.href = "http://aubstream:9060/"
+                // window.location.href = "http://10.99.1.2:5173/";
                 }
           }
             

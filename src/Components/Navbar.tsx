@@ -13,6 +13,7 @@ import { useGetNotifications } from "../Services/Notifications/useGetNotificatio
 import AuthService from "../Auth-Services/AuthService";
 import SpinnerLoader from "../Ui/Spinner";
 import NotificationPage from "../Pages/Notifications/Notifications";
+import GetAgenceBYcode from "../Lib/CustomFunction";
 export function Navbar({setIsSidebarOpen}:props){
  
 const {data:userInfo} = getUserInfo()
@@ -76,7 +77,7 @@ return (
            <div className="flex items-center gap-2">
              <span className="text-[12px]"> {userInfo?.post} </span>
            {(userInfo?.post === "Chargé de clientèle" || userInfo?.post === "Chef agence central") && <span>{" "} - {" "}</span>}
-      {(userInfo?.post === "Chargé de clientèle" || userInfo?.post === "Chef agence central") && <span className="text-[12px]"> {userInfo?.agnece === "00001"? "NKTT" : userInfo?.agnece === "00002" ? "NDB" : ""} </span>}      
+      {(userInfo?.post === "Chargé de clientèle" || userInfo?.post === "Chef agence central") && <span className="text-[12px]"> {GetAgenceBYcode(userInfo?.agnece!)} </span>}      
            </div>
             </div>
           </div>

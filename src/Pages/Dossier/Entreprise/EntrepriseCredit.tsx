@@ -50,6 +50,7 @@ import {
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useGetTypeDocument } from "../../../Services/Demandes/useGetListTypeDocument";
+import GetAgenceBYcode from "../../../Lib/CustomFunction";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -104,7 +105,6 @@ function EntrepriseCreditView() {
       "CRDT MT- MOURABAHA",
       "CRDT LT- MOURABAHA",
       // "DECOUVERT"
-
     ].includes(type);
   }
 
@@ -296,15 +296,17 @@ function EntrepriseCreditView() {
     setDates(dateStrings);
   };
   const { data: LigneDaTa, isPending } = useGetLingeCredit(
-    valueChercher,
-    dates[0]!,
-    dates[1]!
+     valueChercher ?? "",
+    dates?.[0] ?? null!,
+    dates?.[1] ?? null!
   );
   const agenceConnect = AuthService.getAGENCEUserConnect();
 
   const isCommercial =
     role === "Chargé de clientèle" || role === "Chef agence central"
-      ? LigneDaTa?.filter((agence) => agence.agence === agenceConnect)
+      ? LigneDaTa
+        ? LigneDaTa?.filter((agence) => agence?.agence === agenceConnect)
+        : []
       : LigneDaTa;
 
   const handlecancelDetails = () => {
@@ -471,6 +473,11 @@ function EntrepriseCreditView() {
 
   const columnsLigne: ColumnsType<LigneCredit> = [
     {
+      title: "N° Credit",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
       title: "Numéro Client",
       dataIndex: ["client", "client_code"],
       key: "client_code",
@@ -544,9 +551,7 @@ function EntrepriseCreditView() {
 
       key: "agence",
       render: (_, record) => {
-        return (
-          <div> {record?.agence === "00001" ? "Nouakchott" : "Nouadhibou"}</div>
-        );
+        return <div> {GetAgenceBYcode(record?.agence!)}</div>;
       },
     },
 

@@ -8,7 +8,6 @@ const ResetPassword = lazy(() => import("../Pages/Auth/ResetPassword"));
 const Home = lazy(() => import("../Pages/Home"));
 import ErrorPage from "../Pages/ErrorPage"
 const DossierStatus = lazy(() => import("../Pages/Dossier/DossierView"));
-// const CreditStatus = lazy(() => import("../Pages/Credit/CreditView"));
 const Demandes = lazy(() => import("../Pages/Demandes/PageViewDemande"));
 const Historique = lazy(() => import("../Pages/Historiques/HistoriqueView"));
 const Processus = lazy(() => import("../Pages/Processus/Processus"));

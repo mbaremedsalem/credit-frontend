@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useGetStatusValidateur, ValidateurStatus } from '../Services/Home/useGetValidateur';
 import SpinnerLoader from '../Ui/Spinner';
+import GetAgenceBYcode from '../Lib/CustomFunction';
 
 
 
@@ -224,7 +225,7 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ data }) =
                           />
                         </TableCell>
                         <TableCell>
-                          <Chip label={`Agence ${row.agnece === "00001" ? "Nouakchott" : row.agnece === "00002" ?"Nouadhibou" : ""}`} />
+                          <Chip label={`Agence ${GetAgenceBYcode(row.agnece)}`} />
                         </TableCell>
                         <TableCell align="right">
                           <Typography fontWeight="medium">
