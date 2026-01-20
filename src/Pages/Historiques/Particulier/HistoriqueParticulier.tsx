@@ -26,8 +26,8 @@ import Toggle from "../../../Ui/Toggle";
 import { useGetLingeCredit } from "../../../Services/Demandes/useGetLigneCredit";
 import DetailsHistoriquePaticulier from "./DetailsHistoriqueParticulier";
 import HistoriqueHistoriqueParticulier from "./HistoriqueHistoriqueParticulier";
-import GetAgenceBYcode from "../../../Lib/CustomFunction";
 import AuthService from "../../../Auth-Services/AuthService";
+import { GetAgenceBYcode } from "../../../Lib/CustomFunction";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;

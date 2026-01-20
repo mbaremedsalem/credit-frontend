@@ -30,7 +30,7 @@ import { getUserInfo } from "../Services/Auth/useGetUserInfo";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 import NumberFlow from "@number-flow/react";
-import GetAgenceBYcode from "../Lib/CustomFunction";
+import { GetAgenceBYcode } from "../Lib/CustomFunction";
 export default function CreditStatsHomePage() {
   const { data: userInfo } = getUserInfo();
   const { data: StatsData, isPending } = useGetStats();

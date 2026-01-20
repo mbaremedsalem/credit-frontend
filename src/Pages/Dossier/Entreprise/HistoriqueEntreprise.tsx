@@ -239,9 +239,10 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
             {HistoriqueData.credit.points_valides === 2
               ? // ? "Cheff Agence"
                 "Chef agence central"
-              : HistoriqueData.credit.points_valides === 6 &&
-                !isMourabahaType(HistoriqueData?.credit?.type_credit)
-              ? // : HistoriqueData.credit.points_valides === 6
+              : HistoriqueData.credit.points_valides === 6 
+              // &&
+              //   !isMourabahaType(HistoriqueData?.credit?.type_credit)
+              ? 
                 "Chef de département commercial"
               : HistoriqueData.credit.points_valides === 6 &&
                 isMourabahaType(HistoriqueData?.credit?.type_credit)

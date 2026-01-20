@@ -13,7 +13,7 @@ import { useGetNotifications } from "../Services/Notifications/useGetNotificatio
 import AuthService from "../Auth-Services/AuthService";
 import SpinnerLoader from "../Ui/Spinner";
 import NotificationPage from "../Pages/Notifications/Notifications";
-import GetAgenceBYcode from "../Lib/CustomFunction";
+import { GetAgenceBYcode } from "../Lib/CustomFunction";
 export function Navbar({setIsSidebarOpen}:props){
  
 const {data:userInfo} = getUserInfo()
