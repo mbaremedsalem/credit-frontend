@@ -250,7 +250,7 @@ const HistoriqueEntreprise = ({ credit, onClose }: props) => {
               : HistoriqueData.credit.points_valides === 12
               ? "L'Analyse de risque"
               : HistoriqueData.credit.points_valides === 24
-              ? "Directeur Risque"
+              ? "Commité de Crédit"
               : HistoriqueData.credit.points_valides === 48
               ? "En attente de l'importation du tableau d'amortissement par le chargé de clientèle"
               : HistoriqueData.credit.points_valides === 50

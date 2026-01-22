@@ -34,7 +34,7 @@ export function GetEtatDossier(points_valides: number) {
     case 12:
       return "Analyse de Risque";
     case 24:
-      return "Directeur Risque";
+      return "Commité de Crédit";
     case 48:
       return "Chargé de clientèle - Table d'amortissement";
     default:
