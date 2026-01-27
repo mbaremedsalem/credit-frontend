@@ -27,11 +27,12 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
 
   // Fonction pour valider la taille du fichier avant l'upload
   const beforeUpload = (file: File): boolean => {
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    // const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    const MAX_FILE_SIZE = 101 * 1024 * 1024; // 101MB
 
     if (file.size > MAX_FILE_SIZE) {
       message.error(
-        `Le fichier "${file.name}" dépasse la limite de 50MB. Taille: ${(
+        `Le fichier "${file.name}" dépasse la limite de 101MB. Taille: ${(
           file.size /
           (1024 * 1024)
         ).toFixed(2)}MB`
@@ -81,7 +82,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
             >
               <label className="font-semibold text-[13px]">
                 {type.nom}
-                <span className="text-xs text-gray-500 ml-1">(Max: 50MB)</span>
+                <span className="text-xs text-gray-500 ml-1">(Max: 101MB)</span>
               </label>
               <Upload
                 accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv,.doc,.docx"

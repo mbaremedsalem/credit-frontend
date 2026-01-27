@@ -1,10 +1,10 @@
-import  { JSX, useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from "react";
 import { GiConfirmed } from "react-icons/gi";
 import { TbListDetails } from "react-icons/tb";
 import { FaCreditCard } from "react-icons/fa6";
-import { Button, Modal } from 'antd';
+import { Button, Modal } from "antd";
 import { FaFileImport } from "react-icons/fa";
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import {
   FaFilePdf,
   FaFileExcel,
@@ -13,96 +13,98 @@ import {
   FaFileWord,
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
-import { getUserInfo } from '../../../Services/Auth/useGetUserInfo';
-import { AddCreditEntreprise, EnterpriseType } from '../../../Services/Demandes/Entreprise/Type';
-import { IoIosBusiness } from 'react-icons/io';
-import { useAddCreditEntreprise } from '../../../Services/Demandes/Entreprise/useAddCreditEntreprise';
+import { getUserInfo } from "../../../Services/Auth/useGetUserInfo";
+import {
+  AddCreditEntreprise,
+  EnterpriseType,
+} from "../../../Services/Demandes/Entreprise/Type";
+import { IoIosBusiness } from "react-icons/io";
+import { useAddCreditEntreprise } from "../../../Services/Demandes/Entreprise/useAddCreditEntreprise";
 
 type CreditInfo = {
   montant: number;
   duree: number;
   memo: string;
   avis: string;
-  type_credit : string;
-  nature:string,
-   fichiers: {
+  type_credit: string;
+  nature: string;
+  fichiers: {
     file: File;
     type_document: string;
     previewUrl?: string;
   }[];
 };
 type props = {
-  client?:EnterpriseType ,
+  client?: EnterpriseType;
   credit?: CreditInfo;
   closeSecondModal?: () => void;
   closeFirstModal?: () => void;
-}
-const AjoutCreditEntrepriseStep2= ({client, closeFirstModal, closeSecondModal, credit}:props) => {
+};
+const AjoutCreditEntrepriseStep2 = ({
+  client,
+  closeFirstModal,
+  closeSecondModal,
+  credit,
+}: props) => {
   const [isExpandedAvis, setIsExpandedAvis] = useState(false);
   const [isExpandedMemo, setIsExpandedMemo] = useState(false);
-  const {data:userInfo} = getUserInfo()
+  const { data: userInfo } = getUserInfo();
   const [progress, setProgress] = useState(0);
 
-// Et cet useEffect pour animer la progression
-
+  // Et cet useEffect pour animer la progression
 
   const handleToggleAvis = () => setIsExpandedAvis(!isExpandedAvis);
   const handleToggleMemo = () => setIsExpandedMemo(!isExpandedMemo);
 
-  const {mutate:AddCreditEntreprise, isPending} = useAddCreditEntreprise()
+  const { mutate: AddCreditEntreprise, isPending } = useAddCreditEntreprise();
   const truncateText = (text: string, limit: number) => {
     if (text.length <= limit) return text;
     return text.slice(0, limit) + "...";
   };
-  const [Show, setShow] = useState(false)
-  const handlecancel = ()=>{
-    setShow(false)
-  }
+  const [Show, setShow] = useState(false);
+  const handlecancel = () => {
+    setShow(false);
+  };
   const showModal = () => {
-  
-    setShow(true)
-  }
+    setShow(true);
+  };
 
-useEffect(() => {
-  let interval: ReturnType<typeof setInterval>;
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
 
-  if (isPending) {
-    setProgress(0);
-    interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 95) {
-          return 95; // on bloque à 95% tant que c’est pending
-        }
-        return prev + 1;
-      });
-    }, 50);
-  } else {
-    // quand isPending passe à false, on finit la barre
-    setProgress(100);
-    const timeout = setTimeout(() => setProgress(0), 500); // reset après un petit délai
-    return () => clearTimeout(timeout);
-  }
+    if (isPending) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 95) {
+            return 95; // on bloque à 95% tant que c’est pending
+          }
+          return prev + 1;
+        });
+      }, 50);
+    } else {
+      // quand isPending passe à false, on finit la barre
+      setProgress(100);
+      const timeout = setTimeout(() => setProgress(0), 500); // reset après un petit délai
+      return () => clearTimeout(timeout);
+    }
 
-  return () => clearInterval(interval);
-}, [isPending]);
-
-
-
-
+    return () => clearInterval(interval);
+  }, [isPending]);
 
   const getFileIcon = (fileName: string): JSX.Element => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
-  
+    const ext = fileName.split(".").pop()?.toLowerCase();
+
     switch (ext) {
       case "pdf":
         return <FaFilePdf className="text-red-500" />;
-        case "xls":
-          case "xlsx":
-          case "csv":
-            return <FaFileExcel className="text-green-500" />;
-            case "doc":
-              case "docx":
-                return <FaFileWord className="text-blue-700" />;
+      case "xls":
+      case "xlsx":
+      case "csv":
+        return <FaFileExcel className="text-green-500" />;
+      case "doc":
+      case "docx":
+        return <FaFileWord className="text-blue-700" />;
       case "png":
       case "jpg":
       case "jpeg":
@@ -112,10 +114,9 @@ useEffect(() => {
         return <FaFileAlt className="text-gray-500" />;
     }
   };
-  
-const onSubmit = () => {
 
-  const params : AddCreditEntreprise = {
+  const onSubmit = () => {
+    const params: AddCreditEntreprise = {
       avis: credit?.avis! ?? "",
       fichiers: credit?.fichiers ?? [],
       montant: credit?.montant! ?? "",
@@ -124,41 +125,39 @@ const onSubmit = () => {
       TEL: client?.TEL! ?? "",
       duree: credit?.duree! ?? "",
       NOM: client?.Raison_sociale! ?? "",
-      CLIENT:client?.CLIENT! ??  "",
+      CLIENT: client?.CLIENT! ?? "",
       AGENCE: client?.Agence! ?? "",
-      Address : client?.Address! ?? "",
+      Address: client?.Address! ?? "",
       type_credit: credit?.type_credit! ?? "",
-      nature_credit : credit?.nature ?? ""
-  }
+      nature_credit: credit?.nature ?? "",
+    };
 
-  AddCreditEntreprise(params, {
-    onSuccess: () => {
-      closeFirstModal?.();
-    },
-  });
-};
+    AddCreditEntreprise(params, {
+      onSuccess: () => {
+        closeFirstModal?.();
+      },
+    });
+  };
 
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     const interval = setInterval(() => {
       setNow(new Date());
-    }, 1000)
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   const formatDate = (date: Date) => {
-    const pad = (n: number) => n.toString().padStart(2, '0');
+    const pad = (n: number) => n.toString().padStart(2, "0");
     return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   };
   return (
     <div className="w-full  mx-auto p-6 bg-white shadow-lg rounded-md space-y-6">
-      
       <div className="flex items-center justify-center space-x-3">
         <h1 className="text-3xl font-bold text-gray-800">Details</h1>
         <TbListDetails size={28} />
-
       </div>
 
       <div className="space-y-4">
@@ -172,215 +171,231 @@ const onSubmit = () => {
             <span className="font-medium">Client :</span> {client?.CLIENT}
           </div>
           <div>
-            <span className="font-medium">Nom Entreprise:</span> {client?.Raison_sociale}
+            <span className="font-medium">Nom Entreprise:</span>{" "}
+            {client?.Raison_sociale}
           </div>
-            <div>
+          <div>
             <span className="font-medium">NIF :</span> {client?.NIF}
           </div>
-          
         </div>
       </div>
 
       <hr />
 
-      <div className="space-y-4">
-      <div className="flex items-center space-x-2 text-gray-700">
-        <FaCreditCard size={23} />
-        <span className="text-lg font-semibold">Informations Crédit</span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-800">
-        <div>
-          <span className="font-medium">Montant :</span> {credit?.montant.toLocaleString()} MRU
-        </div>
-        <div>
-          <span className="font-medium">Durée :</span> {credit?.duree} mois
-        </div>
-        <div>
-          <span className="font-medium">Type de Crédit :</span> {credit?.type_credit} 
-        </div>
-      </div>
- <div>
-          <span className="font-medium">Natrue de Crédit :</span> {credit?.nature} 
-        </div>
-      {credit?.avis && (
-  <div>
-    <span className="font-medium">Avis :</span>
-    <p className="text-gray-700">
-      {isExpandedAvis  ? credit.avis : truncateText(credit.avis, 150)}
-      <button
-        className="text-blue-500 ml-2 inline-flex items-center"
-        onClick={handleToggleAvis}
-      >
-        {isExpandedAvis && credit.avis.length >= 250 ? (
-          <>
-            Voir moins
-            <ChevronUpIcon className="h-4 w-4 ml-1" />
-          </>
-        ) :  credit.avis.length >= 350 ? (
-          <>
-            Voir plus
-            <ChevronDownIcon className="h-4 w-4 ml-1" />
-          </>
-        ) : null}
-      </button>
-    </p>
-  </div>
-)}
-
-{credit?.memo && (
-  <div>
-    <span className="font-medium">Mémo :</span>
-    <p className="text-gray-700">
-      {isExpandedMemo ? credit.memo : truncateText(credit.memo, 150)}
-      <button
-        className="text-blue-500 ml-2 inline-flex items-center"
-        onClick={handleToggleMemo}
-      >
-        {isExpandedMemo && credit.memo.length>=250 ? (
-          <>
-            Voir moins
-            <ChevronUpIcon className="h-4 w-4 ml-1" />
-          </>
-        ) : credit.memo.length >= 350 ?  (
-          <>
-            Voir plus
-            <ChevronDownIcon className="h-4 w-4 ml-1" />
-          </>
-        ):null}
-      </button>
-    </p>
-  </div>
-)}
-
-      <hr />
-    </div>
-      
       <div className="space-y-4">
         <div className="flex items-center space-x-2 text-gray-700">
-          <FaFileImport  size={23} />
-          <span className="text-lg font-semibold">Informations sur les Importations</span>
+          <FaCreditCard size={23} />
+          <span className="text-lg font-semibold">Informations Crédit</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-800">
+          <div>
+            <span className="font-medium">Montant :</span>{" "}
+            {credit?.montant.toLocaleString()} MRU
+          </div>
+          <div>
+            <span className="font-medium">Durée :</span> {credit?.duree} mois
+          </div>
+          <div>
+            <span className="font-medium">Type de Crédit :</span>{" "}
+            {credit?.type_credit}
+          </div>
+        </div>
+        <div>
+          <span className="font-medium">Natrue de Crédit :</span>{" "}
+          {credit?.nature}
+        </div>
+        {credit?.avis && (
+          <div>
+            <span className="font-medium">Avis :</span>
+            <p className="text-gray-700">
+              {isExpandedAvis ? credit.avis : truncateText(credit.avis, 150)}
+              <button
+                className="text-blue-500 ml-2 inline-flex items-center"
+                onClick={handleToggleAvis}
+              >
+                {isExpandedAvis && credit.avis.length >= 250 ? (
+                  <>
+                    Voir moins
+                    <ChevronUpIcon className="h-4 w-4 ml-1" />
+                  </>
+                ) : credit.avis.length >= 350 ? (
+                  <>
+                    Voir plus
+                    <ChevronDownIcon className="h-4 w-4 ml-1" />
+                  </>
+                ) : null}
+              </button>
+            </p>
+          </div>
+        )}
+
+        {credit?.memo && (
+          <div>
+            <span className="font-medium">Mémo :</span>
+            <p className="text-gray-700">
+              {isExpandedMemo ? credit.memo : truncateText(credit.memo, 150)}
+              <button
+                className="text-blue-500 ml-2 inline-flex items-center"
+                onClick={handleToggleMemo}
+              >
+                {isExpandedMemo && credit.memo.length >= 250 ? (
+                  <>
+                    Voir moins
+                    <ChevronUpIcon className="h-4 w-4 ml-1" />
+                  </>
+                ) : credit.memo.length >= 350 ? (
+                  <>
+                    Voir plus
+                    <ChevronDownIcon className="h-4 w-4 ml-1" />
+                  </>
+                ) : null}
+              </button>
+            </p>
+          </div>
+        )}
+
+        <hr />
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-gray-700">
+          <FaFileImport size={23} />
+          <span className="text-lg font-semibold">
+            Informations sur les Importations
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 text-sm text-gray-900">
-      {credit?.fichiers?.map((fileObj, idx) => (
-       <div>
-        <span className=''>{fileObj?.type_document}</span>
-         <div
-          key={idx}
-          title={fileObj.file.name} 
-          className="flex items-center gap-2 shadow p-3 mt-3 rounded-lg bg-white"
-        >
-          <div className="w-1/6 flex justify-center text-xl ">
-            {getFileIcon(fileObj.file.name)}
-          </div>
+          {credit?.fichiers?.map((fileObj, idx) => (
+            <div>
+              <span className="">{fileObj?.type_document}</span>
+              <div
+                key={idx}
+                title={fileObj.file.name}
+                className="flex items-center gap-2 shadow p-3 mt-3 rounded-lg bg-white"
+              >
+                <div className="w-1/6 flex justify-center text-xl ">
+                  {getFileIcon(fileObj.file.name)}
+                </div>
 
-          <div className="w-4/6 truncate">{fileObj.file.name}</div>
+                <div className="w-4/6 truncate">{fileObj.file.name}</div>
 
-          <div className="w-1/6 text-right">
-            <a
-              href={fileObj.previewUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800"
-            >
-              <IoEyeOutline size={20} />
-            </a>
-          </div>
+                <div className="w-1/6 text-right">
+                  <a
+                    href={fileObj.previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <IoEyeOutline size={20} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-       </div>
-      ))}
-    </div>
       </div>
-
 
       <div className="flex justify-between items-center p-4 bg-white rounded-md shadow-md">
-          <span>Crée Par  </span>
+        <span>Crée Par </span>
 
-      <span>{userInfo?.nom}{" "}{userInfo?.prenom}</span>
-      <div>à la date du : {formatDate(now)}</div>
-    </div>
-
-      <div className='grid lg:grid-cols-2 grid-cols-1 gap-3'>
-        <Button className='secondary-button !h-[44px]' onClick={closeSecondModal}>Annuler</Button>
-        <Button className='auth-button !h-[44px]' onClick={showModal}>Valider</Button>
+        <span>
+          {userInfo?.nom} {userInfo?.prenom}
+        </span>
+        <div>à la date du : {formatDate(now)}</div>
       </div>
 
-<Modal
-  className="rounded-lg"
-  destroyOnClose={true}
-  onCancel={handlecancel}
-  open={Show}
-  footer={null}
-  width={400}
-  closeIcon={!isPending}
-  maskClosable={false}
-  closable={!isPending}
->
-  <div className="flex flex-col items-center space-y-4 p-5">
-    {isPending ? (
-      <div className="w-full flex flex-col items-center space-y-5">
-        <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-2"></div>
-        <h3 className="text-lg font-semibold text-gray-800">Traitement en cours</h3>
-        
-        {/* Barre de progression avec pourcentage */}
-     <div className="w-full space-y-2">
-  <div className="flex justify-between text-sm text-gray-600">
-    <span>Progression</span>
-    <span className="font-medium text-blue-600">{progress}%</span>
-  </div>
-  <div className="w-full bg-gray-200 rounded-full h-2.5">
-    <div 
-      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
-      style={{ width: `${progress}%` }}
-    ></div>
-  </div>
-</div>
-        
-        <p className="text-sm text-gray-500 text-center mt-2">
-          Veuillez patienter pendant le traitement de votre demande...
-        </p>
+      <div className="grid lg:grid-cols-2 grid-cols-1 gap-3">
+        <Button
+          className="secondary-button !h-[44px]"
+          onClick={closeSecondModal}
+        >
+          Annuler
+        </Button>
+        <Button className="auth-button !h-[44px]" onClick={showModal}>
+          Valider
+        </Button>
       </div>
-    ) : (
-      <>
-        <div className="flex items-center justify-center space-x-3">
-          <h1 className="text-xl font-bold text-gray-800">Confirmation</h1>
-          <GiConfirmed size={32} className="text-green-500" />
+
+      <Modal
+        className="rounded-lg"
+        destroyOnClose={true}
+        onCancel={handlecancel}
+        open={Show}
+        footer={null}
+        width={400}
+        closeIcon={!isPending}
+        maskClosable={false}
+        closable={!isPending}
+      >
+        <div className="flex flex-col items-center space-y-4 p-5">
+          {isPending ? (
+            <div className="w-full flex flex-col items-center space-y-5">
+              <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-2"></div>
+              <h3 className="text-lg font-semibold text-gray-800">
+                Traitement en cours
+              </h3>
+
+              {/* Barre de progression avec pourcentage */}
+              <div className="w-full space-y-2">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Progression</span>
+                  <span className="font-medium text-blue-600">{progress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-500 text-center mt-2">
+                Veuillez patienter pendant le traitement de votre demande...
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-center space-x-3">
+                <h1 className="text-xl font-bold text-gray-800">
+                  Confirmation
+                </h1>
+                <GiConfirmed size={32} className="text-green-500" />
+              </div>
+              <p className="my-2 text-[15px] text-center text-gray-600">
+                Êtes-vous sûr de vouloir confirmer ce crédit ?
+              </p>
+            </>
+          )}
+
+          <div className="flex items-center justify-end gap-x-3 w-full pt-2">
+            <Button
+              className={`w-[140px] h-[50px] rounded-lg transition-colors ${
+                isPending
+                  ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                  : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
+              onClick={handlecancel}
+              disabled={isPending}
+            >
+              Non, Annuler
+            </Button>
+            <Button
+              className={`w-[150px] h-[50px] rounded-lg transition-colors ${
+                isPending
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "  !bg-main-color"
+              } text-white`}
+              loading={isPending}
+              onClick={onSubmit}
+              disabled={isPending}
+            >
+              {isPending ? "Traitement..." : "Oui, Confirmer"}
+            </Button>
+          </div>
         </div>
-        <p className="my-2 text-[15px] text-center text-gray-600">
-          Êtes-vous sûr de vouloir confirmer ce crédit ?
-        </p>
-      </>
-    )}
-    
-    <div className="flex items-center justify-end gap-x-3 w-full pt-2">
-      <Button
-        className={`w-[140px] h-[50px] rounded-lg transition-colors ${
-          isPending 
-            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
-            : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-        }`}
-        onClick={handlecancel}
-        disabled={isPending}
-      >
-        Non, Annuler
-      </Button>
-      <Button
-        className={`w-[150px] h-[50px] rounded-lg transition-colors ${
-          isPending 
-            ? 'bg-blue-400 cursor-not-allowed' 
-            : '  !bg-main-color'
-        } text-white`}
-        loading={isPending}
-        onClick={onSubmit}
-        disabled={isPending}
-      >
-        {isPending ? "Traitement..." : "Oui, Confirmer"}
-      </Button>
-    </div>
-  </div>
-</Modal>
-
+      </Modal>
     </div>
   );
 };
