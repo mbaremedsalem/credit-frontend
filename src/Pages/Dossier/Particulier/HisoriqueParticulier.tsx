@@ -235,6 +235,40 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
         >
           <SiProgress size={20} />
           <span>
+            {/* {UserData?.post === "Chargé de clientèle"
+              ? "de remontation"
+              : "de la décision"}
+            {UserData
+              ? ` de ${
+                  UserData?.post === "Directeur Risque"
+                    ? "Commite (" + UserData?.post + ")"
+                    : UserData?.post
+                }, ${UserData.nom?.toUpperCase()} ${UserData.prenom?.toUpperCase()}`
+              : null} */}
+            {HistoriqueData.credit.points_valides >= 2 &&
+            HistoriqueData.credit.points_valides < 48
+              ? "En attente de remontation de"
+              : ""}{" "}
+            {HistoriqueData.credit.points_valides === 2
+              ? // ? "Cheff Agence"
+                "Chef agence central"
+              : HistoriqueData.credit.points_valides === 6 &&
+                !isMourabahaType(HistoriqueData?.credit?.type_credit)
+              ? //  : HistoriqueData.credit.points_valides === 6
+                "Chef de département commercial"
+              : HistoriqueData.credit.points_valides === 6 &&
+                isMourabahaType(HistoriqueData?.credit?.type_credit)
+              ? "Directeur de département Islamique"
+              : HistoriqueData.credit.points_valides === 12
+              ? "L'Analyse de risque"
+              : HistoriqueData.credit.points_valides === 24
+              ? "Commité de Crédit"
+              : HistoriqueData.credit.points_valides === 48
+              ? "En attente de l'importation du tableau d'amortissement par le chargé de clientèle"
+              : HistoriqueData.credit.points_valides === 50
+              ? "En attente de validation par Directeur Engagement"
+              : "En attente de modification de Chargé de clientèle"}
+          </span>
                       En attente de {" => "}
                     {" "}
                    {GetEtatDossier(HistoriqueData?.credit?.points_valides!) === "Chef agence central" || GetEtatDossier(HistoriqueData?.credit?.points_valides!) === "Chargé de clientèle" ? GetEtatDossier(HistoriqueData?.credit?.points_valides!) +"- "+GetAgenceBYcode(HistoriqueData?.credit?.agence!) : GetEtatDossier(HistoriqueData?.credit?.points_valides!)}

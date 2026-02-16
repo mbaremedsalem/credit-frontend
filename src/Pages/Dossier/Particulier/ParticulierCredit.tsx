@@ -184,8 +184,9 @@ function ParticulierCreditView() {
     if (role === "Chef agence central" && dossierPoints === 2) return true;
     if (
       role === "Chef de département commercial" &&
-      dossierPoints === 6 &&
-      !isMourabahaType(typeCredit)
+      dossierPoints === 6
+      // &&
+      // !isMourabahaType(typeCredit)
     )
       return true;
     // if (role === "Chef de département commercial" && dossierPoints === 6)
@@ -221,7 +222,7 @@ function ParticulierCreditView() {
   const { data: LigneDaTa, isPending } = useGetLingeCredit(
     valueChercher ?? "",
     dates?.[0] ?? null!,
-    dates?.[1] ?? null!
+    dates?.[1] ?? null!,
   );
 
   const agenceConnect = AuthService.getAGENCEUserConnect();
@@ -234,14 +235,30 @@ function ParticulierCreditView() {
       : LigneDaTa;
 
   const onlyEnattente = isCommercial?.filter(
-    (ligne) => ligne.status === "EN_COURS"
+    (ligne) => ligne.status === "EN_COURS",
   );
 
   const onlyPaticulier = onlyEnattente?.filter(
-    (credit) => credit.type_dossier === "Particulier"
+    (credit) => credit.type_dossier === "Particulier",
   );
 
   const lignesFiltrees = filtrerLignesCredit(onlyPaticulier);
+
+  const filterTout = lignesFiltrees
+    ? lignesFiltrees.filter((credit) => {
+        if (!credit?.client) return false;
+
+        const client = credit.client;
+        const recherche = cherche?.toUpperCase() || "";
+
+        return (
+          client.nom?.toUpperCase().includes(recherche) ||
+          client.tel?.toString().includes(recherche) ||
+          client.client_code?.toString().toUpperCase().includes(recherche) ||
+          client.prenom?.toUpperCase().includes(recherche)
+        );
+      })
+    : [];
 
   <span className="text-[13px] ">
     {lignesFiltrees.length} Dossiers Particuliers
@@ -500,7 +517,7 @@ function ParticulierCreditView() {
         return (
           <span>
             {new Intl.NumberFormat("fr-FR").format(
-              Number(record?.client?.credits?.[0]?.montant.toLocaleString())
+              Number(record?.client?.credits?.[0]?.montant.toLocaleString()),
             )}
           </span>
         );
@@ -558,125 +575,151 @@ function ParticulierCreditView() {
         );
       },
     },
+
+    // {
+    //   title: "État de remontée",
+    //   key: "etat_remontee",
+    //   render: (_, record) => {
+    //     if (role === "Chargé de clientèle") {
+    //       return record.points_valides! > 0 && record.points_valides! < 48 ? (
+    //         <Tag color="green">Déjà remonté</Tag>
+    //       ) : record.points_valides! === 48 ? (
+    //         <Tag color="orange">En attente de Table d'amortissement</Tag>
+    //       ) : record.points_valides! > 48 ? (
+    //         <Tag color="green">Déjà remonté</Tag>
+    //       ) : (
+    //         <Tag color="orange">En attente de remontée</Tag>
+    //       );
+    //     } else if (role === "Chef agence central") {
+    //       return record?.points_valides! > 4 ? (
+    //         <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+    //           {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+    //         </Tag>
+    //       ) : record?.points_valides === 2 && record.status === "EN_COURS" ? (
+    //         <Tag color="orange">En attente de votre décision</Tag>
+    //       ) : record.status === "REJETÉ" ? (
+    //         <Tag color="red">Déjà Rejeté</Tag>
+    //       ) : record?.points_valides! < 4 ? (
+    //         <Tag color="yellow">En cours d'instruction</Tag>
+    //       ) : (
+    //         ""
+    //       );
+    //     } else if (role === "Chef de département commercial") {
+    //       return record?.points_valides! > 6 ? (
+    //         <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+    //           {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+    //         </Tag>
+    //       ) : // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
+    //       record.points_valides === 6 &&
+    //         record.status === "EN_COURS"
+    //         // &&
+    //         // !isMourabahaType(record?.type_credit!)
+    //          ?
+    //         (
+    //         <Tag color="orange">En attente de votre décision</Tag>
+    //       ) : record.status === "REJETÉ" ? (
+    //         <Tag color="red">Déjà Rejeté</Tag>
+    //       ) : record?.points_valides! < 6 ? (
+    //         <Tag color="yellow">En cours d'instruction</Tag>
+    //       ) : (
+    //         ""
+    //       );
+    //     } else if (role === "Directeur de département Islamique") {
+    //       return record?.points_valides! > 6 ? (
+    //         <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+    //           {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+    //         </Tag>
+    //       ) : record.points_valides === 6 &&
+    //         record.status === "EN_COURS"
+    //         //  &&
+    //         // isMourabahaType(record?.type_credit!)
+    //          ? (
+    //         <Tag color="orange">En attente de votre décision</Tag>
+    //       ) : record.status === "REJETÉ" ? (
+    //         <Tag color="red">Déjà Rejeté</Tag>
+    //       ) : record?.points_valides! < 6 ? (
+    //         <Tag color="yellow">En cours d'instruction</Tag>
+    //       ) : (
+    //         ""
+    //       );
+    //     } else if (role === "Analyse de Risque") {
+    //       return record?.points_valides! > 12 ? (
+    //         <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+    //           {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+    //         </Tag>
+    //       ) : record.points_valides === 12 && record.status === "EN_COURS" ? (
+    //         <Tag color="orange">En attente de votre décision</Tag>
+    //       ) : record.status === "REJETÉ" ? (
+    //         <Tag color="red">Déjà Rejeté</Tag>
+    //       ) : record?.points_valides! < 12 ? (
+    //         <Tag color="yellow">En cours d'instruction</Tag>
+    //       ) : (
+    //         ""
+    //       );
+    //     } else if (role === "Directeur Risque") {
+    //       return record?.points_valides! > 24 ? (
+    //         <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
+    //           {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
+    //         </Tag>
+    //       ) : record.points_valides === 24 ? (
+    //         <Tag color="orange">En attente de décision du commite</Tag>
+    //       ) : record.status === "REJETÉ" ? (
+    //         <Tag color="red">Déjà Rejeté</Tag>
+    //       ) : record?.points_valides! < 24 ? (
+    //         <Tag color="yellow">En cours d'instruction</Tag>
+    //       ) : (
+    //         ""
+    //       );
+    //     } else if (role === "Directeur Engagement") {
+    //       return record?.points_valides! > 48 ? (
+    //         <Tag
+    //           color={
+    //             record.status === "REJETÉ"
+    //               ? "red"
+    //               : record.status === "EN_COURS"
+    //                 ? "orange"
+    //                 : "green"
+    //           }
+    //         >
+    //           {record.status === "REJETÉ"
+    //             ? "Déjà Rejeté"
+    //             : record.status === "EN_COURS"
+    //               ? "En attente de votre décision"
+    //               : "remonté"}
+    //         </Tag>
+    //       ) : record.points_valides === 48 && record.status === "EN_COURS" ? (
+    //         <Tag color="orange">En attente de Table d'amortissement</Tag>
+    //       ) : record.status === "REJETÉ" ? (
+    //         <Tag color="red">Déjà Rejeté</Tag>
+    //       ) : record?.points_valides! < 48 ? (
+    //         <Tag color="yellow">En cours d'instruction</Tag>
+    //       ) : (
+    //         ""
+    //       );
+    //     }
+    //     return null;
+    //   },
+    // },
     {
-      title: "État de remontée",
-      key: "etat_remontee",
+      title: "En attente de",
+
+      key: "points_valides",
       render: (_, record) => {
-        if (role === "Chargé de clientèle") {
-          return record.points_valides! > 0 && record.points_valides! < 48 ? (
-            <Tag color="green">Déjà remonté</Tag>
-          ) : record.points_valides! === 48 ? (
-            <Tag color="orange">En attente de Table d'amortissement</Tag>
-          ) : record.points_valides! > 48 ? (
-            <Tag color="green">Déjà remonté</Tag>
-          ) : (
-            <Tag color="orange">En attente de remontée</Tag>
-          );
-        } else if (role === "Chef agence central") {
-          return record?.points_valides! > 4 ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-            </Tag>
-          ) : record?.points_valides === 2 && record.status === "EN_COURS" ? (
-            <Tag color="orange">En attente de votre décision</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 4 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        } else if (role === "Chef de département commercial") {
-          return record?.points_valides! > 6 ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-            </Tag>
-          ) : // ) : record.points_valides === 6 && record.status === "EN_COURS" && !isMourabahaType(record?.type_credit!)? (
-          record.points_valides === 6 &&
-            record.status === "EN_COURS" &&
-            !isMourabahaType(record?.type_credit!) ? (
-            <Tag color="orange">En attente de votre décision</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 6 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        } else if (role === "Directeur de département Islamique") {
-          return record?.points_valides! > 6 ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-            </Tag>
-          ) : record.points_valides === 6 &&
-            record.status === "EN_COURS" &&
-            isMourabahaType(record?.type_credit!) ? (
-            <Tag color="orange">En attente de votre décision</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 6 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        } else if (role === "Analyse de Risque") {
-          return record?.points_valides! > 12 ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-            </Tag>
-          ) : record.points_valides === 12 && record.status === "EN_COURS" ? (
-            <Tag color="orange">En attente de votre décision</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 12 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        } else if (role === "Directeur Risque") {
-          return record?.points_valides! > 24 ? (
-            <Tag color={record.status === "REJETÉ" ? "red" : "green"}>
-              {record.status === "REJETÉ" ? "Déjà Rejeté" : "remonté"}
-            </Tag>
-          ) : record.points_valides === 24 ? (
-            <Tag color="orange">En attente de décision du commite</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 24 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        } else if (role === "Directeur Engagement") {
-          return record?.points_valides! > 48 ? (
-            <Tag
-              color={
-                record.status === "REJETÉ"
-                  ? "red"
-                  : record.status === "EN_COURS"
-                  ? "orange"
-                  : "green"
-              }
-            >
-              {record.status === "REJETÉ"
-                ? "Déjà Rejeté"
-                : record.status === "EN_COURS"
-                ? "En attente de votre décision"
-                : "remonté"}
-            </Tag>
-          ) : record.points_valides === 48 && record.status === "EN_COURS" ? (
-            <Tag color="orange">En attente de Table d'amortissement</Tag>
-          ) : record.status === "REJETÉ" ? (
-            <Tag color="red">Déjà Rejeté</Tag>
-          ) : record?.points_valides! < 48 ? (
-            <Tag color="yellow">En cours d'instruction</Tag>
-          ) : (
-            ""
-          );
-        }
-        return null;
+        return (
+          <div>
+            {" "}
+            {GetEtatDossier(record?.points_valides!) ===
+              "Chef agence central" ||
+            GetEtatDossier(record?.points_valides!) === "Chargé de clientèle"
+              ? GetEtatDossier(record?.points_valides!) +
+                "- " +
+                GetAgenceBYcode(record?.agence!)
+              : GetEtatDossier(record?.points_valides!)}
+          </div>
+        );
       },
     },
+
     {
       title: "En attente de",
 
@@ -749,14 +792,15 @@ function ParticulierCreditView() {
                 ),
                 key: "4",
                 onClick: () => showModalRejeter(record),
-              }
+              },
             );
           }
 
           if (
             connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6 &&
-            !isMourabahaType(record?.type_credit!)
+            dossierPoints === 6
+            //  &&
+            // !isMourabahaType(record?.type_credit!)
             // dossierPoints === 6
           ) {
             items.push(
@@ -779,7 +823,7 @@ function ParticulierCreditView() {
                 ),
                 key: "6",
                 onClick: () => showModalRejeter(record),
-              }
+              },
             );
           }
 
@@ -808,7 +852,7 @@ function ParticulierCreditView() {
                 ),
                 key: "6",
                 onClick: () => showModalRejeter(record),
-              }
+              },
             );
           }
 
@@ -836,7 +880,7 @@ function ParticulierCreditView() {
                 ),
                 key: "8",
                 onClick: () => showModalRejeter(record),
-              }
+              },
             );
           }
           if (
@@ -863,7 +907,7 @@ function ParticulierCreditView() {
                 ),
                 key: "4",
                 onClick: () => showModalRejeter(record),
-              }
+              },
             );
           }
 
@@ -881,7 +925,7 @@ function ParticulierCreditView() {
                 ),
                 key: "3",
                 onClick: () => showModalValider(record),
-              }
+              },
               // {
               //   label: (
               //     <div className="flex items-center justify-between space-x-3">
@@ -1515,7 +1559,7 @@ function ParticulierCreditView() {
 
                             <div className="preview-content">
                               {uploadedFileMourabaha.file.type.startsWith(
-                                "image/"
+                                "image/",
                               ) ? (
                                 <div className="image-preview">
                                   <img
@@ -1546,19 +1590,19 @@ function ParticulierCreditView() {
                                   <pre>{textContent}</pre>
                                 </div>
                               ) : uploadedFileMourabaha.file.type.includes(
-                                  "csv"
+                                  "csv",
                                 ) ||
                                 uploadedFileMourabaha.file.type.includes(
-                                  "excel"
+                                  "excel",
                                 ) ||
                                 uploadedFileMourabaha.file.type.includes(
-                                  "sheet"
+                                  "sheet",
                                 ) ||
                                 uploadedFileMourabaha.file.type.includes(
-                                  "word"
+                                  "word",
                                 ) ||
                                 uploadedFileMourabaha.file.type.includes(
-                                  "document"
+                                  "document",
                                 ) ? (
                                 <div className="download-preview">
                                   <p>
@@ -1764,7 +1808,7 @@ function ParticulierCreditView() {
         {/* Filtre existant par numéro client */}
         <form className="space-x-2 flex" onSubmit={funcCLick}>
           <Input
-            type="number"
+            type="text"
             value={cherche ?? ""}
             onChange={(e) => setcherche(e.target.value)}
             prefix={(<BiSearch />) as unknown as string}
@@ -1791,7 +1835,8 @@ function ParticulierCreditView() {
         {(LigneDaTa?.length ?? 0) > 0 ? (
           <Table<LigneCredit>
             dataSource={
-              role === "Directeur Général" ? onlyPaticulier : lignesFiltrees
+              // role === "Directeur Général" ? onlyPaticulier : lignesFiltrees
+              role === "Directeur Général" ? onlyPaticulier : filterTout
             }
             columns={columnsLigne}
             loading={isPending}
