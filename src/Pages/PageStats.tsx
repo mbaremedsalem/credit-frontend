@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useGetStatusValidateur, ValidateurStatus } from '../Services/Home/useGetValidateur';
 import SpinnerLoader from '../Ui/Spinner';
-import GetAgenceBYcode from '../Lib/CustomFunction';
+import { GetAgenceBYcode } from '../Lib/CustomFunction';
 
 
 
@@ -31,27 +31,7 @@ type ProfessionalDashboardProps ={
   data: ValidateurStatus[];
 }
 
-// Create a custom theme
-// const theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: '#1976d2',
-//     },
-//     secondary: {
-//       main: '#dc004e',
-//     },
-//     background: {
-//       default: '#f5f7fa',
-//       paper: '#ffffff',
-//     },
-//   },
-//   typography: {
-//     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-//     h4: {
-//       fontWeight: 600,
-//     },
-//   },
-// });
+
 
 // Animation variants
 const containerVariants = {

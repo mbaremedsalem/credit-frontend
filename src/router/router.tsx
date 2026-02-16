@@ -1,6 +1,3 @@
-
-
-
 import {
   createBrowserRouter,
   Navigate,
@@ -15,14 +12,15 @@ import ErrorPage from "../Pages/ErrorPage";
 import { useAuth } from "../Services/Auth/AuthProvider";
 import SpinnerLoader from "../Ui/Spinner";
 import { useAutoLogout } from "../Services/Auth/useAutoLogout";
+import AuthService from "../Auth-Services/AuthService";
 
 const Router = () => {
   const { loading, isAuthenticated } = useAuth();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const { resetTimer } = useAutoLogout();
-
-     useEffect(() => {
+const post = AuthService.getPostUserConnect()
+  useEffect(() => {
     if (isAuthenticated) {
       resetTimer();
     }
@@ -73,11 +71,16 @@ const Router = () => {
     const currentPath = window.location.pathname + window.location.search;
     const isAutoLoginAttempt = currentPath.includes("/login?username=");
 
-    if (
-      isAuthenticated &&
-      (isPublicRoute || route.layout === "public") &&
-      !isAutoLoginAttempt
+    if (isAuthenticated &&(isPublicRoute || route.layout === "public") &&!isAutoLoginAttempt
     ) {
+      return {
+        ...route,
+        element: <Navigate replace to="/" />,
+      };
+    }
+
+
+    if(post !== "Chargé de clientèle" && post !== "DEVELOPPEUR"&& route.path === "/demande"){
       return {
         ...route,
         element: <Navigate replace to="/" />,

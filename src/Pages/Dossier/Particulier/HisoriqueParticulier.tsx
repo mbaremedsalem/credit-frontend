@@ -6,6 +6,7 @@ import { SiProgress } from "react-icons/si";
 import { GrValidate } from "react-icons/gr";
 import { Button, Tag } from "antd";
 import { motion } from "framer-motion";
+import { GetAgenceBYcode, GetEtatDossier } from "../../../Lib/CustomFunction";
 
 type props = {
   credit: number | string;
@@ -30,13 +31,13 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
 
   const { data: HistoriqueData } = useGetHistoriqueLigneCredit(credit);
 
-  function isMourabahaType(type: string) {
-    return [
-      "CRDT CT- MOURABAHA",
-      "CRDT MT- MOURABAHA",
-      "CRDT LT- MOURABAHA",
-    ].includes(type);
-  }
+  // function isMourabahaType(type: string) {
+  //   return [
+  //     "CRDT CT- MOURABAHA",
+  //     "CRDT MT- MOURABAHA",
+  //     "CRDT LT- MOURABAHA",
+  //   ].includes(type);
+  // }
 
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return "";
@@ -234,40 +235,10 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
         >
           <SiProgress size={20} />
           <span>
-            {/* {UserData?.post === "Chargé de clientèle"
-              ? "de remontation"
-              : "de la décision"}
-            {UserData
-              ? ` de ${
-                  UserData?.post === "Directeur Risque"
-                    ? "Commite (" + UserData?.post + ")"
-                    : UserData?.post
-                }, ${UserData.nom?.toUpperCase()} ${UserData.prenom?.toUpperCase()}`
-              : null} */}
-            {HistoriqueData.credit.points_valides >= 2 &&
-            HistoriqueData.credit.points_valides < 48
-              ? "En attente de remontation de"
-              : ""}{" "}
-            {HistoriqueData.credit.points_valides === 2
-              ? // ? "Cheff Agence"
-                "Chef agence central"
-              : HistoriqueData.credit.points_valides === 6 &&
-                !isMourabahaType(HistoriqueData?.credit?.type_credit)
-              ? //  : HistoriqueData.credit.points_valides === 6
-                "Chef de département commercial"
-              : HistoriqueData.credit.points_valides === 6 &&
-                isMourabahaType(HistoriqueData?.credit?.type_credit)
-              ? "Directeur de département Islamique"
-              : HistoriqueData.credit.points_valides === 12
-              ? "L'Analyse de risque"
-              : HistoriqueData.credit.points_valides === 24
-              ? "Directeur Risque"
-              : HistoriqueData.credit.points_valides === 48
-              ? "En attente de l'importation du tableau d'amortissement par le chargé de clientèle"
-              : HistoriqueData.credit.points_valides === 50
-              ? "En attente de validation par Directeur Engagement"
-              : "En attente de modification de Chargé de clientèle"}
-          </span>
+                      En attente de {" => "}
+                    {" "}
+                   {GetEtatDossier(HistoriqueData?.credit?.points_valides!) === "Chef agence central" || GetEtatDossier(HistoriqueData?.credit?.points_valides!) === "Chargé de clientèle" ? GetEtatDossier(HistoriqueData?.credit?.points_valides!) +"- "+GetAgenceBYcode(HistoriqueData?.credit?.agence!) : GetEtatDossier(HistoriqueData?.credit?.points_valides!)}
+                   </span>
         </motion.div>
       )}
 

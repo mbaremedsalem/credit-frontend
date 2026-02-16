@@ -1,35 +1,47 @@
 import { Tabs, TabsProps } from "antd";
 import { BsFillCreditCard2FrontFill, BsAlignEnd } from "react-icons/bs";
-import DemandesParticulier from "./Particiluer/Particulier";
+import { useMemo } from "react";
 import DemandesEntreprise from "./Entreprise/Entreprise";
+import ProsprectView from "./Prospecret/ProsprectView";
+import DemandesParticulier from "./Particiluer/Particulier";
 
 export default function DemandeView() {
-  const onChange = (key: string) => {
+  const onChange: TabsProps['onChange'] = (key) => {
     console.log("Tab sélectionné:", key);
   };
 
-  const items: TabsProps['items'] = [
+  const items = useMemo<TabsProps['items']>(() => [
     {
-      key: '1',
+      key: "1",
       label: (
         <span className="tab-label">
           <BsAlignEnd className="tab-icon" />
           Particuliers
         </span>
       ),
-      children: <DemandesParticulier />
+      children: <DemandesParticulier />,
     },
     {
-      key: '2',
+      key: "2",
       label: (
         <span className="tab-label">
           <BsFillCreditCard2FrontFill className="tab-icon" />
-        Entreprises
+          Entreprises
         </span>
       ),
-      children: <DemandesEntreprise/>
-    }
-  ];
+      children: <DemandesEntreprise />,
+    },
+    {
+      key: "3",
+      label: (
+        <span className="tab-label">
+          <BsFillCreditCard2FrontFill className="tab-icon" />
+          Prospect & Rachat
+        </span>
+      ),
+      children: <ProsprectView />,
+    },
+  ], []);
 
   return (
     <div className="demande-view-container">
@@ -39,6 +51,7 @@ export default function DemandeView() {
         onChange={onChange}
         centered
         animated
+        destroyInactiveTabPane
         className="custom-tabs"
       />
     </div>

@@ -50,7 +50,7 @@ import {
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useGetTypeDocument } from "../../../Services/Demandes/useGetListTypeDocument";
-import GetAgenceBYcode from "../../../Lib/CustomFunction";
+import { GetAgenceBYcode, GetEtatDossier } from "../../../Lib/CustomFunction";
 export type PopconfirmType = {
   client?: CLientT | null;
   open: boolean;
@@ -296,7 +296,7 @@ function EntrepriseCreditView() {
     setDates(dateStrings);
   };
   const { data: LigneDaTa, isPending } = useGetLingeCredit(
-     valueChercher ?? "",
+    valueChercher ?? "",
     dates?.[0] ?? null!,
     dates?.[1] ?? null!
   );
@@ -452,22 +452,22 @@ function EntrepriseCreditView() {
     }
     setLoading(true);
     // setTimeout(() => {
-      setLoading(false);
-      const params: RejeterLigne = {
-        id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
-        user_id: Number(idUserConnect)!,
-        motif: selectTypeDocument + " |=> " + selectAutre,
-      };
-      rejeterligne(params, {
-        onSuccess: () => {
-          handlecancelRejeter();
-          setAvis("");
-          setmemoType("");
-          enqueueSnackbar("Status de dossier Modifier avec success !", {
-            variant: "success",
-          });
-        },
-      });
+    setLoading(false);
+    const params: RejeterLigne = {
+      id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
+      user_id: Number(idUserConnect)!,
+      motif: selectTypeDocument + " |=> " + selectAutre,
+    };
+    rejeterligne(params, {
+      onSuccess: () => {
+        handlecancelRejeter();
+        setAvis("");
+        setmemoType("");
+        enqueueSnackbar("Status de dossier Modifier avec success !", {
+          variant: "success",
+        });
+      },
+    });
     // }, 2000);
   };
 
@@ -690,6 +690,25 @@ function EntrepriseCreditView() {
           );
         }
         return null;
+      },
+    },
+    {
+      title: "En attente de",
+
+      key: "points_valides",
+      render: (_, record) => {
+        return (
+          <div>
+            {" "}
+            {GetEtatDossier(record?.points_valides!) ===
+              "Chef agence central" ||
+            GetEtatDossier(record?.points_valides!) === "Chargé de clientèle"
+              ? GetEtatDossier(record?.points_valides!) +
+                "- " +
+                GetAgenceBYcode(record?.agence!)
+              : GetEtatDossier(record?.points_valides!)}
+          </div>
+        );
       },
     },
     {

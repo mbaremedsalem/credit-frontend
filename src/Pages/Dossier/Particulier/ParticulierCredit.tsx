@@ -49,7 +49,7 @@ import {
   FaUpload,
 } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
-import GetAgenceBYcode from "../../../Lib/CustomFunction";
+import { GetAgenceBYcode, GetEtatDossier } from "../../../Lib/CustomFunction";
 
 export type PopconfirmType = {
   client?: CLientT | null;
@@ -435,7 +435,6 @@ function ParticulierCreditView() {
     });
   };
 
-  
   const handleRejeterLigne = () => {
     // if (!motiv) {
     //   return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
@@ -448,23 +447,23 @@ function ParticulierCreditView() {
     }
     setLoading(true);
     // setTimeout(() => {
-      setLoading(false);
-      const params: RejeterLigne = {
-        id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
-        user_id: Number(idUserConnect)!,
-        motif: selectAutre,
-      };
-      rejeterligne(params, {
-        onSuccess: () => {
-          // setMotiv("");
-          handlecancelRejeter();
-          setAvis("");
-          setmemoType("");
-          enqueueSnackbar("Status de dossier Modifier avec success !", {
-            variant: "success",
-          });
-        },
-      });
+    setLoading(false);
+    const params: RejeterLigne = {
+      id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
+      user_id: Number(idUserConnect)!,
+      motif: selectAutre,
+    };
+    rejeterligne(params, {
+      onSuccess: () => {
+        // setMotiv("");
+        handlecancelRejeter();
+        setAvis("");
+        setmemoType("");
+        enqueueSnackbar("Status de dossier Modifier avec success !", {
+          variant: "success",
+        });
+      },
+    });
     // }, 2000);
   };
 
@@ -676,6 +675,14 @@ function ParticulierCreditView() {
           );
         }
         return null;
+      },
+    },
+    {
+      title: "En attente de",
+
+      key: "points_valides",
+      render: (_, record) => {
+        return <div> {GetEtatDossier(record?.points_valides!) === "Chef agence central" || GetEtatDossier(record?.points_valides!) === "Chargé de clientèle" ? GetEtatDossier(record?.points_valides!) +"- "+GetAgenceBYcode(record?.agence!) : GetEtatDossier(record?.points_valides!)}</div>;
       },
     },
     {
@@ -1782,15 +1789,6 @@ function ParticulierCreditView() {
       </div>
       <div className="!max-w-full mt-4 md:!max-w-full overflow-x-auto">
         {(LigneDaTa?.length ?? 0) > 0 ? (
-          // <Table<LigneCredit>
-          //   dataSource={onlyPaticulier}
-          //   columns={columnsLigne}
-          //   loading={isPending}
-          //   pagination={false}
-          //   bordered
-          //   className="rounded-xl overflow-auto"
-          //   rowClassName={() => "custom-row-height"}
-          // />
           <Table<LigneCredit>
             dataSource={
               role === "Directeur Général" ? onlyPaticulier : lignesFiltrees
