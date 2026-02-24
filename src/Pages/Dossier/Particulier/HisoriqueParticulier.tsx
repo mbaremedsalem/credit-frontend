@@ -6,7 +6,6 @@ import { SiProgress } from "react-icons/si";
 import { GrValidate } from "react-icons/gr";
 import { Button, Tag } from "antd";
 import { motion } from "framer-motion";
-import { GetAgenceBYcode, GetEtatDossier } from "../../../Lib/CustomFunction";
 
 type props = {
   credit: number | string;
@@ -31,13 +30,13 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
 
   const { data: HistoriqueData } = useGetHistoriqueLigneCredit(credit);
 
-  // function isMourabahaType(type: string) {
-  //   return [
-  //     "CRDT CT- MOURABAHA",
-  //     "CRDT MT- MOURABAHA",
-  //     "CRDT LT- MOURABAHA",
-  //   ].includes(type);
-  // }
+  function isMourabahaType(type: string) {
+    return [
+      "CRDT CT- MOURABAHA",
+      "CRDT MT- MOURABAHA",
+      "CRDT LT- MOURABAHA",
+    ].includes(type);
+  }
 
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return "";
@@ -269,10 +268,6 @@ const HistoriqueParticulier = ({ credit, onClose }: props) => {
               ? "En attente de validation par Directeur Engagement"
               : "En attente de modification de Chargé de clientèle"}
           </span>
-                      En attente de {" => "}
-                    {" "}
-                   {GetEtatDossier(HistoriqueData?.credit?.points_valides!) === "Chef agence central" || GetEtatDossier(HistoriqueData?.credit?.points_valides!) === "Chargé de clientèle" ? GetEtatDossier(HistoriqueData?.credit?.points_valides!) +"- "+GetAgenceBYcode(HistoriqueData?.credit?.agence!) : GetEtatDossier(HistoriqueData?.credit?.points_valides!)}
-                   </span>
         </motion.div>
       )}
 

@@ -1,7 +1,6 @@
 import {
   Button,
   DatePicker,
-  Dropdown,
   Input,
   message,
   Modal,
@@ -15,17 +14,10 @@ import { HiOutlineInbox } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
 import { LuCircleUserRound } from "react-icons/lu";
 import { ColumnsType } from "antd/es/table";
-import { GrValidate } from "react-icons/gr";
 import { MdCancel } from "react-icons/md";
 const { RangePicker } = DatePicker;
-import { BsThreeDotsVertical as DotIcon } from "react-icons/bs";
-import { CgDetailsMore } from "react-icons/cg";
-import { RiFileHistoryFill } from "react-icons/ri";
 
 import { CLientT, LigneCredit } from "../../../Services/type";
-import { useGetLingeCredit } from "../../../Services/Demandes/useGetLigneCredit";
-import DetailsLigne from "./DetailsPaticulier";
-import HistoriqueLigne from "./HisoriqueParticulier";
 import { GiConfirmed } from "react-icons/gi";
 import AuthService from "../../../Auth-Services/AuthService";
 import {
@@ -38,9 +30,10 @@ import {
 } from "../../../Services/Demandes/useRejeterLigne";
 import { enqueueSnackbar } from "notistack";
 import SpinnerLoader from "../../../Ui/Spinner";
-import RemonterNouveau from "./RemonterNouveau";
+// import HistoriqueEntreprise from "./HistoriqueEntreprise";
+// import DetailsCreditEntreprise from "./DetailsCreditEntreprise";
+// import RemonterANouveauEntreprise from "./RemounterNouveauEntreprise";
 import {
-  FaArrowDown,
   FaFileAlt,
   FaFileExcel,
   FaFileImage,
@@ -48,68 +41,43 @@ import {
   FaFileWord,
   FaUpload,
 } from "react-icons/fa";
-import { IoEyeOutline } from "react-icons/io5";
-import { GetAgenceBYcode, GetEtatDossier } from "../../../Lib/CustomFunction";
-
+import { useGetTypeDocument } from "../../../Services/Demandes/useGetListTypeDocument";
+import { GetAgenceBYcode } from "../../../Lib/CustomFunction";
+import { useGetRachat } from "../../../Services/Rachat/useGetRachat";
+import { RachatType } from "../../../Services/Rachat/typeRachat";
 export type PopconfirmType = {
   client?: CLientT | null;
+  open: boolean;
+};
+export type PopconfirmTypeDetails = {
+  ligne?: LigneCredit | null;
   open: boolean;
 };
 type UploadedFile = {
   file: File;
   previewUrl: string;
 };
-export type PopconfirmTypeDetails = {
-  ligne?: LigneCredit | null;
-  open: boolean;
-};
-function ParticulierCreditView() {
-  const role = AuthService.getPostUserConnect();
-
+function RachatListView() {
+  const [memoType, setmemoType] = useState("");
+  const [avis, setAvis] = useState("");
+  const [selectAutre, setSelectAutre] = useState("");
+  const [cherche, setcherche] = useState("");
+  const [valueChercher, setValuecher] = useState("");
+  console.log("valueChercher : ", valueChercher)
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [uploadedFileMourabaha, setUploadedFileMourabaha] =
     useState<UploadedFile | null>(null);
-  const [selectAutre, setSelectAutre] = useState("");
-  const [memoType, setmemoType] = useState("");
-  const [avis, setAvis] = useState("");
-  const [cherche, setcherche] = useState("");
-  const [valueChercher, setValuecher] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const [openPopupConfirmDetails, setopenPopupConfirmDetails] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
-  const [openPopupConfirmHistorique, setopenPopupConfirmHistorique] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
-  const [openPopupConfirmValider, setopenPopupConfirmValider] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
-  const [openPopupRemonterAnouveau, setopenPopupRemonterAnouveau] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
-  const [openPopupConfirmRejeter, setopenPopupConfirmRejeter] =
-    useState<PopconfirmTypeDetails>({
-      open: false,
-      ligne: null,
-    });
-
   const [dates, setDates] = useState<[string | null, string | null]>([
     null,
     null,
   ]);
+
+  const [loading, setLoading] = useState(false);
   const [textContent, setTextContent] = useState<string>("");
   const [previewVisible, setPreviewVisible] = useState<boolean>(false);
-  const [previewVisibleMourbaha, setPreviewVisibleMourabaha] =
-    useState<boolean>(false);
+  const [selectTypeDocument, setSelectTypeDocument] = useState("");
+
+  
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const handlePreview = () => {
     setPreviewVisible(true);
@@ -118,13 +86,42 @@ function ParticulierCreditView() {
   const handleCancelPreview = () => {
     setPreviewVisible(false);
   };
-  const handlePreviewMourabaha = () => {
-    setPreviewVisibleMourabaha(true);
-  };
+ 
 
-  const handleCancelPreviewMourabaha = () => {
-    setPreviewVisibleMourabaha(false);
-  };
+  
+//   function isMourabahaType(type: string) {
+//     return [
+//       "CRDT CT- MOURABAHA",
+//       "CRDT MT- MOURABAHA",
+//       "CRDT LT- MOURABAHA",
+//       // "DECOUVERT"
+//     ].includes(type);
+//   }
+
+ 
+  const [openPopupConfirmValider, setopenPopupConfirmValider] =
+    useState<PopconfirmTypeDetails>({
+      open: false,
+      ligne: null,
+    });
+  
+  const [openPopupConfirmRejeter, setopenPopupConfirmRejeter] =
+    useState<PopconfirmTypeDetails>({
+      open: false,
+      ligne: null,
+    });
+
+  const [filtreStatus, setFiltreStatus] = useState<string>("all");
+
+  useEffect(() => {
+    if (cherche.trim() === "") {
+      setValuecher("");
+    }
+  }, [cherche]);
+
+  useEffect(() => {
+    setFiltreStatus("a_decider");
+  }, [dates]);
 
   const getFileIcon = (fileType: string) => {
     if (fileType.includes("pdf"))
@@ -145,125 +142,15 @@ function ParticulierCreditView() {
       }
     };
   }, [uploadedFile]);
+  
 
-  useEffect(() => {
-    return () => {
-      if (uploadedFileMourabaha?.previewUrl) {
-        URL.revokeObjectURL(uploadedFileMourabaha.previewUrl);
-      }
-    };
-  }, [uploadedFileMourabaha]);
-  const [filtreStatus, setFiltreStatus] = useState<string>("all");
+ 
 
-  useEffect(() => {
-    if (cherche.trim() === "") {
-      setValuecher("");
-    }
-  }, [cherche]);
-  useEffect(() => {
-    setFiltreStatus("a_decider");
-  }, [dates]);
+  const role = AuthService.getPostUserConnect();
 
-  function isMourabahaType(type: string) {
-    return [
-      "CRDT CT- MOURABAHA",
-      "CRDT MT- MOURABAHA",
-      "CRDT LT- MOURABAHA",
-      // "DECOUVERT"
-    ].includes(type);
-  }
-  const doitPrendreDecision = (ligne: LigneCredit): boolean => {
-    const dossierPoints = ligne.points_valides ?? 0;
-    const dossierStatus = ligne.status;
-    const typeCredit = ligne.type_credit;
+  const idUserConnect = AuthService.getIDUserConnect();
 
-    if (dossierStatus !== "EN_COURS") return false;
-
-    if (role === "Chargé de clientèle" && dossierPoints === 0) return true;
-    if (role === "Chargé de clientèle" && dossierPoints === 48) return true;
-    if (role === "Chef agence central" && dossierPoints === 2) return true;
-    if (
-      role === "Chef de département commercial" &&
-      dossierPoints === 6
-      // &&
-      // !isMourabahaType(typeCredit)
-    )
-      return true;
-    // if (role === "Chef de département commercial" && dossierPoints === 6)
-    //   return true;
-
-    if (role === "Analyse de Risque" && dossierPoints === 12) return true;
-    if (role === "Directeur Risque" && dossierPoints === 24) return true;
-    if (role === "Directeur Engagement" && dossierPoints === 50) return true;
-
-    if (
-      role === "Directeur de département Islamique" &&
-      dossierPoints === 6 &&
-      isMourabahaType(typeCredit)
-    )
-      return true;
-
-    return false;
-  };
-
-  const filtrerLignesCredit = (lignes: LigneCredit[] | undefined) => {
-    if (!lignes) return [];
-
-    switch (filtreStatus) {
-      case "all":
-        return lignes;
-      case "a_decider":
-        return lignes.filter(doitPrendreDecision);
-
-      default:
-        return lignes;
-    }
-  };
-  const { data: LigneDaTa, isPending } = useGetLingeCredit(
-    valueChercher ?? "",
-    dates?.[0] ?? null!,
-    dates?.[1] ?? null!,
-  );
-
-  const agenceConnect = AuthService.getAGENCEUserConnect();
-
-  const isCommercial =
-    role === "Chargé de clientèle" || role === "Chef agence central"
-      ? LigneDaTa
-        ? LigneDaTa?.filter((agence) => agence?.agence === agenceConnect)
-        : []
-      : LigneDaTa;
-
-  const onlyEnattente = isCommercial?.filter(
-    (ligne) => ligne.status === "EN_COURS",
-  );
-
-  const onlyPaticulier = onlyEnattente?.filter(
-    (credit) => credit.type_dossier === "Particulier",
-  );
-
-  const lignesFiltrees = filtrerLignesCredit(onlyPaticulier);
-
-  const filterTout = lignesFiltrees
-    ? lignesFiltrees.filter((credit) => {
-        if (!credit?.client) return false;
-
-        const client = credit.client;
-        const recherche = cherche?.toUpperCase() || "";
-
-        return (
-          client.nom?.toUpperCase().includes(recherche) ||
-          client.tel?.toString().includes(recherche) ||
-          client.client_code?.toString().toUpperCase().includes(recherche) ||
-          client.prenom?.toUpperCase().includes(recherche)
-        );
-      })
-    : [];
-
-  <span className="text-[13px] ">
-    {lignesFiltrees.length} Dossiers Particuliers
-    {filtreStatus !== "all" && ` (filtrés)`}
-  </span>;
+  const { TextArea } = Input;
 
   const { mutate: ValiderLigne, isPending: isPendigValider } =
     useValiderLigne();
@@ -293,7 +180,6 @@ function ParticulierCreditView() {
     const previewUrl = URL.createObjectURL(file);
     setUploadedFile({ file, previewUrl });
 
-    // Si c'est un fichier texte, on lit son contenu
     if (file.type.startsWith("text/") || file.type === "application/json") {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -325,11 +211,6 @@ function ParticulierCreditView() {
       setTextContent("");
     }
   };
-  const post = AuthService.getPostUserConnect();
-  const poit = AuthService.getPoitUserConnect();
-  const idUserConnect = AuthService.getIDUserConnect();
-
-  const { TextArea } = Input;
 
   const funcCLick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -343,25 +224,17 @@ function ParticulierCreditView() {
     console.log(values);
     setDates(dateStrings);
   };
+  const { data: rachatData, isPending } = useGetRachat();
 
-  const handlecancelDetails = () => {
-    setopenPopupConfirmDetails({
-      open: false,
-      ligne: null,
-    });
-  };
-  const handlecancelRemonterANouveau = () => {
-    setopenPopupRemonterAnouveau({
-      open: false,
-      ligne: null,
-    });
-  };
-  const handlecancelHistorique = () => {
-    setopenPopupConfirmHistorique({
-      open: false,
-      ligne: null,
-    });
-  };
+
+//   const isCommercial =
+//     role === "Chargé de clientèle" || role === "Chef agence central"
+//       ? LigneDaTa
+//         ? LigneDaTa?.filter((agence) => agence?.agence === agenceConnect)
+//         : []
+//       : LigneDaTa;
+
+  
   const handlecancelValide = () => {
     setopenPopupConfirmValider({
       open: false,
@@ -373,23 +246,50 @@ function ParticulierCreditView() {
       open: false,
       ligne: null,
     });
-  };
-  const showModalDetails = (ligne: LigneCredit) => {
-    setopenPopupConfirmDetails({ ligne: ligne, open: true });
-  };
-  const showModalHistorique = (ligne: LigneCredit) => {
-    setopenPopupConfirmHistorique({ ligne: ligne, open: true });
-  };
-  const showModalValider = (ligne: LigneCredit) => {
-    setopenPopupConfirmValider({ ligne: ligne, open: true });
+    setSelectAutre("");
+    setSelectTypeDocument("");
   };
 
-  const showModalRemonterAnouveau = (ligne: LigneCredit) => {
-    setopenPopupRemonterAnouveau({ ligne: ligne, open: true });
+
+  const selectDocument = (value: string) => {
+    setSelectTypeDocument(value);
   };
-  const showModalRejeter = (ligne: LigneCredit) => {
-    setopenPopupConfirmRejeter({ ligne: ligne, open: true });
-  };
+  const onlyEnattente = rachatData? rachatData?.results?.filter(
+    (rachat) => rachat.statut === "EN_ATTENTE",
+  )  : []
+
+  console.log("onlyEnattente : ", onlyEnattente)
+
+//   const onlyPaticulier = onlyEnattente?.filter(
+//     (credit) => credit.type_dossier === "Entreprise",
+//   );
+
+  const { data: DateDocument, isPending: isPendingType } =
+    useGetTypeDocument("entreprise");
+
+  const PartiCiluerDocument =
+    DateDocument?.map((credit) => ({
+      label: credit.nom,
+      value: credit.nom,
+    })) || [];
+//   const lignesFiltrees = filtrerLignesCredit(onlyPaticulier);
+
+
+
+  const filterTout = onlyEnattente
+    ? onlyEnattente.filter((credit) => {
+        if (!credit?.client) return false;
+
+        const client = credit.client_details;
+        const recherche = cherche?.toUpperCase() || "";
+
+        return (
+          client.nom?.toUpperCase().includes(recherche) ||
+          client.tel?.toString().includes(recherche) ||
+          client.client_code?.toString().toUpperCase().includes(recherche)
+        );
+      })
+    : [];
 
   const handleValiderLigne = () => {
     const errors = [];
@@ -453,14 +353,14 @@ function ParticulierCreditView() {
   };
 
   const handleRejeterLigne = () => {
-    // if (!motiv) {
-    //   return enqueueSnackbar("Veuillez Selectionner le motiv ! ", {
-    //     variant: "error",
-    //   });
-    // }
-    if (!selectAutre) {
-      // return message.error("Veuillez saisir le motif de rejet !");
-      return message.error("Merci de préciser le motif du rejet");
+    if (!selectTypeDocument) {
+      return enqueueSnackbar("Veuillez Selectionner le motif ! ", {
+        variant: "error",
+      });
+    } else if (!selectAutre) {
+      return enqueueSnackbar("Merci de préciser le motif du rejet", {
+        variant: "error",
+      });
     }
     setLoading(true);
     // setTimeout(() => {
@@ -468,11 +368,10 @@ function ParticulierCreditView() {
     const params: RejeterLigne = {
       id_credit: Number(openPopupConfirmRejeter?.ligne?.id),
       user_id: Number(idUserConnect)!,
-      motif: selectAutre,
+      motif: selectTypeDocument + " |=> " + selectAutre,
     };
     rejeterligne(params, {
       onSuccess: () => {
-        // setMotiv("");
         handlecancelRejeter();
         setAvis("");
         setmemoType("");
@@ -484,7 +383,7 @@ function ParticulierCreditView() {
     // }, 2000);
   };
 
-  const columnsLigne: ColumnsType<LigneCredit> = [
+  const columnsLigne: ColumnsType<RachatType> = [
     {
       title: "N° Credit",
       dataIndex: "id",
@@ -492,32 +391,43 @@ function ParticulierCreditView() {
     },
     {
       title: "Numéro Client",
-      dataIndex: ["client", "client_code"],
+      dataIndex: ["client_details", "client_code"],
       key: "client_code",
     },
     {
       title: "Nom",
-      dataIndex: ["client", "nom"],
+      dataIndex: ["client_details", "nom"],
       key: "nom",
     },
     {
-      title: "Prénom",
-      dataIndex: ["client", "prenom"],
+      title: "Prenom",
+      dataIndex: ["client_details", "prenom"],
+      key: "nom",
+    },
+    {
+      title: "NNI",
+      dataIndex: ["client_details", "nni"],
       key: "prenom",
     },
     {
       title: "TEL",
-      dataIndex: ["client", "tel"],
+      dataIndex: ["client_details", "tel"],
       key: "tel",
     },
     {
-      title: "Ligne de Crédit (MRU)",
-      key: "credit",
+      title: "Address",
+      dataIndex: ["client_details", "Address"],
+      key: "Address",
+    },
+    {
+      title: "Montant de Rachat (MRU)",
+      key: "montant",
       render: (_, record) => {
         return (
+          // <span>{record?.client?.credits?.[0]?.montant.toLocaleString()}</span>
           <span>
             {new Intl.NumberFormat("fr-FR").format(
-              Number(record?.client?.credits?.[0]?.montant.toLocaleString()),
+              Number(record.montant_rachat?.toLocaleString()),
             )}
           </span>
         );
@@ -526,11 +436,11 @@ function ParticulierCreditView() {
     {
       title: "Durée (mois)",
       key: "duree",
-      render: (_, record) => record.client.credits[0]?.duree ?? "-",
+      render: (_, record) => record.duree_restante_mois ?? "-",
     },
     {
       title: "Type Crédit",
-      key: "duree",
+      key: "Type",
       render: (_, record) => record?.type_credit,
     },
     {
@@ -540,10 +450,10 @@ function ParticulierCreditView() {
         return (
           <div>
             {" "}
-            {record?.date_demande
-              ? record?.date_demande?.slice(0, 10)
+            {record?.date_creation
+              ? record?.date_creation?.slice(0, 10)
               : ""}{" "}
-            {record?.date_demande ? record?.date_demande?.slice(11, 19) : ""}
+            {record?.date_creation ? record?.date_creation?.slice(11, 19) : ""}
           </div>
         );
       },
@@ -553,7 +463,7 @@ function ParticulierCreditView() {
 
       key: "agence",
       render: (_, record) => {
-        return <div> {GetAgenceBYcode(record?.agence!)}</div>;
+        return <div> {GetAgenceBYcode(record?.client_details.agence!)}</div>;
       },
     },
 
@@ -563,280 +473,310 @@ function ParticulierCreditView() {
       key: "status",
       render: (_, record) => {
         let color = "";
-        if (record.status === "VALIDÉ") color = "green";
-        else if (record.status === "REJETÉ") color = "red";
+        if (record.statut === "VALIDÉ") color = "green";
+        else if (record.statut === "REJETÉ") color = "red";
         else color = "geekblue";
         return (
           <Tag color={color} key={status}>
-            {record?.status === "EN_COURS"
+            {record?.statut === "EN_COURS"
               ? "EN COURS".toUpperCase()
-              : record?.status}
+              : record?.statut}
           </Tag>
         );
       },
     },
+    // {
+    //   title: "En attente de",
 
+    //   key: "points_valides",
+    //   render: (_, record) => {
+    //     return (
+    //       <div>
+    //         {" "}
+    //         {GetEtatDossier(record?.points_valides!) ===
+    //           "Chef agence central" ||
+    //         GetEtatDossier(record?.points_valides!) === "Chargé de clientèle"
+    //           ? GetEtatDossier(record?.points_valides!) +
+    //             "- " +
+    //             GetAgenceBYcode(record?.agence!)
+    //           : GetEtatDossier(record?.points_valides!)}
+    //       </div>
+    //     );
+    //   },
+    // },
 
-    {
-      title: "En attente de",
+ 
 
-      key: "points_valides",
-      render: (_, record) => {
-        return <div> {GetEtatDossier(record?.points_valides!) === "Chef agence central" || GetEtatDossier(record?.points_valides!) === "Chargé de clientèle" ? GetEtatDossier(record?.points_valides!) +"- "+GetAgenceBYcode(record?.agence!) : GetEtatDossier(record?.points_valides!)}</div>;
-      },
-    },
-    {
-      title: "",
-      key: "actions",
-      render: (_, record) => {
-        const connectedUser = {
-          post: post,
-          points: poit,
-        };
+    // {
+    //   title: "En attente de",
 
-        const dossierPoints = record?.points_valides ?? 0;
-        const dossierStatus = record?.status;
+    //   key: "points_valides",
+    //   render: (_, record) => {
+    //     return (
+    //       <div>
+    //         {" "}
+    //         {GetEtatDossier(record?.points_valides!) ===
+    //           "Chef agence central" ||
+    //         GetEtatDossier(record?.points_valides!) === "Chargé de clientèle"
+    //           ? GetEtatDossier(record?.points_valides!) +
+    //             "- " +
+    //             GetAgenceBYcode(record?.agence!)
+    //           : GetEtatDossier(record?.points_valides!)}
+    //       </div>
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "",
+    //   key: "actions",
+    //   render: (_, record) => {
+    //     const connectedUser = {
+    //       post: post,
+    //       points: poit,
+    //     };
 
-        const items = [
-          {
-            label: (
-              <div className="flex items-center justify-between space-x-3">
-                <span>Voir Détails</span>
-                <CgDetailsMore size={17} />
-              </div>
-            ),
-            key: "1",
-            onClick: () => showModalDetails(record),
-          },
-          {
-            label: (
-              <div className="flex items-center justify-between space-x-3">
-                <span>Voir Historique</span>
-                <RiFileHistoryFill size={17} />
-              </div>
-            ),
-            key: "2",
-            onClick: () => showModalHistorique(record),
-          },
-        ];
+    //     const dossierPoints = record?.points_valides ?? 0;
+    //     const dossierStatus = record?.status;
 
-        if (
-          dossierStatus === "EN_COURS" &&
-          connectedUser.post !== "Chargé de clientèle"
-        ) {
-          if (
-            connectedUser.post === "Chef agence central" &&
-            dossierPoints === 2
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    {/* <span>Valider</span> */}
-                    <span>Remonter</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "3",
-                onClick: () => showModalValider(record),
-              },
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Réjeter</span>
-                    <MdCancel color="red" size={17} />
-                  </div>
-                ),
-                key: "4",
-                onClick: () => showModalRejeter(record),
-              },
-            );
-          }
+    //     const items = [
+    //       {
+    //         label: (
+    //           <div className="flex items-center justify-between space-x-3">
+    //             <span>Voir Détails</span>
+    //             <CgDetailsMore size={17} />
+    //           </div>
+    //         ),
+    //         key: "1",
+    //         onClick: () => showModalDetails(record),
+    //       },
+    //       {
+    //         label: (
+    //           <div className="flex items-center justify-between space-x-3">
+    //             <span>Voir Historique</span>
+    //             <RiFileHistoryFill size={17} />
+    //           </div>
+    //         ),
+    //         key: "2",
+    //         onClick: () => showModalHistorique(record),
+    //       },
+    //     ];
 
-          if (
-            connectedUser.post === "Chef de département commercial" &&
-            dossierPoints === 6
-            //  &&
-            // !isMourabahaType(record?.type_credit!)
-            // dossierPoints === 6
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Remonter</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "5",
-                onClick: () => showModalValider(record),
-              },
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Réjeter</span>
-                    <MdCancel color="red" size={17} />
-                  </div>
-                ),
-                key: "6",
-                onClick: () => showModalRejeter(record),
-              },
-            );
-          }
+    //     if (
+    //       dossierStatus === "EN_COURS" &&
+    //       connectedUser.post !== "Chargé de clientèle"
+    //     ) {
+    //       if (
+    //         connectedUser.post === "Chef agence central" &&
+    //         dossierPoints === 2
+    //       ) {
+    //         items.push(
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 {/* <span>Valider</span> */}
+    //                 <span>Remonter</span>
+    //                 <GrValidate color="green" size={17} />
+    //               </div>
+    //             ),
+    //             key: "3",
+    //             onClick: () => showModalValider(record),
+    //           },
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Réjeter</span>
+    //                 <MdCancel color="red" size={17} />
+    //               </div>
+    //             ),
+    //             key: "4",
+    //             onClick: () => showModalRejeter(record),
+    //           },
+    //         );
+    //       }
 
-          if (
-            connectedUser.post === "Directeur de département Islamique" &&
-            dossierPoints === 6 &&
-            isMourabahaType(record?.type_credit!)
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Remonter</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "5",
-                onClick: () => showModalValider(record),
-              },
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Réjeter</span>
-                    <MdCancel color="red" size={17} />
-                  </div>
-                ),
-                key: "6",
-                onClick: () => showModalRejeter(record),
-              },
-            );
-          }
+    //       if (
+    //         connectedUser.post === "Chef de département commercial" &&
+    //         dossierPoints === 6
+    //         // &&
+    //         // !isMourabahaType(record?.type_credit!)
+    //       ) {
+    //         items.push(
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Remonter</span>
+    //                 <GrValidate color="green" size={17} />
+    //               </div>
+    //             ),
+    //             key: "5",
+    //             onClick: () => showModalValider(record),
+    //           },
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Réjeter</span>
+    //                 <MdCancel color="red" size={17} />
+    //               </div>
+    //             ),
+    //             key: "6",
+    //             onClick: () => showModalRejeter(record),
+    //           },
+    //         );
+    //       }
 
-          if (
-            connectedUser.post === "Analyse de Risque" &&
-            dossierPoints === 12
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Remonter</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "7",
-                onClick: () => showModalValider(record),
-              },
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Réjeter</span>
-                    <MdCancel color="red" size={17} />
-                  </div>
-                ),
-                key: "8",
-                onClick: () => showModalRejeter(record),
-              },
-            );
-          }
-          if (
-            connectedUser.post === "Directeur Risque" &&
-            dossierPoints === 24
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Remonter</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "3",
-                onClick: () => showModalValider(record),
-              },
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Réjeter</span>
-                    <MdCancel color="red" size={17} />
-                  </div>
-                ),
-                key: "4",
-                onClick: () => showModalRejeter(record),
-              },
-            );
-          }
+    //       if (
+    //         connectedUser.post === "Directeur de département Islamique" &&
+    //         dossierPoints === 6 &&
+    //         isMourabahaType(record?.type_credit!)
+    //       ) {
+    //         items.push(
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Remonter</span>
+    //                 <GrValidate color="green" size={17} />
+    //               </div>
+    //             ),
+    //             key: "5",
+    //             onClick: () => showModalValider(record),
+    //           },
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Réjeter</span>
+    //                 <MdCancel color="red" size={17} />
+    //               </div>
+    //             ),
+    //             key: "6",
+    //             onClick: () => showModalRejeter(record),
+    //           },
+    //         );
+    //       }
 
-          if (
-            connectedUser.post === "Directeur Engagement" &&
-            dossierPoints === 50
-          ) {
-            items.push(
-              {
-                label: (
-                  <div className="flex items-center justify-between space-x-3">
-                    <span>Valider</span>
-                    <GrValidate color="green" size={17} />
-                  </div>
-                ),
-                key: "3",
-                onClick: () => showModalValider(record),
-              },
-              // {
-              //   label: (
-              //     <div className="flex items-center justify-between space-x-3">
-              //       <span>Réjeter</span>
-              //       <MdCancel color="red" size={17} />
-              //     </div>
-              //   ),
-              //   key: "4",
-              //   onClick: () => showModalRejeter(record),
-              // }
-            );
-          }
-        } else if (
-          dossierStatus === "EN_COURS" &&
-          connectedUser.post === "Chargé de clientèle" &&
-          dossierPoints === 0
-        ) {
-          items.push({
-            label: (
-              <div className="flex items-center justify-between space-x-3">
-                <span>Remonter a nouveau </span>
-                <GrValidate color="green" size={17} />
-              </div>
-            ),
-            key: "13",
-            onClick: () => showModalRemonterAnouveau(record),
-          });
-        } else if (
-          dossierStatus === "EN_COURS" &&
-          connectedUser.post === "Chargé de clientèle" &&
-          dossierPoints === 48
-        ) {
-          items.push({
-            label: (
-              <div className="flex items-center justify-between space-x-3">
-                {/* <span>Valider</span> */}
-                <span> Joindre documents </span>
-                <GrValidate color="green" size={17} />
-              </div>
-            ),
-            key: "3",
-            onClick: () => showModalValider(record),
-          });
-        }
-        return (
-          <div className="cursor-pointer">
-            <Dropdown menu={{ items }}>
-              <DotIcon />
-            </Dropdown>
-          </div>
-        );
-      },
-      filteredValue: null,
-    },
+    //       if (
+    //         connectedUser.post === "Analyse de Risque" &&
+    //         dossierPoints === 12
+    //       ) {
+    //         items.push(
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Remonter</span>
+    //                 <GrValidate color="green" size={17} />
+    //               </div>
+    //             ),
+    //             key: "7",
+    //             onClick: () => showModalValider(record),
+    //           },
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Réjeter</span>
+    //                 <MdCancel color="red" size={17} />
+    //               </div>
+    //             ),
+    //             key: "8",
+    //             onClick: () => showModalRejeter(record),
+    //           },
+    //         );
+    //       }
+    //       if (
+    //         connectedUser.post === "Directeur Risque" &&
+    //         dossierPoints === 24
+    //       ) {
+    //         items.push(
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Remonter</span>
+    //                 <GrValidate color="green" size={17} />
+    //               </div>
+    //             ),
+    //             key: "3",
+    //             onClick: () => showModalValider(record),
+    //           },
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Réjeter</span>
+    //                 <MdCancel color="red" size={17} />
+    //               </div>
+    //             ),
+    //             key: "4",
+    //             onClick: () => showModalRejeter(record),
+    //           },
+    //         );
+    //       }
+
+    //       if (
+    //         connectedUser.post === "Directeur Engagement" &&
+    //         dossierPoints === 50
+    //       ) {
+    //         items.push(
+    //           {
+    //             label: (
+    //               <div className="flex items-center justify-between space-x-3">
+    //                 <span>Valider</span>
+    //                 <GrValidate color="green" size={17} />
+    //               </div>
+    //             ),
+    //             key: "3",
+    //             onClick: () => showModalValider(record),
+    //           },
+    //           // {
+    //           //   label: (
+    //           //     <div className="flex items-center justify-between space-x-3">
+    //           //       <span>Réjeter</span>
+    //           //       <MdCancel color="red" size={17} />
+    //           //     </div>
+    //           //   ),
+    //           //   key: "4",
+    //           //   onClick: () => showModalRejeter(record),
+    //           // }
+    //         );
+    //       }
+    //     } else if (
+    //       dossierStatus === "EN_COURS" &&
+    //       connectedUser.post === "Chargé de clientèle" &&
+    //       dossierPoints === 0
+    //     ) {
+    //       items.push({
+    //         label: (
+    //           <div className="flex items-center justify-between space-x-3">
+    //             <span>Remonter a nouveau </span>
+    //             <GrValidate color="green" size={17} />
+    //           </div>
+    //         ),
+    //         key: "13",
+    //         onClick: () => showModalRemonterAnouveau(record),
+    //       });
+    //     } else if (
+    //       dossierStatus === "EN_COURS" &&
+    //       connectedUser.post === "Chargé de clientèle" &&
+    //       dossierPoints === 48
+    //     ) {
+    //       items.push({
+    //         label: (
+    //           <div className="flex items-center justify-between space-x-3">
+    //             {/* <span>Valider</span> */}
+    //             <span> Joindre documents </span>
+    //             <GrValidate color="green" size={17} />
+    //           </div>
+    //         ),
+    //         key: "3",
+    //         onClick: () => showModalValider(record),
+    //       });
+    //     }
+    //     return (
+    //       <div className="cursor-pointer">
+    //         <Dropdown menu={{ items }}>
+    //           <DotIcon />
+    //         </Dropdown>
+    //       </div>
+    //     );
+    //   },
+    //   filteredValue: null,
+    // },
   ];
 
   return (
@@ -845,81 +785,27 @@ function ParticulierCreditView() {
         <div className="flex flex-col ">
           <span className="text-[18px] font-bold">Dossiers</span>
           <span className="text-[13px] ">
-            {lignesFiltrees?.length} Dossiers Particuliers
+            {onlyEnattente?.length} Dossiers Rachat
           </span>
         </div>
         <div className="flex items-center gap-x-[13px] justify-center mt-3">
-          <Modal
+          {/* <Modal
             destroyOnClose={true}
             onCancel={handlecancelRemonterANouveau}
             open={openPopupRemonterAnouveau.open}
             footer={null}
-            width={1000}
+            width={1350}
             closable={false}
             maskClosable={false}
           >
-            <RemonterNouveau
+            <RemonterANouveauEntreprise
               closeSecondModal={handlecancelRemonterANouveau}
               ligne={openPopupRemonterAnouveau.ligne!}
               Credit_id={openPopupRemonterAnouveau?.ligne?.id!}
             />
-          </Modal>
-          <Modal
-            title={`Aperçu de ${uploadedFile?.file.name || "fichier"}`}
-            open={previewVisible}
-            onCancel={handleCancelPreview}
-            footer={null}
-            width="80%"
-            style={{ top: 20 }}
-            maskClosable={false}
-          >
-            {uploadedFile &&
-              (uploadedFile.file.type.startsWith("image/") ? (
-                <img
-                  src={uploadedFile.previewUrl}
-                  alt="Aperçu"
-                  style={{ width: "100%" }}
-                />
-              ) : uploadedFile.file.type === "application/pdf" ? (
-                <iframe
-                  src={uploadedFile.previewUrl}
-                  title="Aperçu PDF"
-                  width="100%"
-                  height="600px"
-                />
-              ) : (
-                <div>
-                  <p>
-                    <strong>Nom:</strong> {uploadedFile.file.name}
-                  </p>
-                  <p>
-                    <strong>Taille:</strong>{" "}
-                    {(uploadedFile.file.size / 1024).toFixed(2)} KB
-                  </p>
-                  <p>
-                    <strong>Type:</strong> {uploadedFile.file.type}
-                  </p>
-                  <p>
-                    Pour visualiser ce type de fichier, vous devrez peut-être le
-                    télécharger.
-                  </p>
-                  <Button>
-                    Télécharger
-                    <FaArrowDown />
-                    <a
-                      href={uploadedFile.previewUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <IoEyeOutline size={20} />
-                    </a>
-                  </Button>
-                </div>
-              ))}
-          </Modal>
+          </Modal> */}
 
-          <Modal
+          {/* <Modal
             title={`Aperçu de ${uploadedFileMourabaha?.file.name || "fichier"}`}
             open={previewVisibleMourbaha}
             onCancel={handleCancelPreviewMourabaha}
@@ -972,9 +858,9 @@ function ParticulierCreditView() {
                   </Button>
                 </div>
               ))}
-          </Modal>
+          </Modal> */}
 
-          <Modal
+          {/* <Modal
             className="rounded-lg"
             destroyOnClose={true}
             onCancel={handlecancelDetails}
@@ -984,12 +870,13 @@ function ParticulierCreditView() {
             closeIcon={false}
             maskClosable={false}
           >
-            <DetailsLigne
+            <DetailsCreditEntreprise
               closeSecondModal={handlecancelDetails}
               ligne={openPopupConfirmDetails.ligne!}
             />
-          </Modal>
-          <Modal
+          </Modal> */}
+
+          {/* <Modal
             className="rounded-lg"
             destroyOnClose={true}
             onCancel={handlecancelHistorique}
@@ -999,10 +886,53 @@ function ParticulierCreditView() {
             closeIcon={false}
             maskClosable={false}
           >
-            <HistoriqueLigne
+            <HistoriqueEntreprise
               onClose={handlecancelHistorique}
               credit={openPopupConfirmHistorique?.ligne?.id!}
             />
+          </Modal> */}
+
+          <Modal
+            title={`Aperçu de ${uploadedFile?.file.name || "fichier"}`}
+            open={previewVisible}
+            onCancel={handleCancelPreview}
+            footer={null}
+            width="80%"
+            style={{ top: 20 }}
+            maskClosable={false}
+          >
+            {uploadedFile &&
+              (uploadedFile.file.type.startsWith("image/") ? (
+                <img
+                  src={uploadedFile.previewUrl}
+                  alt="Aperçu"
+                  style={{ width: "100%" }}
+                />
+              ) : uploadedFile.file.type === "application/pdf" ? (
+                <iframe
+                  src={uploadedFile.previewUrl}
+                  title="Aperçu PDF"
+                  width="100%"
+                  height="600px"
+                />
+              ) : (
+                <div>
+                  <p>
+                    <strong>Nom:</strong> {uploadedFile.file.name}
+                  </p>
+                  <p>
+                    <strong>Taille:</strong>{" "}
+                    {(uploadedFile.file.size / 1024).toFixed(2)} KB
+                  </p>
+                  <p>
+                    <strong>Type:</strong> {uploadedFile.file.type}
+                  </p>
+                  <p>
+                    Pour visualiser ce type de fichier, vous devrez peut-être le
+                    télécharger.
+                  </p>
+                </div>
+              ))}
           </Modal>
           <Modal
             className="rounded-lg"
@@ -1435,7 +1365,6 @@ function ParticulierCreditView() {
                                     height="500px"
                                   />
                                   <Button
-                                    onClick={handlePreviewMourabaha}
                                     className="w-[153.8px] h-[50.6px] mt-2 primary-button"
                                   >
                                     Ouvrir en plein écran
@@ -1538,107 +1467,52 @@ function ParticulierCreditView() {
             closeIcon={false}
             maskClosable={false}
           >
-            <div className="flex flex-col items-center space-y-3 ">
-              <div className="flex items-center justify-center space-x-3">
-                <h1 className="text-xl font-bold text-gray-800">Rejeter</h1>
-                <MdCancel size={32} className="text-red-500" />
-              </div>
+            {isPendingType ? (
+              <SpinnerLoader />
+            ) : (
+              <div className="flex flex-col items-center space-y-3 ">
+                <div className="flex items-center justify-center space-x-3">
+                  <h1 className="text-xl font-bold text-gray-800">Rejeter</h1>
+                  <MdCancel size={32} className="text-red-500" />
+                </div>
 
-              {/* <label>Motif</label>
-              <Select
-                className="w-full h-[42px]"
-                options={[
-                  {
-                    label: "Dossier incomplet",
-                    value: "Dossier incomplet",
-                  },
-                  {
-                    label: "Dossier non conforme",
-                    value: "Dossier non conforme",
-                  },
-                  // {
-                  //   label: "Capacité de remboursement insuffisante",
-                  //   value: "Capacité de remboursement insuffisante",
-                  // },
-                  // {
-                  //   label: "Historique de crédit défavorable",
-                  //   value: "Historique de crédit défavorable",
-                  // },
-                  // {
-                  //   label: "Endettement trop élevé",
-                  //   value: "Endettement trop élevé",
-                  // },
-                  // {
-                  //   label: "Revenus instables ou insuffisants",
-                  //   value: "Revenus instables ou insuffisants",
-                  // },
-                  // {
-                  //   label: "Garanties insuffisantes",
-                  //   value: "Garanties insuffisantes",
-                  // },
-                  // {
-                  //   label: "Secteur d'activité à risque",
-                  //   value: "Secteur d'activité à risque",
-                  // },
-                  // {
-                  //   label: "Ancienneté professionnelle insuffisante",
-                  //   value: "Ancienneté professionnelle insuffisante",
-                  // },
-                  // {
-                  //   label: "Montant demandé trop important",
-                  //   value: "Montant demandé trop important",
-                  // },
-                  // {
-                  //   label: "Durée de remboursement inadaptée",
-                  //   value: "Durée de remboursement inadaptée",
-                  // },
-                  {
-                    label: "Autre motif (préciser)",
-                    value: "Autre",
-                  },
-                ]}
-                value={motiv}
-                onChange={SelectMotiv}
-                placeholder="motif"
-              />
-              { motiv&& <><label>Document</label>
+                <label>Motif</label>
 
-                 <Select
-                className="w-full h-[42px]"
-                options={PartiCiluerDocument}
-                value={selectTypeDocument}
-                onChange={selectDocument}
-                placeholder="Select Document"
-              /></>}
-               */}
-
-              <label>
-                Motif de Rejet
-                <Input
-                  value={selectAutre}
-                  onChange={(e) => setSelectAutre(e.target.value)}
+                <Select
+                  className="w-full h-[42px]"
+                  options={PartiCiluerDocument}
+                  value={selectTypeDocument}
+                  onChange={selectDocument}
+                  placeholder="Select Document"
                 />
-              </label>
+                <label>
+                  Motif de Rejet
+                  <Input
+                    value={selectAutre}
+                    onChange={(e) => setSelectAutre(e.target.value)}
+                  />
+                </label>
 
-              <p className=" my-2 text-[15px] text-center">
-                Êtes-vous sûr de vouloir réjeter ce ligne ?
-              </p>
-              <div className="flex items-center justify-end gap-x-2">
-                <Button
-                  className="w-[143px] h-[50.6px]   mt-2 secondary-button"
-                  onClick={handlecancelRejeter}
-                >
-                  No, Annuler
-                </Button>
-                <Button
-                  className="w-[153.8px] h-[50.6px] mt-2 primary-button"
-                  loading={isPendigRejeter}
-                  onClick={handleRejeterLigne}
-                >
-                  Oui, Réjeter
-                </Button>
+                <p className=" my-2 text-[15px] text-center">
+                  Êtes-vous sûr de vouloir réjeter ce ligne ?
+                </p>
+                <div className="flex items-center justify-end gap-x-2">
+                  <Button
+                    className="w-[143px] h-[50.6px]   mt-2 secondary-button"
+                    onClick={handlecancelRejeter}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    className="w-[153.8px] h-[50.6px] mt-2 primary-button"
+                    loading={isPendigRejeter}
+                    onClick={handleRejeterLigne}
+                  >
+                    Réjeter
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </Modal>
           {loading && <SpinnerLoader />}
         </div>
@@ -1654,15 +1528,12 @@ function ParticulierCreditView() {
               options={[
                 { value: "all", label: "Tous les dossiers" },
                 { value: "a_decider", label: "À décider par moi" },
-                // { value: "en_cours", label: "En cours d'instruction" },
-                // { value: "valides", label: "Dossiers validés" },
-                // { value: "rejetes", label: "Dossiers rejetés" },
               ]}
               placeholder="Filtrer par statut"
             />
           </label>
         )}
-        {/* Filtre existant par numéro client */}
+
         <form className="space-x-2 flex" onSubmit={funcCLick}>
           <Input
             type="text"
@@ -1681,7 +1552,6 @@ function ParticulierCreditView() {
           </Button>
         </form>
 
-        {/* Filtre par date existant */}
         <RangePicker
           className="w-[350px] max-lg:w-[100px] border border-[#e7e7e7] rounded-[10px] !h-[46px]"
           onChange={handleDateChange}
@@ -1689,11 +1559,11 @@ function ParticulierCreditView() {
         />
       </div>
       <div className="!max-w-full mt-4 md:!max-w-full overflow-x-auto">
-        {(LigneDaTa?.length ?? 0) > 0 ? (
-          <Table<LigneCredit>
+        {(onlyEnattente?.length ?? 0) > 0 ? (
+          <Table<RachatType>
             dataSource={
               // role === "Directeur Général" ? onlyPaticulier : lignesFiltrees
-              role === "Directeur Général" ? onlyPaticulier : filterTout
+              role === "Directeur Général" ? onlyEnattente : filterTout
             }
             columns={columnsLigne}
             loading={isPending}
@@ -1706,7 +1576,7 @@ function ParticulierCreditView() {
           <div className="col-span-full flex flex-col items-center justify-center min-h-[300px] text-center">
             <HiOutlineInbox className="text-5xl text-main-color mb-4 rotate-45" />
             <p className="text-lg text-gray-500">
-              Aucune dossier particulier à afficher
+              Aucune dossier Entreprise à afficher
             </p>
           </div>
         )}
@@ -1715,4 +1585,4 @@ function ParticulierCreditView() {
   );
 }
 
-export default ParticulierCreditView;
+export default RachatListView;

@@ -22,8 +22,7 @@ function Sidebar({ setIsSidebarOpen, isSidebarOpen }: props) {
     setLoading(true);
     setLoading(false);
     logout();
-    //  window.location.href = "http://aubstream:9060/";
-    window.location.href = "http://10.99.1.2:5173/";
+     window.location.href = "http://aubstream:9060/";
   };
   const navsAdmin = [
     { name: "Accueil", link: "/", icon: <LiaWarehouseSolid size={20} /> },

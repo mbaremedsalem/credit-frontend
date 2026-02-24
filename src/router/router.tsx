@@ -6,9 +6,8 @@ import {
 import { useEffect, useState } from "react";
 
 import Layout from "../Layout/Layout";
-import MainRouter from "./MainRouter";
 import PublicLayout from "../Layout/PublicLayout";
-import ErrorPage from "../Pages/ErrorPage";
+import MainRouter from "./MainRouter";
 import { useAuth } from "../Services/Auth/AuthProvider";
 import SpinnerLoader from "../Ui/Spinner";
 import { useAutoLogout } from "../Services/Auth/useAutoLogout";
@@ -16,93 +15,119 @@ import AuthService from "../Auth-Services/AuthService";
 
 const Router = () => {
   const { loading, isAuthenticated } = useAuth();
+  const { resetTimer } = useAutoLogout();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  const { resetTimer } = useAutoLogout();
-const post = AuthService.getPostUserConnect()
   useEffect(() => {
     if (isAuthenticated) {
       resetTimer();
     }
   }, [isAuthenticated, resetTimer]);
+
   useEffect(() => {
     if (!loading) {
       setIsCheckingAuth(false);
     }
   }, [loading]);
 
-  // Routes publiques accessibles sans authentification
-  const publicRoutes = [
-    "/login",
-    "/forget-password",
-    "/reset-password",
-    "/reset-success",
-    "/otp",
-    "/register",
-    "/success-send-email",
-    "/success-reset-password",
-  ];
 
-  // Routes de reset avec token (traitement spécial)
 
   if (isCheckingAuth) {
     return <SpinnerLoader />;
   }
 
+  console.log("access : ", AuthService.getAccessToken())
+  console.log("refresh : ", AuthService.getRefreshToken())
+  console.log("isAuthenticated : ", isAuthenticated)
+  // const routes = MainRouter.map((route) => {
+  //   const isPublicRoute =
+  //     publicRoutes.includes(route.path || "") ||
+  //     route.layout === "public";
+
+  //   /* 🔒 Non authentifié → accès interdit aux routes privées */
+  //   if (!isAuthenticated && !isPublicRoute) {
+  //     return {
+  //       ...route,
+  //       element: <Navigate to="/no-autorise" replace />,
+  //     };
+  //   }
+
+  //   /* 🔓 Authentifié → interdit d’aller sur routes publiques */
+  //   if (isAuthenticated && isPublicRoute) {
+  //     return {
+  //       ...route,
+  //       element: <Navigate to="/" replace />,
+  //     };
+  //   }
+
+  //   /* 🎨 Gestion des layouts */
+  //   let element = route.element;
+
+  //   if (route.layout === "private") {
+  //     element = <Layout>{route.element}</Layout>;
+  //   }
+
+  //   if (route.layout === "public") {
+  //     element = <PublicLayout>{route.element}</PublicLayout>;
+  //   }
+
+  //   return {
+  //     ...route,
+  //     element: element ?? (
+  //       <ErrorPage status="404" message="Page not found" />
+  //     ),
+  //   };
+  // });
+
+
+
   const routes = MainRouter.map((route) => {
-    const isPublicRoute = publicRoutes.includes(route.path || "");
+  const hasAccessToken = !!AuthService.getAccessToken();
+  const isPublicRoute = route.layout === "public";
 
-    // Redirection pour les utilisateurs NON authentifiés essayant d'accéder à des routes privées
-    if (!isAuthenticated && route.layout === "private") {
-      return {
-        ...route,
-        element: <Navigate replace to="/login" />,
-      };
-    }
-
-    // Redirection pour les utilisateurs authentifiés essayant d'accéder à des routes publiques
-    if (isAuthenticated && (isPublicRoute || route.layout === "public")) {
-      return {
-        ...route,
-        element: <Navigate replace to="/" />,
-      };
-    }
-
-    const currentPath = window.location.pathname + window.location.search;
-    const isAutoLoginAttempt = currentPath.includes("/login?username=");
-
-    if (isAuthenticated &&(isPublicRoute || route.layout === "public") &&!isAutoLoginAttempt
-    ) {
-      return {
-        ...route,
-        element: <Navigate replace to="/" />,
-      };
-    }
-
-
-    if(post !== "Chargé de clientèle" && post !== "DEVELOPPEUR"&& route.path === "/demande"){
-      return {
-        ...route,
-        element: <Navigate replace to="/" />,
-      };
-    }
-
-    // Gestion des layouts
-    let element = route.element;
-
-    if (route.layout === "private") {
-      element = <Layout>{route.element}</Layout>;
-    } else if (route.layout === "public") {
-      element = <PublicLayout>{route.element}</PublicLayout>;
-    }
-
+  /* 🔒 NON AUTH + PAS DE TOKEN → routes privées interdites */
+  if (!isAuthenticated && !hasAccessToken && route.layout === "private") {
     return {
       ...route,
-      element: element || <ErrorPage status="404" message="Page not found" />,
+      element: <Navigate to="/no-autorise" replace />,
     };
-  });
+  }
+
+  /* 🔓 AUTH OU TOKEN → routes publiques interdites
+     ⚠️ SAUF /login (SSO handler)
+  */
+  if (
+    (isAuthenticated || hasAccessToken) &&
+    isPublicRoute &&
+    route.path !== "/login"
+  ) {
+    return {
+      ...route,
+      element: <Navigate to="/" replace />,
+    };
+  }
+
+  /* 🎨 Layout */
+  let element = route.element;
+
+  if (route.layout === "private") {
+    element = <Layout>{route.element}</Layout>;
+  }
+
+  if (route.layout === "public") {
+    element = <PublicLayout>{route.element}</PublicLayout>;
+  }
+
+  return {
+    ...route,
+    element,
+  };
+});
+
+
 
   const router = createBrowserRouter(routes);
+
   return <RouterProvider router={router} />;
 };
 

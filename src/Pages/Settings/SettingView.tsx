@@ -11,6 +11,7 @@ import {
 import { RiUserUnfollowLine, RiUserFollowLine } from "react-icons/ri";
 import { GiBackwardTime, GiSwitchWeapon } from "react-icons/gi";
 import { useGetProcessusUsers } from "../../Services/processus/useGetProcessusUsers";
+import SpinnerLoader from "../../Ui/Spinner";
 
 interface User {
   id: string;
@@ -55,9 +56,10 @@ export default function SettingsPage() {
   } | null>(null);
   const [draggedUserId, setDraggedUserId] = useState<string | null>(null);
   const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
-    null
+    null,
   );
   const [showTutorial, setShowTutorial] = useState(true);
+    const controls = useAnimation();
   const { data: getUser, isPending } = useGetProcessusUsers();
 
   // Auto-hide tutorial after 5 seconds
@@ -71,7 +73,7 @@ export default function SettingsPage() {
   const handleDragEnd = async (
     userId: string,
     info: PanInfo,
-    controls: any
+    controls: any,
   ) => {
     const threshold = 80;
     const velocityThreshold = 300;
@@ -220,8 +222,8 @@ export default function SettingsPage() {
                 user.status === "active" ? "Suspendu" : "Activé"
               } le ${new Date().toLocaleDateString("fr-FR")}`,
             }
-          : user
-      )
+          : user,
+      ),
     );
   };
 
@@ -235,7 +237,7 @@ export default function SettingsPage() {
     const config =
       activeAction.type === "activate"
         ? {
-            emoji: "🎉",
+            emoji: "",
             title: "Utilisateur Activé!",
             message: `${user.name} est maintenant actif`,
             icon: RiUserFollowLine,
@@ -244,7 +246,7 @@ export default function SettingsPage() {
             borderColor: "border-green-200",
           }
         : {
-            emoji: "⏸️",
+            emoji: "",
             title: "Utilisateur Suspendu!",
             message: `${user.name} a été suspendu`,
             icon: RiUserUnfollowLine,
@@ -308,9 +310,13 @@ export default function SettingsPage() {
     );
   };
 
+  if (isPending) {
+    return <SpinnerLoader />;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
         <AnimatePresence>
           {activeAction && <FloatingActionIndicator />}
         </AnimatePresence>
@@ -406,7 +412,7 @@ export default function SettingsPage() {
                     }}
                     className={`p-3 rounded-full ${stat.color.replace(
                       "text",
-                      "bg"
+                      "bg",
                     )} bg-opacity-10`}
                   >
                     <stat.icon className={`${stat.color} text-xl`} />
@@ -479,7 +485,7 @@ export default function SettingsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {getUser?.map((user, index) => {
-            const controls = useAnimation();
+          
             const isSuspended = user.plafond === 0;
 
             return (
@@ -736,8 +742,8 @@ export default function SettingsPage() {
                           rotate: isSuspended
                             ? [-45, -30, -45, -60, -45] // Animation circulaire autour de -45°
                             : draggedUserId === user.id
-                            ? [0, 360]
-                            : 0,
+                              ? [0, 360]
+                              : 0,
                           scale: draggedUserId === user.id ? [1, 1.2, 1.1] : 1,
                         }}
                         transition={{
@@ -827,7 +833,6 @@ export default function SettingsPage() {
                                       ease: "easeInOut",
                                     }}
                                   >
-                                    ⏸
                                   </motion.span>
                                   <span>SUSPENDU</span>
                                 </>

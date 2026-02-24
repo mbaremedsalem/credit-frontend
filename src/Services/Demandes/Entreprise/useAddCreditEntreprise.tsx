@@ -57,7 +57,7 @@ export const useAddCreditEntreprise = () => {
         queryKey: LIGNES_KEY,
       });
       enqueueSnackbar("Crédit ajouté avec succès !", { variant: "success" });
-      navigate("/dossier");
+      navigate("/dossier?tab=entreprise");
     },
     onError: (err: any) => {
       const errorMessage = handleError(err);

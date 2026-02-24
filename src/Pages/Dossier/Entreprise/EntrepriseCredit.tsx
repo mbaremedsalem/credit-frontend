@@ -617,36 +617,6 @@ function EntrepriseCreditView() {
         );
       },
     },
-
-    // {
-    //   title : "Departement",
-    //   key:"dept",
-    //  render: (_, record) => {
-    //   return (
-    //     getDepartementUser(record.points_valides!)
-    //   )
-    //  }
-    // },
-
-    {
-      title: "En attente de",
-
-      key: "points_valides",
-      render: (_, record) => {
-        return (
-          <div>
-            {" "}
-            {GetEtatDossier(record?.points_valides!) ===
-              "Chef agence central" ||
-            GetEtatDossier(record?.points_valides!) === "Chargé de clientèle"
-              ? GetEtatDossier(record?.points_valides!) +
-                "- " +
-                GetAgenceBYcode(record?.agence!)
-              : GetEtatDossier(record?.points_valides!)}
-          </div>
-        );
-      },
-    },
     {
       title: "",
       key: "actions",

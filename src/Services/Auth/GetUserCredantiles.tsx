@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { BaseUrl } from "../../api/BaseUrl";
 import { enqueueSnackbar } from "notistack";
+import { BaseUrl } from "../../api/BaseUrl";
 
 export type CredantialsParams = {
   username: string;
@@ -13,6 +13,7 @@ export type CredantialsResponse = {
 };
 
 async function usercredantials(params: CredantialsParams): Promise<CredantialsResponse> {
+
   const res = await axios.post(
     `${BaseUrl}auth/get-user-credentials/`,
     {

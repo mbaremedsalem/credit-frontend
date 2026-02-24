@@ -3,18 +3,48 @@ import SpinnerLoader from "../Ui/Spinner";
 
 const Login = lazy(() => import("../Pages/Auth/Login"));
 const Register = lazy(() => import("../Pages/Auth/Register"));
-const ForgetPassword = lazy(() => import("../Pages/Auth/ForgetPassword"));
 const ResetPassword = lazy(() => import("../Pages/Auth/ResetPassword"));
 const Home = lazy(() => import("../Pages/Home"));
 import ErrorPage from "../Pages/ErrorPage";
+import AuthService from "../Auth-Services/AuthService";
 const DossierStatus = lazy(() => import("../Pages/Dossier/DossierView"));
 const Demandes = lazy(() => import("../Pages/Demandes/PageViewDemande"));
 const Historique = lazy(() => import("../Pages/Historiques/HistoriqueView"));
 const Processus = lazy(() => import("../Pages/Processus/Processus"));
+// const AutorisedPage = lazy(() => import("../Pages/AuthorizedPage/AuthorizedPage"));
+
 const SettingView = lazy(() => import("../Pages/Settings/SettingView"));
+
+const NoAccess = lazy(() => import("../Pages/AuthorizedPage/NoAccess"));
+
+const AuthorizedPage = lazy(
+  () => import("../Pages/AuthorizedPage/AuthorizedPage"),
+);
 // const Quide = lazy(() => import("../Pages/Quite/Quide"));
 
+const post = AuthService.getPostUserConnect()
+
 var MainRouter = [
+  // {
+  //       path:"/no-autorise",
+  //       element: (
+  //           <Suspense  fallback={  <SpinnerLoader/>}>
+  //             < AuthorizedPage/>
+  //           </Suspense>
+  //         ),
+  //       layout : "public",
+  //       role:"admin"
+  //   },
+  {
+    path: "/no-autorise",
+    element: (
+      <Suspense fallback={<SpinnerLoader />}>
+        <AuthorizedPage />
+      </Suspense>
+    ),
+    layout: "public",
+    role: "admin",
+  },
   {
     path: "/login",
     element: (
@@ -35,16 +65,16 @@ var MainRouter = [
     layout: "public",
     role: "admin",
   },
-  {
-    path: "/forget-password",
-    element: (
-      <Suspense fallback={<SpinnerLoader />}>
-        <ForgetPassword />
-      </Suspense>
-    ),
-    layout: "public",
-    role: "admin",
-  },
+  // {
+  //   path: "/forget-password",
+  //   element: (
+  //     <Suspense fallback={<SpinnerLoader />}>
+  //       <ForgetPassword />
+  //     </Suspense>
+  //   ),
+  //   layout: "public",
+  //   role: "admin",
+  // },
   {
     path: "/reset-password/:token",
     element: (
@@ -126,27 +156,17 @@ var MainRouter = [
     layout: "private",
     role: "admin",
   },
-
   {
-  path:"/setting",
-  element: (
-      <Suspense fallback={  <SpinnerLoader/>}>
-        < SettingView/>
-      </Suspense>
-    ),
-  layout : "private",
-  role:"admin"
-},
-  // {
-  //   path:"/quide",
-  //   element: (
-  //       <Suspense fallback={  <SpinnerLoader/>}>
-  //         < Quide/>
-  //       </Suspense>
-  //     ),
-  //   layout : "private",
-  //   role:"admin"
-  // },
+    path:"/setting",
+    element: (
+        <Suspense fallback={  <SpinnerLoader/>}>
+          {post === "DEVELOPPEUR" ?  <SettingView/> : <NoAccess/>}
+         
+        </Suspense>
+      ),
+    layout : "private",
+    role:"admin"
+  },
 
   {
     path: "*",

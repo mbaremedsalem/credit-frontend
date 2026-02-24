@@ -60,7 +60,8 @@ export const useAddligne = () => {
         queryKey: LIGNES_KEY,
       });
       enqueueSnackbar("Crédit ajouté avec succès !", { variant: "success" });
-      navigate("/dossier");
+      // navigate("/dossier");
+      navigate("/dossier?tab=particulier");
     },
     onError: (err: any) => {
       const errorMessage = handleError(err);

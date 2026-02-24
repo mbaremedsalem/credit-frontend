@@ -53,6 +53,7 @@ export const useLogin = () => {
         const message = "Bienvenue " + data.nom;
         return enqueueSnackbar(message, { variant: "success" });
       } else {
+        navigate("/no-autorise")
         return enqueueSnackbar("Error username ou mot de passe incorrect", {
           variant: "error",
         });

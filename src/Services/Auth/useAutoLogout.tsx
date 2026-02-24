@@ -23,8 +23,7 @@ export const useAutoLogout = () => {
 
     // Redirection via window.location au lieu de useNavigate
     // window.location.href = "/login";
-      // window.location.href = `http://aubstream:9060/`;
-      window.location.href = "http://10.99.1.2:5173/";
+      window.location.href = `http://aubstream:9060/`;
 
   }, [setAuthState]);
 
